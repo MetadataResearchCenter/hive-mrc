@@ -120,13 +120,13 @@ public class SKOSConceptImpl implements SKOSConcept {
 			output = output + "\t<skos:altLabel>" + alt + "</skos:altLabel>" + "\n";
 		}
 		for(String broader : this.broaders.keySet()){
-			output = output + "\t<skos:broader rdf:resource=\"" + this.broaders.get(broader) + "/>" + "\n";
+			output = output + "\t<skos:broader rdf:resource=\"" + this.broaders.get(broader).getNamespaceURI() + this.broaders.get(broader).getLocalPart() + "/>" + "\n";
 		}
 		for(String narrower : this.narrowers.keySet()){
-			output = output + "\t<skos:narrower rdf:resource=\"" + this.narrowers.get(narrower) + "/>" + "\n";
+			output = output + "\t<skos:narrower rdf:resource=\"" + this.narrowers.get(narrower).getNamespaceURI() + this.narrowers.get(narrower).getLocalPart() + "/>" + "\n";
 		}
 		for(String related : this.relateds.keySet()){
-			output = output + "\t<skos:related rdf:resource=\"" + this.relateds.get(related) + "/>" + "\n";
+			output = output + "\t<skos:related rdf:resource=\"" + this.relateds.get(related).getNamespaceURI() + this.relateds.get(related).getLocalPart() + "/>" + "\n";
 		}
 		output = output + "\t<skos:inScheme rdf:resource=\"" + this.getQName().getNamespaceURI() +"\"/>\n";
 		for(String scopeNote : this.scopeNotes){
