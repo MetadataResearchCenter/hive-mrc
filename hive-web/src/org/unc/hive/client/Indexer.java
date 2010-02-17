@@ -466,6 +466,10 @@ public class Indexer implements EntryPoint {
 	    for(ConceptProxy cp : result)
 	    {
 	    	String ori = cp.getOrigin();
+	    	if(!openedVocabularies.contains(ori.toLowerCase()))
+	    	{
+	    		continue;
+	    	}
 	    	String uri = cp.getURI();
 	    	String uris[] = uri.split(" ");
 	    	String namespace = uris[0];
