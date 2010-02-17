@@ -946,12 +946,11 @@ public class ConceptBrowser implements EntryPoint, ValueChangeHandler<String> {
 		}
 		conceptBrowserService.searchForConcept(query, openedVocabularies,
 				new AsyncCallback<List<ConceptProxy>>() {
-
 					@Override
 					public void onFailure(Throwable caught) {
 						// TODO Auto-generated method stub
 						HTML reminder = new HTML(
-								"<span style = 'color:red'>Server is unresponse, please try again later.</span>");
+								"<span style = 'color:red'>Server is down, please try again later.</span>");
 						resultList.clear();
 						filteringPanel.clear();
 						resultList.add(reminder);
@@ -969,6 +968,9 @@ public class ConceptBrowser implements EntryPoint, ValueChangeHandler<String> {
 							resultList.add(reminder);
 
 						} else {
+							//Display the first concept on the list
+							ConceptProxy c = result.get(0);
+							displayConceptInfo(c);
 							resultStorage = result;
 							resultList.clear();
 							if (filteringVocabularies == null)
@@ -1005,7 +1007,6 @@ public class ConceptBrowser implements EntryPoint, ValueChangeHandler<String> {
 								resulttable.getCellFormatter().addStyleName(j,
 										1, "concept-style");
 							}
-
 							filteringPanel.clear();
 							for (String ori : filteringVocabularies) {
 								final CheckBox check = new CheckBox(ori);
@@ -1063,6 +1064,7 @@ public class ConceptBrowser implements EntryPoint, ValueChangeHandler<String> {
 								});
 								filteringPanel.add(check);
 							}
+							
 						}
 					}
 
