@@ -1,3 +1,17 @@
+The basic steps for deploying the HIVE web application are:
+1. go into the hive-web directory
+2. edit the build.properties file to have correct paths
+3. run "ant deploy"
+4. start (or restart) Tomcat
+5. load vocabularies as described below
+
+To use the HIVE core library in an application, compile the hive-core
+directory (sorry, there isn't a buildfile there yet, but Eclipse or
+another IDE should be able to do it for you).
+
+NOTE: HIVE does not currently come with any vocabularies. You can
+download the LCSH vocabulary from http://id.loc.gov, or find another
+SKOS vocabulary to load.
 
 ------------------------------------------------------------------------
 1- Importing Vocabularies
