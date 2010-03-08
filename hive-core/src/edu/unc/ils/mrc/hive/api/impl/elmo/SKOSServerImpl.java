@@ -115,24 +115,24 @@ public class SKOSServerImpl implements SKOSServer {
 		 * Statistics test
 		 */
 
-//		TreeMap<String, SKOSScheme> vocabularies = server.getSKOSSchemas();
-//		Set<String> keys = vocabularies.keySet();
-//		Iterator<String> it = keys.iterator();
-//		while (it.hasNext()) {
-//			SKOSScheme voc = vocabularies.get(it.next());
-//			System.out.println("NAME: " + voc.getName());
-//			System.out.println("\t LONG NAME: " + voc.getLongName());
-//			System.out.println("\t NUMBER OF CONCEPTS: "
-//					+ voc.getNumberOfConcepts());
-//			System.out.println("\t NUMBER OF RELATIONS: "
-//					+ voc.getNumberOfRelations());
-//			System.out.println("\t DATE: " + voc.getLastDate());
-//			System.out.println();
-//			System.out.println("\t SIZE: " + voc.getSubAlphaIndex("a").size());
-//			System.out.println();
-//			System.out.println("\t TOP CONCEPTS: "
-//					+ voc.getTopConceptIndex().size());
-//		}
+		TreeMap<String, SKOSScheme> vocabularies = server.getSKOSSchemas();
+		Set<String> keys = vocabularies.keySet();
+		Iterator<String> it = keys.iterator();
+		while (it.hasNext()) {
+			SKOSScheme voc = vocabularies.get(it.next());
+			System.out.println("NAME: " + voc.getName());
+			System.out.println("\t LONG NAME: " + voc.getLongName());
+			System.out.println("\t NUMBER OF CONCEPTS: "
+					+ voc.getNumberOfConcepts());
+			System.out.println("\t NUMBER OF RELATIONS: "
+					+ voc.getNumberOfRelations());
+			System.out.println("\t DATE: " + voc.getLastDate());
+			System.out.println();
+			System.out.println("\t SIZE: " + voc.getSubAlphaIndex("a").size());
+			System.out.println();
+			System.out.println("\t TOP CONCEPTS: "
+					+ voc.getTopConceptIndex().size());
+		}
 
 //		/**
 //		 * Search by keyword test
@@ -147,7 +147,8 @@ public class SKOSServerImpl implements SKOSServer {
 //			uri = c.getQName().getNamespaceURI();
 //			lp = c.getQName().getLocalPart();
 //			System.out.println("\t URI: " + uri + " Local part: " + lp);
-//			//System.out.println("\t Origin: " + server.getOrigin(c));
+//			QName qname = new QName(uri, lp);
+//			System.out.println("\t Origin: " + server.getOrigin(qname));
 //		}
 //		System.out.println();
 
@@ -168,31 +169,31 @@ public class SKOSServerImpl implements SKOSServer {
 //		//System.out.println("\t Origin: " + server.getOrigin(c2));
 //		System.out.println("\t SKOS Format: \n" + c2.getSKOSFormat());
 
-		/**
-		 * SKOS tagger test
-		 */
-
-		SKOSTagger tagger = server.getSKOSTagger();
-
-		String source = "/home/hive/Desktop/ag086e00.pdf";
-		source = "http://en.wikipedia.org/wiki/Biology";
-		
-		List<String> vocabs = new ArrayList<String>();
-		vocabs.add("nbii");
-		vocabs.add("lcsh");
-		vocabs.add("agrovoc");
-
-		List<SKOSConcept> l = tagger.getTags(source, vocabs, server.getSKOSSearcher());
-		System.out.println();
-		System.out.println("Tagging Results for ALL");
-		for (SKOSConcept s : l) {
-			System.out.println(s.getPrefLabel());
-			//System.out.println(s.getQName().getNamespaceURI());
-		}
-
-		System.out.println();
-		System.out
-				.println("-----------------------------------------------------------------");
+//		/**
+//		 * SKOS tagger test
+//		 */
+//
+//		SKOSTagger tagger = server.getSKOSTagger();
+//
+//		String source = "/home/hive/Desktop/ag086e00.pdf";
+//		source = "http://en.wikipedia.org/wiki/Biology";
+//		
+//		List<String> vocabs = new ArrayList<String>();
+//		vocabs.add("nbii");
+//		vocabs.add("lcsh");
+//		vocabs.add("agrovoc");
+//
+//		List<SKOSConcept> l = tagger.getTags(source, vocabs, server.getSKOSSearcher());
+//		System.out.println();
+//		System.out.println("Tagging Results for ALL");
+//		for (SKOSConcept s : l) {
+//			System.out.println(s.getPrefLabel());
+//			//System.out.println(s.getQName().getNamespaceURI());
+//		}
+//
+//		System.out.println();
+//		System.out
+//				.println("-----------------------------------------------------------------");
 //
 //		/**
 //		 * Get Children by URI test
