@@ -204,7 +204,7 @@ public class ConceptBrowser implements EntryPoint, ValueChangeHandler<String> {
 										}
 										
 										openedVocabularies = filteringVocabularies; 
-										currentViewing = filteringVocabularies.get(0);
+										currentViewing = filteringVocabularies.get(0).toUpperCase();
 										
 										for (int j = 0; j < resulttable.getRowCount(); j++) {
 											resulttable.getCellFormatter().addStyleName(j,
@@ -282,7 +282,7 @@ public class ConceptBrowser implements EntryPoint, ValueChangeHandler<String> {
 				{
 					currentViewing = queryfromhome.substring(queryfromhome.indexOf("=", 0) + 1);
 					openedVocabularies = new ArrayList<String>();
-					openedVocabularies.add(currentViewing);
+					openedVocabularies.add(currentViewing.toLowerCase());
 					conceptBrowserService.getFirstConcept(currentViewing, new AsyncCallback<ConceptProxy>()
 							{
 
@@ -332,11 +332,11 @@ public class ConceptBrowser implements EntryPoint, ValueChangeHandler<String> {
 							Boolean isChecked = check.getValue();
 							if(isChecked)
 							{
-								openedVocabularies.add(check.getText());
+								openedVocabularies.add(check.getText().toLowerCase());
 							}
 							else
 							{
-								openedVocabularies.remove(check.getText());
+								openedVocabularies.remove(check.getText().toLowerCase());
 							}
 						}   
 					   });
@@ -357,9 +357,9 @@ public class ConceptBrowser implements EntryPoint, ValueChangeHandler<String> {
 						glass.removeFromParent();
 						if(openedVocabularies.isEmpty())
 						{
-							openedVocabularies.add(allVocabulary.get(0)); 
+							openedVocabularies.add(allVocabulary.get(0).toLowerCase()); 
 						}
-						currentViewing = openedVocabularies.get(0);
+						currentViewing = openedVocabularies.get(0).toUpperCase();
 						conceptBrowserService.getFirstConcept(currentViewing, new AsyncCallback<ConceptProxy>()
 								{
 
@@ -394,8 +394,8 @@ public class ConceptBrowser implements EntryPoint, ValueChangeHandler<String> {
 						choosePanel.removeFromParent();
 						glass.removeFromParent();
 						openedVocabularies.clear();
-						openedVocabularies.add(allVocabulary.get(0));	
-						currentViewing = openedVocabularies.get(0);
+						openedVocabularies.add(allVocabulary.get(0).toLowerCase());	
+						currentViewing = openedVocabularies.get(0).toUpperCase();
 						conceptBrowserService.getFirstConcept(currentViewing, new AsyncCallback<ConceptProxy>()
 								{
 
@@ -577,9 +577,8 @@ public class ConceptBrowser implements EntryPoint, ValueChangeHandler<String> {
 	private void displayOpenedVocabularies() {
 
 		for (final String c : openedVocabularies) {
-
 			final ToggleButton closeVocabulary = new ToggleButton(new Image("./img/close.jpg"), new Image("./img/disabled.jpg"));
-			Label vname = new Label(c);
+			Label vname = new Label(c.toUpperCase());
 			vname.addStyleName("vname");
 			final HorizontalPanel hp = new HorizontalPanel();
 			hp.setVerticalAlignment(HasVerticalAlignment.ALIGN_TOP);
@@ -594,13 +593,13 @@ public class ConceptBrowser implements EntryPoint, ValueChangeHandler<String> {
 				public void onClick(ClickEvent e) {
 					if (closeVocabulary.isDown()) {
 						closeVocabulary.setDown(false);
-						ConfirmDialog dlg = new ConfirmDialog(hp,closeVocabulary, c, false, true);
+						ConfirmDialog dlg = new ConfirmDialog(hp,closeVocabulary, c.toUpperCase(), false, true);
 						dlg.show();
 						dlg.center();
 					} else {
 						/* Bring back the deleted vocabulary */
-						openedVocabularies.add(c);
-						final Hyperlink hp = new Hyperlink(c, c);
+						openedVocabularies.add(c.toLowerCase());
+						final Hyperlink hp = new Hyperlink(c.toUpperCase(), c.toUpperCase());
 						browsingTab.addTab(hp);
 					}
 				}
@@ -619,17 +618,17 @@ public class ConceptBrowser implements EntryPoint, ValueChangeHandler<String> {
 				addVocabularyPanel.clear();
 				addVocabularyPanel.removeFromParent();
 				for (final String c : allVocabulary) {
-					if (!openedVocabularies.contains(c)) {
-						final Hyperlink hp = new Hyperlink(c, c);
+					if (!openedVocabularies.contains(c.toLowerCase())) {
+						final Hyperlink hp = new Hyperlink(c.toUpperCase(), c.toUpperCase());
 						hp.addClickHandler(new ClickHandler() {
 
 							public void onClick(ClickEvent e) {
-								openedVocabularies.add(c);
-								currentViewing = c;
+								openedVocabularies.add(c.toLowerCase());
+								currentViewing = c.toUpperCase();
 								final ToggleButton closeVocabulary = new ToggleButton(
 										new Image("./img/close.jpg"),
 										new Image("./img/disabled.jpg"));
-								Label vname = new Label(c);
+								Label vname = new Label(c.toUpperCase());
 								vname.addStyleName("vname");
 								final HorizontalPanel vpanel = new HorizontalPanel();
 								vpanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_TOP);
@@ -639,7 +638,7 @@ public class ConceptBrowser implements EntryPoint, ValueChangeHandler<String> {
 								vpanel.add(vname);
 								configure.insert(vpanel, configure.getWidgetCount() - 2);
 								pop.hide();
-								final Hyperlink newtabhead = new Hyperlink(c, c);
+								final Hyperlink newtabhead = new Hyperlink(c.toUpperCase(), c.toUpperCase());
 								browsingTab.addTab(newtabhead);
 								browsingTab.selectTab(browsingTab.getTabCount()-1);
 								getAndDisplayConcepts(currentViewing.toString(), subAlpha.toString());
@@ -647,7 +646,7 @@ public class ConceptBrowser implements EntryPoint, ValueChangeHandler<String> {
 									@Override
 									public void onClick(ClickEvent event) {
 										// TODO Auto-generated method stub
-										currentViewing = c;
+										currentViewing = c.toUpperCase();
 										getAndDisplayConcepts(currentViewing.toString(), subAlpha.toString());
 									}
 
@@ -661,7 +660,7 @@ public class ConceptBrowser implements EntryPoint, ValueChangeHandler<String> {
 													dlg.show();
 													dlg.center();
 												} else {
-													openedVocabularies.add(c);
+													openedVocabularies.add(c.toLowerCase());
 													final Hyperlink hp = new Hyperlink(c, c);
 													hp.addClickHandler(new ClickHandler() {
 
@@ -744,19 +743,19 @@ public class ConceptBrowser implements EntryPoint, ValueChangeHandler<String> {
 
 	private void initBrowsingTab() {
 		for (final String c : openedVocabularies) {
-			Hyperlink hp = new Hyperlink(c, c);
+			Hyperlink hp = new Hyperlink(c.toUpperCase(), c.toUpperCase());
 			hp.addClickHandler(new ClickHandler() {
 
 				@Override
 				public void onClick(ClickEvent event) {
 					// TODO Auto-generated method stub
-					currentViewing = c;
+					currentViewing = c.toUpperCase();
 					getAndDisplayConcepts(currentViewing.toString(), subAlpha.toString());
 				}
 			});
 			browsingTab.addTab(hp);
 		}
-		int index = openedVocabularies.indexOf(currentViewing);
+		int index = openedVocabularies.indexOf(currentViewing.toLowerCase());
 		browsingTab.selectTab(index);
 		getAndDisplayConcepts(currentViewing.toString(), subAlpha.toString());
 	}
@@ -1081,7 +1080,7 @@ public class ConceptBrowser implements EntryPoint, ValueChangeHandler<String> {
 				boolean autohide, boolean modal) {
 			super(autohide, modal);
 			associateVoc = vocabulary;
-			vocIndex = openedVocabularies.indexOf(associateVoc);
+			vocIndex = openedVocabularies.indexOf(associateVoc.toLowerCase());
 			glassPanel = new GlassPanel(false);
 			com.google.gwt.user.client.ui.Button yesBtn = new com.google.gwt.user.client.ui.Button(
 					"Yes");
@@ -1106,7 +1105,7 @@ public class ConceptBrowser implements EntryPoint, ValueChangeHandler<String> {
 					if(browsingTab.getTabCount() != 0)
 					{
 						browsingTab.selectTab(0);
-						getAndDisplayConcepts(openedVocabularies.get(0), subAlpha);
+						getAndDisplayConcepts(openedVocabularies.get(0).toUpperCase(), subAlpha);
 					}
 					else
 					{
