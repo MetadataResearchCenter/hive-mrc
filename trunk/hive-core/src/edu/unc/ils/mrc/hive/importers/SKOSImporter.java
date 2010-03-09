@@ -91,8 +91,8 @@ public class SKOSImporter implements Importer {
 	public void importThesaurustoInvertedIndex() {
 		System.out.println("Indexing Thesaurus in inverted index");
 		for (Concept concept : this.manager.findAll(Concept.class)) {
-			System.out.println("Indexing " + concept.getSkosPrefLabel()
-					+ " concept");
+			//System.out.println("Indexing " + concept.getSkosPrefLabel()
+				//	+ " concept");
 			this.indexer.indexConcept(concept);
 			this.alphaIndex.put(concept.getSkosPrefLabel(), concept.getQName());
 			if (concept.getSkosBroaders().size() == 0

@@ -30,7 +30,7 @@ import edu.unc.ils.mrc.hive.api.impl.elmo.SKOSConceptImpl;
 
 public class ConceptMultiSearcher implements Searcher {
 
-	private static int NUMBER_RESULTS = 20;
+	private static int NUMBER_RESULTS = 1500;
 
 	private Searchable[] searchers;
 	private MultiSearcher searcher;
