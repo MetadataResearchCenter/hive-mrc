@@ -25,10 +25,10 @@ public class AdminVocabularies {
 		importer.importThesaurustoInvertedIndex();
 		importer.close();
 		System.out.println("Import finished");
-		if (args[2].equals("train")) {
-			TaggerTrainer trainer = new TaggerTrainer(schema);
-			trainer.trainAutomaticIndexingModule();
- 		}
+//		if (args[2].equals("train")) {
+//			TaggerTrainer trainer = new TaggerTrainer(schema);
+//			trainer.trainAutomaticIndexingModule();
+// 		}
 	}
 
 }
