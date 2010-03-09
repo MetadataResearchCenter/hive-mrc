@@ -63,7 +63,7 @@ public class SKOSServerImpl implements SKOSServer {
 		}
 
 		this.searcher = new SKOSSearcherImpl(this.schemes);
-		this.tagger = new SKOSTaggerImpl(this.schemes,"dummy");
+		this.tagger = new SKOSTaggerImpl(this.schemes, "dummy");
 
 	}
 
@@ -134,123 +134,150 @@ public class SKOSServerImpl implements SKOSServer {
 					+ voc.getTopConceptIndex().size());
 		}
 
-//		/**
-//		 * Search by keyword test
-//		 */
-//		System.out.println("Search by keyword:");
-//		List<SKOSConcept> ranking = searcher.searchConceptByKeyword("activity");
-//		System.out.println("Results in SKOSServer: " + ranking.size());
-//		String uri = "";
-//		String lp = "";
-//		for (SKOSConcept c : ranking) {
-//			System.out.println("PrefLabel: " + c.getPrefLabel());
-//			uri = c.getQName().getNamespaceURI();
-//			lp = c.getQName().getLocalPart();
-//			System.out.println("\t URI: " + uri + " Local part: " + lp);
-//			QName qname = new QName(uri, lp);
-//			System.out.println("\t Origin: " + server.getOrigin(qname));
-//		}
-//		System.out.println();
+		// /**
+		// * Search by keyword test
+		// */
+		// System.out.println("Search by keyword:");
+		// List<SKOSConcept> ranking = searcher
+		// .searchConceptByKeyword("accidents");
+		// System.out.println("Results in SKOSServer: " + ranking.size());
+		// String uri = "";
+		// String lp = "";
+		// for (SKOSConcept c : ranking) {
+		// uri = c.getQName().getNamespaceURI();
+		// lp = c.getQName().getLocalPart();
+		// QName qname = new QName(uri, lp);
+		// String origin = server.getOrigin(qname);
+		// if (origin.toLowerCase().equals("nbii")) {
+		// System.out.println("PrefLabel: " + c.getPrefLabel());
+		// System.out.println("\t URI: " + uri + " Local part: " + lp);
+		// System.out.println("\t Origin: " + server.getOrigin(qname));
+		// }
+		// }
+		// System.out.println();
 
 		// /**
 		// * Search by URI test
 		// */
 
-//		System.out.println("Search by URI:");
-//		SKOSConcept c2 = searcher.searchConceptByURI(
-//				"http://thesaurus.nbii.gov/nbii#", "Enzymatic-activity");
-//		// Concept c2 = searcher.searchConceptByURI(uri, lp);//TODO Cuando no
-//		// hay resultados esto explota, controlar excepcion
-//		List<String> alt = c2.getAltLabels();
-//		System.out.println("PrefLabel: " + c2.getPrefLabel());
-//		for (String a : alt) {
-//			System.out.println("\t altLabel: " + a);
-//		}
-//		//System.out.println("\t Origin: " + server.getOrigin(c2));
-//		System.out.println("\t SKOS Format: \n" + c2.getSKOSFormat());
+		// System.out.println("Search by URI:");
+		// SKOSConcept c2 = searcher.searchConceptByURI(
+		// "http://thesaurus.nbii.gov/nbii#", "Enzymatic-activity");
+		// // Concept c2 = searcher.searchConceptByURI(uri, lp);//TODO Cuando no
+		// // hay resultados esto explota, controlar excepcion
+		// List<String> alt = c2.getAltLabels();
+		// System.out.println("PrefLabel: " + c2.getPrefLabel());
+		// for (String a : alt) {
+		// System.out.println("\t altLabel: " + a);
+		// }
+		// //System.out.println("\t Origin: " + server.getOrigin(c2));
+		// System.out.println("\t SKOS Format: \n" + c2.getSKOSFormat());
 
-//		/**
-//		 * SKOS tagger test
-//		 */
-//
-//		SKOSTagger tagger = server.getSKOSTagger();
-//
-//		String source = "/home/hive/Desktop/ag086e00.pdf";
-//		source = "http://en.wikipedia.org/wiki/Biology";
-//		
-//		List<String> vocabs = new ArrayList<String>();
-//		vocabs.add("nbii");
-//		vocabs.add("lcsh");
-//		vocabs.add("agrovoc");
-//
-//		List<SKOSConcept> l = tagger.getTags(source, vocabs, server.getSKOSSearcher());
-//		System.out.println();
-//		System.out.println("Tagging Results for ALL");
-//		for (SKOSConcept s : l) {
-//			System.out.println(s.getPrefLabel());
-//			//System.out.println(s.getQName().getNamespaceURI());
-//		}
-//
-//		System.out.println();
-//		System.out
-//				.println("-----------------------------------------------------------------");
-//
-//		/**
-//		 * Get Children by URI test
-//		 */
-//
-//		vocabularies = server.getSKOSSchemas();
-//		keys = vocabularies.keySet();
-//		it = keys.iterator();
-//		while (it.hasNext()) {
-//			SKOSScheme voc = vocabularies.get(it.next());
-//			int n = voc.getSubTopConceptIndex("x").size();
-//			int a = voc.getSubAlphaIndex("x").size();
-//			System.out.println("Vocabulary: " + voc.getLongName());
-//			System.out.println("\t Size for X in Top Concept Index: " + n);
-//			System.out.println("\t Size for X in Alpha Index: " + a);
-//			for (String g : voc.getSubTopConceptIndex("x").keySet()) {
-//				System.out.println("lina go home: " + g);
-//			}
-//			File outputTAX = new File("/home/hive/taxonomySESAME"
-//					+ voc.getName());
-//			FileOutputStream fos = new FileOutputStream(outputTAX);
-//			PrintWriter pr = new PrintWriter(fos);
-//			TreeMap<String, QName> top = voc.getTopConceptIndex();
-//			Set<String> topConcepts = top.keySet();
-//			Iterator<String> it2 = topConcepts.iterator();
-//			while (it2.hasNext()) {
-//				String term = it2.next();
-//				TreeMap<String, QName> children = searcher.searchChildrenByURI(
-//						top.get(term).getNamespaceURI(), top.get(term)
-//								.getLocalPart());
-//				pr.println(term);
-//				for (String c : children.keySet()) {
-//					String term2 = c;
-//					pr.println("\t" + term2);
-//					TreeMap<String, QName> ch = searcher.searchChildrenByURI(
-//							children.get(term2).getNamespaceURI(), children.get(term2).getLocalPart());
-//					for (String c3 : ch.keySet()) {
-//						pr.println("\t \t" + c3);
-//					}
-//				}
-//			}
-//			pr.close();
-//			fos.close();
-//		}
-//
-//		System.out.println();
-//		System.out
-//				.println("Children for http://id.loc.gov/authorities/sh2001009743#concept");
-//		SKOSConcept con = searcher.searchConceptByURI(
-//				"http://id.loc.gov/authorities/sh2001009743#", "concept");
-//		System.out.println(con.getPrefLabel());
-//		TreeMap<String,QName> children = searcher.searchChildrenByURI(
-//				"http://id.loc.gov/authorities/sh2001009743#", "concept");
-//		for (String c : children.keySet()) {
-//			System.out.println("prefLabel: " + c);
-//		}
-//		System.out.println();
+		// /**
+		// * SKOS tagger test
+		// */
+		//
+		// SKOSTagger tagger = server.getSKOSTagger();
+		//
+		// String source = "/home/hive/Desktop/ag086e00.pdf";
+		// source = "http://en.wikipedia.org/wiki/Biology";
+		//		
+		// List<String> vocabs = new ArrayList<String>();
+		// vocabs.add("nbii");
+		// vocabs.add("lcsh");
+		// vocabs.add("agrovoc");
+		//
+		// List<SKOSConcept> l = tagger.getTags(source, vocabs,
+		// server.getSKOSSearcher());
+		// System.out.println();
+		// System.out.println("Tagging Results for ALL");
+		// for (SKOSConcept s : l) {
+		// System.out.println(s.getPrefLabel());
+		// //System.out.println(s.getQName().getNamespaceURI());
+		// }
+		//
+		// System.out.println();
+		// System.out
+		// .println("-----------------------------------------------------------------");
+		//
+		// /**
+		// * Get Children by URI test
+		// */
+		//
+		// vocabularies = server.getSKOSSchemas();
+		// keys = vocabularies.keySet();
+		// it = keys.iterator();
+		// while (it.hasNext()) {
+		// SKOSScheme voc = vocabularies.get(it.next());
+		// int n = voc.getSubTopConceptIndex("x").size();
+		// int a = voc.getSubAlphaIndex("x").size();
+		// System.out.println("Vocabulary: " + voc.getLongName());
+		// System.out.println("\t Size for X in Top Concept Index: " + n);
+		// System.out.println("\t Size for X in Alpha Index: " + a);
+		// for (String g : voc.getSubTopConceptIndex("x").keySet()) {
+		// System.out.println("lina go home: " + g);
+		// }
+		// File outputTAX = new File("/home/hive/taxonomySESAME"
+		// + voc.getName());
+		// FileOutputStream fos = new FileOutputStream(outputTAX);
+		// PrintWriter pr = new PrintWriter(fos);
+		// TreeMap<String, QName> top = voc.getTopConceptIndex();
+		// Set<String> topConcepts = top.keySet();
+		// Iterator<String> it2 = topConcepts.iterator();
+		// while (it2.hasNext()) {
+		// String term = it2.next();
+		// TreeMap<String, QName> children = searcher.searchChildrenByURI(
+		// top.get(term).getNamespaceURI(), top.get(term)
+		// .getLocalPart());
+		// pr.println(term);
+		// for (String c : children.keySet()) {
+		// String term2 = c;
+		// pr.println("\t" + term2);
+		// TreeMap<String, QName> ch = searcher.searchChildrenByURI(
+		// children.get(term2).getNamespaceURI(),
+		// children.get(term2).getLocalPart());
+		// for (String c3 : ch.keySet()) {
+		// pr.println("\t \t" + c3);
+		// }
+		// }
+		// }
+		// pr.close();
+		// fos.close();
+		// }
+		//
+		// System.out.println();
+		// System.out
+		// .println("Children for http://id.loc.gov/authorities/sh2001009743#concept");
+		// SKOSConcept con = searcher.searchConceptByURI(
+		// "http://id.loc.gov/authorities/sh2001009743#", "concept");
+		// System.out.println(con.getPrefLabel());
+		// TreeMap<String,QName> children = searcher.searchChildrenByURI(
+		// "http://id.loc.gov/authorities/sh2001009743#", "concept");
+		// for (String c : children.keySet()) {
+		// System.out.println("prefLabel: " + c);
+		// }
+		// System.out.println();
+
+		/*
+		 * SPARQL test
+		 */
+
+		List solutions1 = searcher.SPARQLSelect(
+				"SELECT ?s ?p ?p WHERE {?s ?p ?o} LIMIT 10", "nbii");
+		List solutions2 = searcher
+				.SPARQLSelect(
+						"PREFIX skos: <http://www.w3.org/2004/02/skos/core#> SELECT ?s ?p ?o WHERE {  ?s ?p ?o . ?s skos:prefLabel \"Damage\" .}",
+						"nbii");
+		List solutions3 = searcher
+				.SPARQLSelect(
+						"PREFIX skos: <http://www.w3.org/2004/02/skos/core#> SELECT ?uri ?label WHERE { <http://thesaurus.nbii.gov/nbii#Mud> skos:broader ?uri . ?uri skos:prefLabel ?label}",
+						"nbii");
+		if (solutions1 != null)
+			System.out.println("SOLUTIONS 1: " + solutions1.toString());
+		if (solutions2 != null)
+			System.out.println("SOLUTIONS 2: " + solutions2.toString());
+		if (solutions3 != null)
+			System.out.println("SOLUTIONS 3: " + solutions3.toString());
 
 		// Closing the server
 		server.close();
