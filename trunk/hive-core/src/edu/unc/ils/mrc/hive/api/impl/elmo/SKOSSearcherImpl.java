@@ -1,8 +1,9 @@
 package edu.unc.ils.mrc.hive.api.impl.elmo;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -13,7 +14,14 @@ import org.openrdf.concepts.skos.core.Concept;
 import org.openrdf.elmo.ElmoModule;
 import org.openrdf.elmo.sesame.SesameManager;
 import org.openrdf.elmo.sesame.SesameManagerFactory;
+import org.openrdf.model.Value;
+import org.openrdf.query.BindingSet;
+import org.openrdf.query.MalformedQueryException;
+import org.openrdf.query.QueryEvaluationException;
+import org.openrdf.query.TupleQuery;
+import org.openrdf.query.TupleQueryResult;
 import org.openrdf.repository.Repository;
+import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.sail.SailRepository;
 import org.openrdf.sail.nativerdf.NativeStore;
@@ -160,6 +168,46 @@ public class SKOSSearcherImpl implements SKOSSearcher {
 				return sconcept.getNarrowers();
 			}
 		}
+		return null;
+	}
+	
+	public List<HashMap> SPARQLSelect(String qs, String vocabulary) {
+		try {
+			List<String> voc = new ArrayList<String>();
+			voc.addAll(this.vocabularies.keySet());
+			int i = voc.indexOf(vocabulary.toLowerCase());
+			RepositoryConnection con = this.repositories[i].getConnection();
+			try {
+				TupleQuery query = con.prepareTupleQuery(org.openrdf.query.QueryLanguage.SPARQL, qs);
+				TupleQueryResult qres = query.evaluate();
+				List<HashMap> reslist = new ArrayList<HashMap>();
+				while(qres.hasNext()) {
+					BindingSet b = qres.next();
+					Set<String> names = b.getBindingNames();
+					HashMap hm = new HashMap<String, Value>();
+					for(String n : names) {
+						hm.put(n, b.getValue(n));
+					}
+					reslist.add(hm);
+				}
+				return reslist;
+			} catch (MalformedQueryException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (QueryEvaluationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			finally {
+				con.close();
+			}
+		} catch (RepositoryException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ArrayIndexOutOfBoundsException a) {
+			System.err.println("The name of the vocabulary has not been recognized");
+		}
+		
 		return null;
 	}
 
