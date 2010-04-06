@@ -175,16 +175,24 @@ public class VocabularyService {
 		SKOSSearcher searcher = this.skosServer.getSKOSSearcher();
 		List<SKOSConcept> result = searcher.searchConceptByKeyword(keyword);
 		List<ConceptProxy> rankedlist = new ArrayList<ConceptProxy>();
+		for(String s : openedVocabularies) {
+			System.out.println(s);
+		}
 		if (result.size() != 0) {
 			for (SKOSConcept c : result) {
 				String origin = skosServer.getOrigin(c.getQName());
-				if (openedVocabularies.contains(origin)) {
+				System.out.println("POR AQUI PASO");
+				System.out.println("ORIGEN: " + origin);
+				System.out.println("SIZE: " + openedVocabularies.size());
+				if (openedVocabularies.contains(origin.toLowerCase())) {
 					String preLabel = c.getPrefLabel();
 					QName qname = c.getQName();
 					String namespace = qname.getNamespaceURI();
 					String localPart = qname.getLocalPart();
 					String uri = namespace + " " + localPart;
+					System.out.println("ESTO ES MI DEBUGGING: " + uri);
 					ConceptProxy cp = new ConceptProxy(origin, preLabel, uri);
+					System.out.println("CONCEPT PROXI: " + cp.getOrigin());
 					rankedlist.add(cp);
 				}
 			}
@@ -298,7 +306,7 @@ public class VocabularyService {
 	public static void main(String[] args) {
 		VocabularyService service = VocabularyService
 				.getInstance("war/WEB-INF/conf/vocabularies");
-		System.out.println("Number of Concepts: " + service.getNumberOfConcept("agrovoc"));
+		System.out.println("Number of Concepts: " + service.getNumberOfConcept("mesh"));
 		TreeMap<String, SKOSScheme> voc = service.skosServer.getSKOSSchemas();
 		Set<String> set = voc.keySet();
 		for (String s : set) {
@@ -309,9 +317,34 @@ public class VocabularyService {
 			System.out.println("bvDATE: " + sc.getLastDate());
 		}
 
+//		/**
+//		 * Search by keyword test
+//		 */
+//		System.out.println("Search by keyword:");
+//		List<SKOSConcept> ranking = service.getSKOSSearcher().searchConceptByKeyword("syndrome");
+//		System.out.println("Results in SKOSServer: " + ranking.size());
+//		String uri = "";
+//		String lp = "";
+//		for (SKOSConcept c : ranking) {
+//			System.out.println("PrefLabel: " + c.getPrefLabel());
+//			uri = c.getQName().getNamespaceURI();
+//			lp = c.getQName().getLocalPart();
+//			System.out.println("\t URI: " + uri + " Local part: " + lp);
+//			//QName qname = new QName(uri, lp);
+//			//System.out.println("\t Origin: " + service.server.getOrigin(qname));
+//		}
+//		System.out.println();
+		
 //		System.out.println(service.getTags("/home/hive/Desktop/ag086e00.pdf",
 //				"agrovoc") + " terminos extraidos");
 
+		/*
+		 * Trying the tree
+		 */
+		
+		ConceptProxy c = service.getFirstConcept("nbii");
+		System.out.println(c.getPreLabel());
+		
 		service.close();
 	}
 
