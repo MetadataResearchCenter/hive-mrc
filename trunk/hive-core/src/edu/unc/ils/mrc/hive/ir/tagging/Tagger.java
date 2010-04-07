@@ -5,6 +5,7 @@ import java.util.List;
 public interface Tagger {
 	
 	public void extractKeyphrases();
+	
 	public List<String> extractKeyphrases(String text);
 	
 	/**
