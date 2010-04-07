@@ -15,6 +15,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeMap;
 
+import org.apache.log4j.Logger;
+
 import edu.unc.ils.mrc.hive.api.SKOSConcept;
 import edu.unc.ils.mrc.hive.api.SKOSScheme;
 import edu.unc.ils.mrc.hive.api.SKOSSearcher;
@@ -28,7 +30,8 @@ import edu.unc.ils.mrc.hive.util.TextManager;
  */
 
 public class SKOSTaggerImpl implements SKOSTagger {
-
+	private static Logger log = Logger.getLogger(SKOSTaggerImpl.class);
+	
 	private static final int LIMIT = 10;
 
 	private TreeMap<String, Tagger> taggers;
@@ -46,7 +49,7 @@ public class SKOSTaggerImpl implements SKOSTagger {
 			while (it.hasNext()) {
 				String vocName = it.next();
 				SKOSScheme schema = vocabularies.get(vocName);
-				TaggerFactory.selectTagger(2);
+				TaggerFactory.selectTagger(TaggerFactory.KEATAGGER);
 				Tagger tagger = TaggerFactory.getTagger(schema
 						.getKEAtestSetDir(), schema.getKEAModelPath(), schema
 						.getStopwordsPath(), schema);
@@ -54,33 +57,33 @@ public class SKOSTaggerImpl implements SKOSTagger {
 			}
 		} else if (this.algorithm.equals("dummy")) {
 			SKOSScheme schema = vocabularies.get(vocabularies.firstKey());
-			TaggerFactory.selectTagger(1);
+			TaggerFactory.selectTagger(TaggerFactory.DUMMYTAGGER);
 			Tagger tagger = TaggerFactory.getTagger("", schema
 					.getLingpipeModel(), "", null);
 			this.taggers.put("Dummytagger", tagger);
 		} else {
-			System.out.println(this.algorithm + " algorithm is not suported");
+			log.fatal(this.algorithm + " algorithm is not suported");
 		}
-		System.out.println("NUMBER OF TAGGERS: " + this.taggers.size());
+		log.debug("NUMBER OF TAGGERS: " + this.taggers.size());
 		for (Tagger tag : this.taggers.values()) {
-			System.out.println("Tagger: " + tag.getVocabulary());
+			log.info("Tagger: " + tag.getVocabulary());
 		}
 	}
 
-	public List<SKOSConcept> getTags(String source, List<String> vocabulary,
+	public List<SKOSConcept> getTags(String inputFilePath, List<String> vocabulary,
 			SKOSSearcher searcher) {
 		TextManager tm = new TextManager();
-		String text = tm.getPlainText(source);
+		String text = tm.getPlainText(inputFilePath);
 		List<SKOSConcept> result = new ArrayList<SKOSConcept>();
 		if (this.algorithm.equals("kea")) {
 			Date date = new Date();
 			for (String voc : vocabulary) {
 				String path = this.vocabularies.get(voc).getKEAtestSetDir();
 				String fileName = path + "/" + date.getTime();
-				File input = new File(fileName + voc + ".txt");
+				File keaInputFile = new File(fileName + voc + ".txt");
 				FileOutputStream fos;
 				try {
-					fos = new FileOutputStream(input);
+					fos = new FileOutputStream(keaInputFile);
 					PrintWriter pr = new PrintWriter(fos);
 					pr.print(text);
 					pr.close();
@@ -93,11 +96,11 @@ public class SKOSTaggerImpl implements SKOSTagger {
 					e.printStackTrace();
 				}
 				Tagger tagger = this.taggers.get(voc);
-				System.out.println("Indexing with " + tagger.getVocabulary());
+				log.info("Indexing with " + tagger.getVocabulary());
 				tagger.extractKeyphrases();
-				File output = new File(fileName + voc + ".key");
+				File keaOutputFile = new File(fileName + voc + ".key");
 				try {
-					FileInputStream fis = new FileInputStream(output);
+					FileInputStream fis = new FileInputStream(keaOutputFile);
 					InputStreamReader isr = new InputStreamReader(fis);
 					BufferedReader br = new BufferedReader(isr);
 					String line = br.readLine();
@@ -115,21 +118,22 @@ public class SKOSTaggerImpl implements SKOSTagger {
 					isr.close();
 					fis.close();
 				} catch (FileNotFoundException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					log.error("unable to find file", e);
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					log.error("file processing problem", e);
 				}
 			}
 		} else if (this.algorithm.equals("dummy")) {
 			Tagger tagger = this.taggers.get("Dummytagger");
-			System.out.println("Indexing with " + tagger.getVocabulary());
+			log.info("Dummy indexing with " + tagger.getVocabulary());
+			log.debug("extracting keyphrases");
 			List<String> keywords = tagger.extractKeyphrases(text);
-			System.out.println("Number of keywords: " + keywords.size());
+			log.info("Number of keyphrases: " + keywords.size());
 			int limit = LIMIT;
-			if (limit > keywords.size())
+			if (limit > keywords.size()) {
 				limit = keywords.size();
+			}
+			log.debug("searching for keyphrases in index");
 			for (int i = 0; i < limit; i++) {
 				List<SKOSConcept> concepts = searcher
 						.searchConceptByKeyword(keywords.get(i));
@@ -140,6 +144,7 @@ public class SKOSTaggerImpl implements SKOSTagger {
 				if (concepts.size() > 2)
 					result.add(concepts.get(2));
 			}
+			log.debug("tagging complete");
 		}
 		return result;
 	}

@@ -2,13 +2,17 @@ package edu.unc.ils.mrc.hive.ir.tagging;
 
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import edu.unc.ils.mrc.hive.api.SKOSScheme;
+import edu.unc.ils.mrc.hive.api.impl.elmo.SKOSTaggerImpl;
 import kea.main.KEAKeyphraseExtractor;
 import kea.stemmers.PorterStemmer;
 import kea.stopwords.StopwordsEnglish;
 
 public class KEATagger implements Tagger{
 
+	private static Logger log = Logger.getLogger(KEATagger.class);
 	private KEAKeyphraseExtractor ke;
 	private String vocabulary;
 
@@ -69,7 +73,7 @@ public class KEATagger implements Tagger{
 			this.ke.loadModel();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.fatal("unable to load KEA", e);
 		}
 		
 		this.ke.loadThesaurus();
