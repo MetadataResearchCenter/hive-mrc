@@ -4,10 +4,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -19,13 +17,16 @@ import java.util.TreeMap;
 
 import javax.xml.namespace.QName;
 
-import edu.unc.ils.mrc.hive.api.SKOSConcept;
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Logger;
+
 import edu.unc.ils.mrc.hive.api.SKOSScheme;
 import edu.unc.ils.mrc.hive.api.SKOSSearcher;
 import edu.unc.ils.mrc.hive.api.SKOSServer;
 import edu.unc.ils.mrc.hive.api.SKOSTagger;
 
 public class SKOSServerImpl implements SKOSServer {
+	private static Logger log = Logger.getLogger(SKOSServerImpl.class);
 
 	private SKOSSearcher searcher;
 	private SKOSTagger tagger;
@@ -106,6 +107,9 @@ public class SKOSServerImpl implements SKOSServer {
 	}
 
 	public static void main(String[] args) throws IOException {
+		BasicConfigurator.configure();
+		
+		log.debug("starting SKOSServerImpl");
 		// Levanto el servidor de vocabularios
 		SKOSServer server = new SKOSServerImpl(args[0]);
 		// Le pido un Searcher

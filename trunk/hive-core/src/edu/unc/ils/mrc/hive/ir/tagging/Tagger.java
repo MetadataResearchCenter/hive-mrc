@@ -6,6 +6,10 @@ public interface Tagger {
 	
 	public void extractKeyphrases();
 	public List<String> extractKeyphrases(String text);
+	
+	/**
+	 * @return The vocabulary being used for this tagger.
+	 */
 	public String getVocabulary();
 
 }

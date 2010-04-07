@@ -28,15 +28,15 @@ public class TextManager {
 		this.metadata = new Metadata();
 	}
 
-	public String getPlainText(String input) {
+	public String getPlainText(String inputPath) {
 		InputStream is = null;
 		try {
-			File file = new File(input);
+			File file = new File(inputPath);
 			if (file.isFile()) {
 				this.metadata.set(Metadata.RESOURCE_NAME_KEY, file.getName());
 				is = new FileInputStream(file);
 			} else {
-				URL url = new URL(input);
+				URL url = new URL(inputPath);
 				String path = url.getPath();
 				int slash = path.lastIndexOf('/');
 				String name = path.substring(slash + 1);
