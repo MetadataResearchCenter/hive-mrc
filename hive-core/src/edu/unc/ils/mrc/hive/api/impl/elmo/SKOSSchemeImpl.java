@@ -128,12 +128,18 @@ public class SKOSSchemeImpl implements SKOSScheme {
 	}
 
 	@Override
+	/**
+	   Returns an index of all terms, sorted alphabetically.
+	**/
 	public TreeMap<String, QName> getSubAlphaIndex(String startLetter) {
 		return IndexAdministrator
 				.getSubAlphaIndex(startLetter, this.alphaIndex);
 	}
 
 	@Override
+	/**
+	   Returns the top level of the concept hierarchy.
+	**/
 	public TreeMap<String, QName> getTopConceptIndex() {
 		return this.topConceptIndex;
 	}
