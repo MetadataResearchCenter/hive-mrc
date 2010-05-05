@@ -77,7 +77,7 @@ a:hover
 {
 	width:100%;
 	background-image:url(./img/footer_bg.png);
-	height:50px;
+	height:30px;
 	background-repeat:repeat-x;
 	margin:0;
 	padding:0;
@@ -326,7 +326,7 @@ a:hover
 
 .label
 {
- color:blue;
+ color:black;
  font-weight:200;
  margin-left:5px;
 }
@@ -1008,8 +1008,7 @@ a:hover
 
 .start-processing
 {
-	margin-left: 30px;
-	height: 50px;
+	height: 70px;
 }
 
 .border-left
@@ -1141,8 +1140,6 @@ a:hover
 .kea img
 {
  border:none;
- width:100px;
- height:60px;
 }
 
 .gwt-Label
