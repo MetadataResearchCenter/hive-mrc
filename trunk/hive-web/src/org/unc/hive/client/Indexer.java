@@ -225,11 +225,20 @@ public class Indexer implements EntryPoint {
 		configure.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 		SimplePanel configureWrapper = new SimplePanel();
 		configureWrapper.setStyleName("configure");
-		final Label lb1 = new Label("Step 1: Select vocabulary source ");
+		final Label lb1 = new Label("Select vocabulary source ");
+		final HTML step1 = new HTML("<img src = './img/step1.png'/>");
+		HorizontalPanel hp1 = new HorizontalPanel();
+		hp1.add(step1);
+		hp1.add(lb1);
+		hp1.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
+		hp1.setCellVerticalAlignment(lb1, HasVerticalAlignment.ALIGN_MIDDLE);
+		hp1.setCellVerticalAlignment(step1, HasVerticalAlignment.ALIGN_MIDDLE);
+		
 		lb1.addStyleName("label");
-		indexingTable.setWidget(0, 0, lb1);
+		indexingTable.setWidget(0, 0, hp1);
 		indexingTable.setWidget(0, 1, configure);
-
+		indexingTable.getCellFormatter().setVerticalAlignment(0, 0, HasVerticalAlignment.ALIGN_MIDDLE);
+		indexingTable.getCellFormatter().setVerticalAlignment(0, 1, HasVerticalAlignment.ALIGN_MIDDLE);
 		addVocabularyPanel = new FlowPanel();
 		addVocabularyPanel.setSize("200px", "150px");
 		this.displayOpenedVocabularies();
@@ -322,16 +331,22 @@ public class Indexer implements EntryPoint {
 			}
 		});	
 	    
-		Label lb3 = new Label("Step 2: Upload a document");
+		Label lb3 = new Label("Upload a document");
 		lb3.addStyleName("label");
-		indexingTable.setWidget(1, 0, lb3);
+		HorizontalPanel hp2 = new HorizontalPanel();
+		final HTML step2 = new HTML("<img src = './img/step2.png'/>");
+		hp2.add(step2);
+		hp2.add(lb3);
+		hp2.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
+		hp2.setCellVerticalAlignment(lb3, HasVerticalAlignment.ALIGN_MIDDLE);
+		hp2.setCellVerticalAlignment(step2, HasVerticalAlignment.ALIGN_MIDDLE);
+		indexingTable.setWidget(1, 0, hp2);
 		indexingTable.setWidget(1, 1, uploadholder);
+		indexingTable.getCellFormatter().setVerticalAlignment(1, 0, HasVerticalAlignment.ALIGN_MIDDLE);
+		indexingTable.getCellFormatter().setVerticalAlignment(1, 1, HasVerticalAlignment.ALIGN_MIDDLE);
 		
 		final FlowPanel logoPanel = new FlowPanel();
 		Label powered = new Label("Powered by");
-//		Image kea = new Image("./img/kea_logo.gif");
-//		kea.setSize("130px", "80px");
-
 	    HTML kea = new HTML("<a class = 'kea' href='http://www.nzdl.org/Kea/index.html' target = '_blank'><img src = './img/kea_logo.gif'/></a>", true);
 		logoPanel.add(powered);
 		logoPanel.add(kea);
@@ -347,8 +362,17 @@ public class Indexer implements EntryPoint {
 		indexingTable.setWidget(2, 1, docURL);
 		Button startProcessing = new Button("Start Processing");
 		startProcessing.setStyleName("start-processing");
-		indexingTable.setWidget(0, 2, startProcessing);
-		indexingTable.setWidget(0, 3, logoPanel);
+		final HTML step3 = new HTML("<img src = './img/step3.png'/>");
+//		HorizontalPanel hp3 = new HorizontalPanel();
+//		hp3.add(step3);
+//		hp3.add(startProcessing);
+//		hp3.setCellHorizontalAlignment(step3, HasHorizontalAlignment.ALIGN_LEFT);
+//		hp3.setCellHorizontalAlignment(startProcessing, HasHorizontalAlignment.ALIGN_LEFT);
+//		hp3.setCellVerticalAlignment(startProcessing, HasVerticalAlignment.ALIGN_MIDDLE);
+//		hp3.setCellVerticalAlignment(step3, HasVerticalAlignment.ALIGN_MIDDLE);
+		indexingTable.setWidget(0, 2, step3);
+		indexingTable.setWidget(1, 2, startProcessing);
+		indexingTable.setWidget(2, 2, logoPanel);
 		indexingTable.getFlexCellFormatter().setRowSpan(0, 2, 3);
 		indexingTable.getFlexCellFormatter().addStyleName(0, 2, "border-left");
 		startProcessing.addClickHandler(new ClickHandler()
@@ -522,7 +546,7 @@ public class Indexer implements EntryPoint {
 		{			
 			super(autohide, modal);
 			associateVoc = vocabulary;
-			vocIndex = openedVocabularies.indexOf(associateVoc);
+			vocIndex = openedVocabularies.indexOf(associateVoc.toLowerCase());
 			glassPanel = new GlassPanel(false);
 			this.setText("Confirm");
 			this.setAnimationEnabled(true);
