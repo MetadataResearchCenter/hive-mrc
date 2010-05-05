@@ -64,7 +64,7 @@ public class SKOSServerImpl implements SKOSServer {
 		}
 
 		this.searcher = new SKOSSearcherImpl(this.schemes);
-		this.tagger = new SKOSTaggerImpl(this.schemes, "dummy");//kea or dummy
+		this.tagger = new SKOSTaggerImpl(this.schemes, "kea");//kea or dummy
 
 	}
 
