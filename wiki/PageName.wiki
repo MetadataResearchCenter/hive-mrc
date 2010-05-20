@@ -2,13 +2,12 @@
 
 = HIVE project documentation under development =
 
-Add your content here.
+We are preparing the next sections for HIVE documentation:
 
-* Code
+  * How to use HIVE Core
+  * HIVE Web installation
+  * Training KEA
+  * Importing SKOS vocabularies into HIVE
+  * SKOSifying vocabularies
 
-= Details =
-
-Add your content here.  Format your content with:
-  * Text in *bold* or _italic_
-  * Headings, paragraphs, and lists
-  * Automatic links to other wiki pages
+If you have any suggestion, please send us an e-mail
