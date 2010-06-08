@@ -28,11 +28,12 @@ import edu.unc.ils.mrc.hive.api.impl.elmo.SKOSSchemeImpl;
 import edu.unc.ils.mrc.hive.importers.Importer;
 import edu.unc.ils.mrc.hive.importers.ImporterFactory;
 
-/*
+/**
  * This class create Sesame Store, Lucene Index and AlphaIndex 
  * for a SKOS/RDF file
- * 
+ * @author Jose R. Perez-Aguera
  */
+
 public class AdminVocabularies {
 
 	public static void main(String[] args) {

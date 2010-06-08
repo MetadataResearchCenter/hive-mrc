@@ -36,9 +36,10 @@ import org.openrdf.sail.nativerdf.NativeStore;
 import edu.unc.ils.mrc.hive.api.SKOSScheme;
 import edu.unc.ils.mrc.hive.ir.tagging.KEAModelGenerator;
 
-/*
+/**
  * This class train the tagger from a SKOS/RDF file and some domain oriented 
  * documents which are used like trainning set for KEA algorithm
+ * @author Jose R. Perez-Aguera
  */
 
 public class TaggerTrainer {
