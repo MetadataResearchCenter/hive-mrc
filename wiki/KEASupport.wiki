@@ -1,51 +1,45 @@
-\section{Introduction}
+= Introduction to KEA =
 
 The algorithm that we are using in HIVE is KEA++, KEA++ has been
 developed for Ian Witten's group from University of Waikakato. Last
 version of KEA has been part of the Olena Medelyan phd. The other
-interesting result of her thesis has been Maui\footnote{http://code.google.com/p/maui-indexer/}, that is based on KEA.
+interesting result of her thesis has been Maui http://code.google.com/p/maui-indexer/, that is based on KEA.
 
-%The implementation that we are using in HIVE was very well explained
-%in this paper: http://www.cs.waikato.ac.nz/~olena/publications/efita2005_kea.pdf,
-%following I will try to explain how it works:
-
-\section{How it works?}
+== How it works? ==
 
 KEA use a Machine Learning approach for automatic keyphrase extraction:
 
 Machine Learning approaches use to have two different phases:
-\begin{itemize}
- \item Training phase, where examples of solutions are used to explain to
+
+ * Training phase, where examples of solutions are used to explain to
 the system how the problem can be resolved. In our case these
 solutions are documents indexed by human indexers using controlled
 vocabularies. From now this set of documents will be called training
 set.
- \item Test phase, where the system try to solve new problems which are
+ * Test phase, where the system try to solve new problems which are
 similar to the solved problems used to train the system. In our case,
 these problems to solve will be the documents that we want to index
 using the vocabularies that we have in HIVE.
-\end{itemize}
 
 KEA use a Machine Learning scheme that can be divided in the following parts:
-\begin{itemize}
- \item Candidate identification using a set of features
-\begin{itemize}
-\item Candidate extraction
-\item Features identification
-\end{itemize}
-\item Filtering
-\begin{itemize}
-\item Training the model using the training set
-\item Extracting keyphrases from new documents that are not present in the training set
-\end{itemize}
-\end{itemize}
 
-\subsection{Candidate identification}
+ * Candidate identification using a set of features
+
+ ** Candidate extraction
+ ** Features identification
+
+ * Filtering
+
+ **Training the model using the training set
+ ** Extracting keyphrases from new documents that are not present in the training set
+
+== Candidate identification ==
 
 Candidate identification is the process where the most representative
 keyphrases are identified for each document in the training set.
 
-\subsubsection{Candidate extraction}
+=== Candidate extraction ===
+
 Candidates are extracted from documents using some simple methods like
 n-gram identification, stopwords filtering and stemming. KEA calls
 this candidates pseudo-phrases. This pseudo phrases  are normalized
@@ -77,30 +71,27 @@ descriptors are all grammatical terms that relate to the document’s
 content, and each has an occurrence count. The next step is to
 identify a subset containing the most important of these candidates.
 
-\subsubsection{Features identification}
+=== Features identification ===
 The features which KEA use are the followings:
-\begin{itemize}
-\item TF*IDF
-\item First occurrence position of the keyphrase in the document
+
+ * TF*IDF
+ * First occurrence position of the keyphrase in the document
 normalized by document length
-\item Length of the keyphrases (in words, which boots multiterms)
-\item Node degree reflects how richly the term is connected in the
+ * Length of the keyphrases (in words, which boots multiterms)
+ * Node degree reflects how richly the term is connected in the
 thesaurus graph structure. The “degree” of a thesaurus term is the
 number of semantic links that connect it to other terms—for example, a
 term with one broader term and four related terms has degree 5. KEA
 considers three different variants:
-\begin{itemize}
-   \item the number of links that connect the term to other thesaurus terms
-   \item the number of links that connect the term to other candidate phrases
-   \item the ratio of the two.
-\end{itemize}
-\item Appearance is a binary attribute that reflects whether the
+ ** the number of links that connect the term to other thesaurus terms
+ ** the number of links that connect the term to other candidate phrases
+ ** the ratio of the two.
+* Appearance is a binary attribute that reflects whether the
 pseudo-phrase corresponding to a term actually appears in the
 document.
-\end{itemize}
 
-\subsection{Filtering}
-\subsubsection{Training the model using the training set}
+== Filtering ==
+=== Training the model using the training set ===
 KEA use a classifier to create a model for good and bad keyphrases. In
 Machine Learning clustering and classification are very common
 techniques. In this case we have a classifier. Classifiers can be
@@ -118,7 +109,7 @@ have a model that we can use to estimate the probability that a
 keyphrase have to be a good or a bad keyphrase for a new document,
 based on the model that we are generated using our training set.
 
-\subsubsection{Extracting keyphrases from new documents that are not present in the training set}
+=== Extracting keyphrases from new documents that are not present in the training set ===
 Once the model has been generated, we can offer our system to the
 users to index new documents. To index a new document, we only need to
 know the probability that have the keyphrase that occur in this new
