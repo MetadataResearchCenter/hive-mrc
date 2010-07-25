@@ -4,10 +4,10 @@
 
 HIVE try to solve traditional problems of vocabularies in digital environments. We can enumerate these problems as follow:
 
-* Concept Retrieval
-* Automatic annotation
-* RIA technology for vocabulary server Web User Interface
-* Linked Data for Concepts based on SPARQL end points
+ * Concept Retrieval
+ * Automatic annotation
+ * RIA technology for vocabulary server Web User Interface
+ * Linked Data for Concepts based on SPARQL end points
 
 In the next sections we will explain how HIVE solves these problems, to offer a 
 methodology and tool which allows vocabularies use on the Web.
@@ -19,8 +19,8 @@ vocabularies management.
 
 HIVE Core allow users to access to the vocabularies in different ways, As you can see in the image below, the system can be queried in two different ways:
 
-* Natural Language Interface
-* SPARQL interface
+ * Natural Language Interface
+ * SPARQL interface
 
 HIVE integrate different libraries to allow these access. Natural Language interface allow us to use keyword based queries to retrieve concepts from the vocabularies. 
 This interface is based on Lucene, so each query is fired against a Lucene index where the concepts are stored.
@@ -32,7 +32,7 @@ This interface is based on Lucene, so each query is fired against a Lucene index
 \label{hivearchitecture}
 \end{figure}
  
-\section{Loading vocabularies from SKOS Core}\label{configuration}
+== Loading vocabularies from SKOS Core ==
 
 Loading new vocabularies in HIVE is quite simple. HIVE is able to load any vocabulary in SKOS Core format from RDF files. So If we have 
 a vocabulary in a file with SKOS Core format, you could import it into HIVE very easily.
