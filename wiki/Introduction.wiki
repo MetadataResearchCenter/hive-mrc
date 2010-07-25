@@ -78,22 +78,22 @@ kea_model = /home/hive/hive-data/lcsh/lcshKEA/lcsh
 You should have one file like this for every vocabulary that you want load in HIVE.
 
 {{{
- 		String configpath = args[0];
-		String vocabularyName = args[1].toLowerCase();
+String configpath = args[0];
+String vocabularyName = args[1].toLowerCase();
 
-		SKOSScheme schema = new SKOSSchemeImpl(configpath, vocabularyName, true);
+SKOSScheme schema = new SKOSSchemeImpl(configpath, vocabularyName, true);
 
-		ImporterFactory.selectImporter(ImporterFactory.SKOSIMPORTER);
-		Importer importer = ImporterFactory.getImporter(schema);
-		importer.importThesaurustoDB();
-		importer.importThesaurustoInvertedIndex();
-		importer.close();
-		System.out.println("Import finished");
-//		if (args[2].equals("train")) {
-//			TaggerTrainer trainer = new TaggerTrainer(schema);
-//			trainer.trainAutomaticIndexingModule();
-// 		}
-	}
+ImporterFactory.selectImporter(ImporterFactory.SKOSIMPORTER);
+Importer importer = ImporterFactory.getImporter(schema);
+importer.importThesaurustoDB();
+importer.importThesaurustoInvertedIndex();
+importer.close();
+System.out.println("Import finished");
+//if (args[2].equals("train")) {
+//	TaggerTrainer trainer = new TaggerTrainer(schema);
+//	trainer.trainAutomaticIndexingModule();
+//	}
+}
 }}}
 
 == Creating databases and indices ==
@@ -246,6 +246,8 @@ String lp = "";
 
 === URI based search ===
 
+Concepts can be retrieved using their URI. Following code show you how to do that:
+
 {{{
 System.out.println("Search by URI:");
 SKOSConcept c2 = searcher.searchConceptByURI(
@@ -275,7 +277,7 @@ for (String c : children.keySet()) {
 }}}
 
 
-\section{Tagging documents with SKOS Tagger}
+== Tagging documents with SKOS Tagger ==
 
 One of the most important features of HIVE is the module for automatic metadata extraction. Use this functionality is quite easy using the SKOSTagger class. 
 This class is accesed via SKOSServer using the method getSKOSTagger().
@@ -283,7 +285,7 @@ This class is accesed via SKOSServer using the method getSKOSTagger().
 Once we have an SKOSTagger we can use the method getTags(), to get the keywords for a given document. The arguments required for this method are the source 
 of the text, usually a document, the list of vocabularies to normalize the keywords and a SKOSSearcher object. Following there is an example about how to use HIVE tagger.
 
-\begin{verbatim}
+{{{
 SKOSTagger tagger = server.getSKOSTagger();
 
 String source = "/home/hive/Desktop/ag086e00.pdf";
@@ -302,4 +304,4 @@ for (SKOSConcept s : l) {
   System.out.println(s.getPrefLabel());
   System.out.println(s.getQName().getNamespaceURI());
 }
-\end{verbatim}
+}}}
