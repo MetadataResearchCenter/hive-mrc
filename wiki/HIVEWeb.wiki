@@ -54,12 +54,7 @@ automatic annotation tool after a document is processed and concepts are extract
 HIVE Concept Browser, showed in figure \ref{browser} is the most important component of HIVE Web UI. The HIVE Concept Browser also 
 articulates the RIA paradigm applied in the design and implementation process.
 
-\begin{figure}
-\centering
-\includegraphics[width=400pt]{img/browser.pdf}
-\caption{Concept Browser}
-\label{browser}
-\end{figure}
+<img src="http://hive-mrc.googlecode.com/svn/trunk/hive-core/doc/HIVE-Documentation/img/browser.jpg" width=500 height=300 />
 
 The goal of HIVE Concept Browser is to allow users to browse and search concepts from heterogeneous 
 vocabulary authorities such as Library of Congress Subject Headings and National Biological Information 
