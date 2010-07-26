@@ -1146,3 +1146,31 @@ a:hover
 {
 	font-size:12px;
 }
+
+.border-left-increase
+{
+	padding-left: 40px;
+	border-left: 1px solid #ccc;
+}
+
+.border-left-increase2
+{
+	padding-left: 80px;
+	border-left: 1px solid #ccc;
+}
+
+.clear
+{
+ clear:both;
+}
+
+p.error
+{
+   font-size:24px;
+   text-align:center;
+   height:500px;
+   color:#000000;
+   font-style:italic;
+   padding-top: 50px;
+   color:#FF0000;
+}
