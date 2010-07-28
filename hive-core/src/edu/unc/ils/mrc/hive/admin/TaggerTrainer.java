@@ -19,6 +19,8 @@ SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PRO
 LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, 
 STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
 ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+@author Jose R. Perez-Aguera
  */
 
 package edu.unc.ils.mrc.hive.admin;
@@ -39,7 +41,6 @@ import edu.unc.ils.mrc.hive.ir.tagging.KEAModelGenerator;
 /**
  * This class train the tagger from a SKOS/RDF file and some domain oriented 
  * documents which are used like trainning set for KEA algorithm
- * @author Jose R. Perez-Aguera
  */
 
 public class TaggerTrainer {

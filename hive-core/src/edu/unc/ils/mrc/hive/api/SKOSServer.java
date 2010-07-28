@@ -19,6 +19,8 @@ SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PRO
 LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, 
 STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
 ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+@author Jose R. Perez-Aguera
  */
 
 package edu.unc.ils.mrc.hive.api;
@@ -34,7 +36,6 @@ import javax.xml.namespace.QName;
 * to load is written.
 * SKOSServer manages the three basic classes which take the work to implement the HIVE basic functionalities: Concept Search 
 (SKOSSearcher), Vocabularies management (SKOSScheme) and indexing SKOSTagger.
- * @author hive
  *
  */
 
