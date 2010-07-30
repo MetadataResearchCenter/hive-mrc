@@ -278,17 +278,6 @@ public class Indexer implements EntryPoint {
 				}
 				else
 				{
-//				//fileName = path;
-//				String[] pathElements;
-//				if (path.contains("/")) {		
-//					pathElements = path.split("/");
-//					fileName = pathElements[pathElements.length - 1];
-//				//	Window.alert(fileName);
-//				} else if (path.contains("\\")) {
-//					pathElements = path.split("\\");
-//					fileName = pathElements[pathElements.length - 1];
-//				//	Window.alert(fileName);
-//				}
 				RootPanel.get().add(glass, 0, 0);
 				uploadPopup.center();
 				uploadPopup.show();
@@ -363,18 +352,13 @@ public class Indexer implements EntryPoint {
 		Button startProcessing = new Button("Start Processing");
 		startProcessing.setStyleName("start-processing");
 		final HTML step3 = new HTML("<img src = './img/step3.png'/>");
-//		HorizontalPanel hp3 = new HorizontalPanel();
-//		hp3.add(step3);
-//		hp3.add(startProcessing);
-//		hp3.setCellHorizontalAlignment(step3, HasHorizontalAlignment.ALIGN_LEFT);
-//		hp3.setCellHorizontalAlignment(startProcessing, HasHorizontalAlignment.ALIGN_LEFT);
-//		hp3.setCellVerticalAlignment(startProcessing, HasVerticalAlignment.ALIGN_MIDDLE);
-//		hp3.setCellVerticalAlignment(step3, HasVerticalAlignment.ALIGN_MIDDLE);
 		indexingTable.setWidget(0, 2, step3);
 		indexingTable.setWidget(1, 2, startProcessing);
+		indexingTable.getFlexCellFormatter().setHorizontalAlignment(1, 2, HasHorizontalAlignment.ALIGN_RIGHT);
 		indexingTable.setWidget(2, 2, logoPanel);
-		indexingTable.getFlexCellFormatter().setRowSpan(0, 2, 3);
 		indexingTable.getFlexCellFormatter().addStyleName(0, 2, "border-left");
+		indexingTable.getFlexCellFormatter().addStyleName(1, 2, "border-left-increase");
+		indexingTable.getFlexCellFormatter().addStyleName(2, 2, "border-left-increase2");
 		startProcessing.addClickHandler(new ClickHandler()
 		{
 			@Override
@@ -751,8 +735,7 @@ public class Indexer implements EntryPoint {
 		} 
 		else 
 		{
-			conceptTable.setText(4, 1,
-					"This concept does not have narrower terms.");
+			conceptTable.setText(4, 1, "This concept does not have narrower terms.");
 		}
 
 		HashMap<String, String> related = result.getRelated();
