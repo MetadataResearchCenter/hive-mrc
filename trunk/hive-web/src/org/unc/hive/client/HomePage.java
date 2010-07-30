@@ -50,8 +50,6 @@ public class HomePage implements EntryPoint {
 		indexing.setStyleName("caption");
 		queryBox = new TextBox();
 		queryBox.setWidth("240px");
-		
-		
 		queryBox.addKeyPressHandler(new KeyPressHandler()
 		{
 			
@@ -102,8 +100,6 @@ public class HomePage implements EntryPoint {
 		searchVP.add(search);
 		searchVP.add(gotoCB);
 		searchConcept.add(searchVP);
-		
-		
 		final HTML introIndex = new HTML(
 				"HIVE <a href = 'indexing.html'>Indexing</a> automatically extracts concepts from a given document to aid the cataloging and indexing practice.",
 				true);
@@ -137,8 +133,7 @@ public class HomePage implements EntryPoint {
 		vp.add(indexing);
 		vp.add(logoPanel);
 
-		conceptBrowserService
-				.getAllVocabularies(new AsyncCallback<List<List<String>>>() {
+		conceptBrowserService.getAllVocabularies(new AsyncCallback<List<List<String>>>() {
 					@Override
 					public void onFailure(Throwable caught) {
 						// TODO Auto-generated method stub
@@ -146,7 +141,6 @@ public class HomePage implements EntryPoint {
 						vocabularyStatistics.add(new Label(
 								"Cannot get the information!"));
 						Window.alert("Lina is sleeping!");
-
 					}
 
 					@Override
@@ -177,7 +171,6 @@ public class HomePage implements EntryPoint {
 										final Hyperlink hp = new Hyperlink(c,c);
 										hp.addClickHandler(new ClickHandler()
 										{
-
 											@Override
 											public void onClick(ClickEvent event) {
 												// TODO Auto-generated method stub
