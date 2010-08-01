@@ -44,17 +44,12 @@ and the font size to show the relevance of extracted concepts.
 Figure \ref{indexing} shows HIVE Web UI for 
 automatic annotation tool after a document is processed and concepts are extracted by HIVE indexer.
 
-\begin{figure}
-\centering
-\includegraphics[width=400pt]{img/indexing.pdf}
-\caption{Automatic Annotation tool}
-\label{indexing}
-\end{figure}
+<img src="http://hive-mrc.googlecode.com/svn/trunk/doc/HIVE-Documentation/img/indexing.jpg" width=700 height=600 />
 
 HIVE Concept Browser, showed in figure \ref{browser} is the most important component of HIVE Web UI. The HIVE Concept Browser also 
 articulates the RIA paradigm applied in the design and implementation process.
 
-<img src="http://hive-mrc.googlecode.com/svn/trunk/hive-core/doc/HIVE-Documentation/img/browser.jpg" width=500 height=300 />
+<img src="http://hive-mrc.googlecode.com/svn/trunk/doc/HIVE-Documentation/img/browser.jpg" width=700 height=600 />
 
 The goal of HIVE Concept Browser is to allow users to browse and search concepts from heterogeneous 
 vocabulary authorities such as Library of Congress Subject Headings and National Biological Information 
