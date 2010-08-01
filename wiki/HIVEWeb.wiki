@@ -9,7 +9,9 @@ web application, the user interface is only assigned for two tasks: display info
 to the designated web server, while all the data storage and application logic are maintained by the program 
 in web server. The hindrance of traditional web application model for user experience has two folds:  
  * Each request sent by user interface requires a page load hence reduce the responsiveness of the user interface. 
- * The web page is a static document to present information rather than interactive application for user to control and manipulate. The computing power of personal computer is sufficient to process and render complex data logic in client browser. The RIA model distributes a part of computation to client side of user interface, so that user can perform complex interaction with the interface without requesting data from the server.
+ * The web page is a static document to present information rather than interactive application for user to control and manipulate. The computing power of personal computer is sufficient to process and render complex data logic in client browser. 
+
+The RIA model distributes a part of computation to client side of user interface, so that user can perform complex interaction with the interface without requesting data from the server.
 
 Furthermore, if user's interaction must request server to refresh some data, the client can selectively retrieve 
 from the server only the information that needed to be changed, update its internal status, and redisplay the 
