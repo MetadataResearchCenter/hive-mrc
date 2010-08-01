@@ -57,20 +57,12 @@ Infrastructure. The other important aspect of Concept Browser is to visualize th
 via showing the relations to help user better understand difficult concept as well as its usage. 
 The functionalities of Concept Browser include:
 
-* Allow user to traverse from different vocabularies.
-* Allow user to open and close a vocabulary.
-* Allow user to search concepts in multiple vocabularies, and filtering the concepts based on user 
-selection.
-* Visualize the hierarchical structure of user selected vocabulary for browsing.
-* Visualize the context of concepts to help user better understand difficult concept.
-* Display the concept in SKOS metadata schema.
-
-%\begin{figure}
-%\centering
-%\psfig{file=browser.pdf, height=2.7in, width=3.3in,}
-%\caption{HIVE Concept Browser}
-%\label{browser}
-%\end{figure}
+ * Allow user to traverse from different vocabularies.
+ * Allow user to open and close a vocabulary.
+ * Allow user to search concepts in multiple vocabularies, and filtering the concepts based on user selection.
+ * Visualize the hierarchical structure of user selected vocabulary for browsing.
+ * Visualize the context of concepts to help user better understand difficult concept.
+ * Display the concept in SKOS metadata schema.
 
 The design principles of the functionalities described above are based on RIA, and the implementation are 
 powered by RIA technology, Google Web Tool Kit. Future work on HIVE Web UI will focus on the usability 
@@ -99,15 +91,15 @@ the GWT multipage web page http://claudiushauptmann.com/gwt-multipage/)
 
 To run HIVE web in your application server you should follow the following steps:
 
-* Copy the content of the directory hiveweb in your HIVE distribution in the ROOT directory of your Tomcat installation.
-* Go to the  ../WEB-INF/conf directory to configurate the configuration files.
+ * Copy the content of the directory hiveweb in your HIVE distribution in the ROOT directory of your Tomcat installation.
+ * Go to the  ../WEB-INF/conf directory to configurate the configuration files.
 
 There are to kind of configuration files in HIVE:
 
  * vocabularies: This is the general file for configuration. This file contains the information about the vocabularies that will 
 be loaded when the application starts. So if we want load three vocabularies we will include its names in this file. You only can have 
 one “vocabularies” file for each HIVE instance.
- * $<vocabularyName>$.properties: These properties files include information about each vocabulary that can be loaded by the system. 
+ * <vocabularyName>.properties: These properties files include information about each vocabulary that can be loaded by the system. 
 For example the file lcsh.properties will include information to load LCSH vocabulary in HIVE. This file not only have information about 
 the vocabulary, but also have the paths to the different databases where the vocabulary is stored. As we said previously, HIVE have a 
 double storage system, one based on Sesame RDF native databases and one based on Lucene. lcsh.properties will include the path in the 
