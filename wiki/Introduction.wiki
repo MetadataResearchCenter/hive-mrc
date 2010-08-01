@@ -25,12 +25,7 @@ HIVE Core allow users to access to the vocabularies in different ways, As you ca
 HIVE integrate different libraries to allow these access. Natural Language interface allow us to use keyword based queries to retrieve concepts from the vocabularies. 
 This interface is based on Lucene, so each query is fired against a Lucene index where the concepts are stored.
 
-\begin{figure}
-\centering
-\includegraphics[width=400pt]{img/hive-architecture.pdf}
-\caption{HIVE Core architecture}
-\label{hivearchitecture}
-\end{figure}
+<img src="http://hive-mrc.googlecode.com/svn/trunk/doc/HIVE-Documentation/img/hive-architecture.jpg" />
  
 == Loading vocabularies from SKOS Core ==
 
@@ -142,12 +137,7 @@ SKOSServer is the high level classes that we have to instantiate to get up the V
  
 where the method's argument makes reference to the configuration file where the names of the thesauri to load is written.
 
-\begin{figure}
-\centering
-\includegraphics[width=400pt]{img/skosserver.pdf}
-\caption{SKOS Server}
-\label{skosserver}
-\end{figure}
+<img src="http://hive-mrc.googlecode.com/svn/trunk/doc/HIVE-Documentation/img/skosserver.jpg" />
 
 SKOSServer manages the three basic classes which take the work to implement the HIVE basic functionalities: Concept Search 
 (SKOSSearcher), Vocabularies management (SKOSScheme) and indexing SKOSTagger.
