@@ -20,7 +20,7 @@ HIVE is capable to import any vocabulary from a RDF/SKOS file.
 
 In order to import a new vocabulary you have to accomplish the following two steps:
 
-	1- Create a configuration file where do you include the paths to different files and indexes that will be generated in your serevr by HIVE import tools. 
+	1- Create a configuration file where you include the paths to different files and indexes that will be generated in your serevr by HIVE import tools. 
 		You can see how to create this configuration file bellow*
 	2- Run edu.unc.ils.mrc.hive.admin.AdminVocabularies class on your console. The parameters that you have to include 
 		are the following:
