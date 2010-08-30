@@ -2,18 +2,17 @@
 
 == What is HIVE ==
 
-HIVE try to solve traditional problems of vocabularies in digital environments. We can enumerate these problems as follow:
+HIVE tries to solve problems traditionally associated with using controlled vocabularies in digital environments. We can enumerate these problems as follow:
 
  * Concept Retrieval
  * Automatic annotation
  * RIA technology for vocabulary server Web User Interface
  * Linked Data for Concepts based on SPARQL end points
 
-In the next sections we will explain how HIVE solves these problems, to offer a 
-methodology and tool which allows vocabularies use on the Web.
+In the following sections, we will explain how HIVE solves these problems. We offer a 
+methodology and tools which ease vocabulary use on the Web.
 
-HIVE Core is a SKOS Core based library written entirely in Java. It is a technology suitable for nearly any application that requires 
-vocabularies management.
+HIVE Core is a SKOS Core based library written entirely in Java. It is suitable for nearly any application that requires management of vocabularies.
 
 == HIVE core architecture ==
 
