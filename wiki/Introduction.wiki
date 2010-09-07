@@ -70,27 +70,17 @@ You should have one file like this for every vocabulary that you want load in HI
 
 == Creating databases and indices ==
 
-The AdminVocabularies class use an SKOSScheme that represent a SKOS vocabulary into HIVE and a Importer which implement all the importation 
-process. Importer are implemented as a Factory, although at this moment there is only implemented one importer for SKOS format. 
-Once we have decide what importer we want to use we can call different methods. Every method is related with a different kind of storage:
+The AdminVocabularies class uses a SKOSScheme that represents a SKOS vocabulary and an Importer which implements the import process. Importer is implemented as a Factory, although at this moment there is only one importer, for SKOS. Once an importer has been selected, the appropriate methods are called to store the thesaurus in appropriately indexed formats:
 
-importThesaurustoDB(): this method implement the interface to add data to the Sesame database. HIVE use NativeStore, so every vocabulary imported using this 
-method will be stored on your file system with this format.
-importThesaurustoInvertedIndex(): this method create a Lucene index to store the information about concepts. At this point we are following a document 
-oriented approach to represent concepts in the inverted index, so each concept is actually represented as a document with different fields. Each field 
-represent the different elements which we can find in a vocabulary, preferred term, broader terms, scope notes, etc.
+  * importThesaurustoDB(): adds data to the Sesame database. HIVE uses NativeStore, so vocabularies will be stored on the file system.
+  * importThesaurustoInvertedIndex(): creates a Lucene index to store concepts. We are following a document-oriented approach to represent concepts in the inverted index, so each concept is represented as a document with multiple fields. Each field represent the elements in the vocabulary: preferred term, broader terms, scope notes, etc.
 
-HIVE importer create to additional indexes for every vocabulary, in order to optimize the access to different representations of the same vocabulary. These 
-two additional indexes are the following:
+The Importer creates two additional indexes for every vocabulary, in order to optimize the access to different representations of the same vocabulary:
 
-Alphabetical index: This index is an alphabetically ordered list which make easier represent concepts in a alphabetical way
-Hierarchical index: This index allow us to create hierarchical representation of the data in order to implement representations based on the hierarchical 
-structure of the vocabularies.
+  * Alphabetical index: an alphabetically ordered list which makes it easier to represent concepts alphabetically
+  * Hierarchical index: a hierarchical representation of the data in order to implement representations based on the hierarchical structure of the vocabularies.
 
-Both indexes are created after the inverted index. 
-
-All theses indexes and databases can be stored wherever you need in your file systems. The location of each database and index have to be defines in the properties 
-file what we have for every vocabulary in the ../conf directory.
+All indexes and databases can be stored wherever you need in your file systems. The location of each database and index is defined in the properties file for the vocabulary in the conf directory.
 
 == Creating training data for automatic metadata generation ==
 
