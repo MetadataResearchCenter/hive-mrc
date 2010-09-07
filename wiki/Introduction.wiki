@@ -30,15 +30,12 @@ HIVE integrates different libraries to allow these access. The Natural Language 
 Loading new vocabularies in HIVE is quite simple. HIVE is able to load any vocabulary in SKOS Core format from RDF files. So If we have 
 a vocabulary in a file with SKOS Core format, you could import it into HIVE very easily.
 
-To import a vocabulary, use the AdminVocabularies class, which has a main method that performs the import. The parameters to execute this class are two:
+To import a vocabulary, use the AdminVocabularies class, which has a main method that performs the import. The parameters to execute this class are:
 
-# the path to the conf directory for HIVE, where the configuration file for the HIVE server and for every vocabulary are. 
-# is there another parameter???
+  # the path to the conf directory for HIVE, where the configuration file for the HIVE server and for every vocabulary are. 
+  # is there another parameter???
 
-In each vocabulary configuration file you have to define where do you want store the different databases that HIVE will use to store the 
-vocabulary and you can also define the location of the RDF file from where you want import the vocabulary.
-
-The format of the file for the example of lcsh.properties file would be the following:
+In each vocabulary configuration file you must define the directories that HIVE will use to store the vocabulary and define the location of the RDF file that contains the vocabulary. The format of the vocabulary configuration file is as follows:
 
 {{{
 #Vocabularies data
