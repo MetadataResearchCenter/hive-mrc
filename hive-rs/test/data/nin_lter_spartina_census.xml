@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<eml:eml xmlns:eml="eml://ecoinformatics.org/eml-2.0.1" xmlns:stmml="http://www.xml-cml.org/schema/stmml" xmlns:sw="eml://ecoinformatics.org/software-2.0.1" xmlns:cit="eml://ecoinformatics.org/literature-2.0.1" xmlns:ds="eml://ecoinformatics.org/dataset-2.0.1" xmlns:prot="eml://ecoinformatics.org/protocol-2.0.1" xmlns:doc="eml://ecoinformatics.org/documentation-2.0.1" xmlns:res="eml://ecoinformatics.org/resource-2.0.1" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="eml://ecoinformatics.org/eml-2.0.1 c:/eml-2.0.1/eml.xsd" packageId="knb-lter-nin.50001.2" system="knb" scope="system">
+<dataset>
+<alternateIdentifier>LTER.NIN.SPART.txt</alternateIdentifier>
+<shortName>
+knb-lter-nin.50001.1</shortName>
+<title> Census - Spartina Production. Spartina alterniflora production: Goat Island high marsh nitrogen fertilizer and control. Oyster Landing high and low marsh.  </title>
+<creator>
+<individualName>
+<salutation>Dr.</salutation>
+<givenName>James</givenName>
+<givenName>T.</givenName>
+<surName>Morris</surName>
+</individualName>
+</creator>
+<metadataProvider>
+<organizationName>LTER Network Office</organizationName>
+<address>
+<deliveryPoint>UNM Biology Department, MSC03-2020</deliveryPoint>
+<deliveryPoint>1 University of New Mexico</deliveryPoint>
+<city>Albuquerque</city>
+<administrativeArea>NM</administrativeArea>
+<postalCode>87131-0001</postalCode>
+<country>USA</country>
+</address><phone phonetype="voice">505 277 2535</phone><phone phonetype="fax">505 277 2541</phone><electronicMailAddress>dman@lternet.edu</electronicMailAddress>
+<onlineUrl>http://www.lternet.edu</onlineUrl>
+</metadataProvider>
+<pubDate>2007</pubDate>
+<language>english</language>
+<abstract>
+<para>
+<literalLayout> The long term study of Spartina alterniflora in salt marsh ecosystems.  Specifically, the measurement of biomass, production, and stem density in various marsh sites to understand long-term patterns of Spartina growth and to relate these patterns to other factors in the LTER study.</literalLayout>
+</para>
+</abstract>
+<keywordSet>
+<keyword keywordType="theme">Spartina</keyword>
+<keyword keywordType="theme">primary production.</keyword>
+<keyword keywordType="place">North Inlet Estuarine</keyword>
+<keyword keywordType="place">Baruch Institute</keyword>
+<keyword keywordType="place">Georgetown, South Carolina</keyword>
+</keywordSet>
+<intellectualRights>
+<section>
+<title>LTER Network Data Access Requirements</title>
+<para><literalLayout>The access to all LTER data is subject to requirements set forth by this policy document to enable data providers to track usage, evaluate its impact in the community, and confirm users' acceptance of the terms of acceptable use. These requirements are standardized across the LTER Network to provide contractual exchange of data between Site Data Providers, Network Data Providers, and Data Users that can be encoded into electronic form and exchanged between computers. This will allow direct access to data via a common portal once these requirements have been fulfilled. The following information may be required directly or by proxy prior to the transference of any data object:</literalLayout>
+<itemizedlist>
+<listitem><para><literalLayout>Registration</literalLayout></para></listitem>
+<listitem>
+<itemizedlist>
+<listitem><para><literalLayout>Name</literalLayout></para></listitem>
+<listitem><para><literalLayout>Affiliation</literalLayout></para></listitem>
+<listitem><para><literalLayout>Email address</literalLayout></para></listitem>
+<listitem><para><literalLayout>Full Contact Info</literalLayout></para></listitem>
+</itemizedlist>
+</listitem>
+<listitem><para><literalLayout>Acceptance of the General Public Use Agreement or Restricted Data Use Agreement, as applicable</literalLayout></para></listitem>
+<listitem><para><literalLayout>A Statement of Intended Use that is compliant with the above agreements. Such statements may be made submitted explicitly or made implicitly via the data access portal interface.</literalLayout></para></listitem>
+</itemizedlist>
+</para>
+</section>
+<section>
+<title>Conditions of Data Use</title>
+<para><literalLayout>The re-use of scientific data has the potential to greatly increase communication, collaboration and synthesis within and among disciplines, and thus is fostered, supported and encouraged. Permission to use this dataset is granted to the Data User free of charge subject to the following terms:</literalLayout>
+<itemizedlist>
+<listitem><para><literalLayout>Acceptable Use. Use of the dataset will be restricted to academic, research, educational, government, recreational, or other not-for-profit professional purposes. The Data User is permitted to produce and distribute derived works from this dataset provided that they are released under the same license terms as those accompanying this Data Set. Any other uses for the Data Set or its derived products will require explicit permission from the dataset owner. </literalLayout></para></listitem>
+<listitem><para><literalLayout>Redistribution. The data are provided for use by the Data User. The metadata and this license must accompany all copies made and be available to all users of this Data Set. The Data User will not redistribute the original Data Set beyond this collaboration sphere.</literalLayout></para></listitem>
+<listitem><para><literalLayout>Citation. It is considered a matter of professional ethics to acknowledge the work of other scientists. Thus, the Data User will properly cite the Data Set in any publications or in the metadata of any derived data products that were produced using the Data Set. Citation should take the following general form: Creator, Year of Data Publication, Title of Dataset, Publisher, Dataset identifier.</literalLayout></para></listitem>
+<listitem><para><literalLayout>Acknowledgement. The Data User should acknowledge any institutional support or specific funding awards referenced in the metadata accompanying this dataset in any publications where the Data Set contributed significantly to its content. Acknowledgements should identify the supporting party, the party that received the support, and any identifying information such as grant numbers.</literalLayout></para></listitem>
+<listitem><para><literalLayout>Notification. The Data User will notify the Data Set Contact when any derivative work or publication based on or derived from the Data Set is distributed. The Data User will provide the data contact with two reprints of any publications resulting from use of the Data Set and will provide copies, or on-line access to, any derived digital products. Notification will include an explanation of how the Data Set was used to produce the derived work.</literalLayout></para></listitem>
+<listitem><para><literalLayout>Collaboration. The Data Set has been released in the spirit of open scientific collaboration. Data Users are thus strongly encouraged to consider consultation, collaboration and/or co-authorship with the Data Set Creator.</literalLayout></para></listitem>
+</itemizedlist>
+<literalLayout>By accepting this Data Set, the Data User agrees to abide by the terms of this agreement. The Data Owner shall have the right to terminate this agreement immediately by written notice upon the Data User's breach of, or non-compliance with, any of its terms. The Data User may be held responsible for any misuse that is caused or encouraged by the Data User's failure to abide by the terms of this agreement.</literalLayout> </para></section>
+<section>
+<title>Disclaimer</title>
+<para><literalLayout>While substantial efforts are made to ensure the accuracy of data and documentation contained in this Data Set, complete accuracy of data and metadata cannot be guaranteed. All data and metadata are made available "as is". The Data User holds all parties involved in the production or distribution of the Data Set harmless for damages resulting from its use or interpretation.</literalLayout></para>
+</section>
+</intellectualRights>
+<distribution id="distributionReference">
+<online><url>http://metacat.lternet.edu/knb/dataAccessServlet?docid=knb-lter-nin.50001.2&amp;urlTail=nin_spartina_census92.txt</url></online>
+</distribution>
+<coverage>
+<geographicCoverage id="geoReference">
+<geographicDescription>North Inlet encompasses about 2,630 hectares of tidal marshes and wetlands near Georgetown, South Carolina, USA. North Inlet-Winyah Bay features high quality, ocean-dominated waters and salt marshes in North Inlet, contrasting with the brackish waters and marshes of Winyah Bay. The bay estuary is dominated by riverine discharges from a watershed impacted by agricultural, municipal and industrial development. Former rice fields  and canals provide another system for study within the Reserve. The Debidue site is located at the confluence of Town Creek and Debidue Creek. The Bread and Butter site is located along the western shoreline of Town Creek adjacent to the mouth of Clambank Creek.  GI is in the marsh east of Goat Island. It is accessible from Clambank Rd. about 1/4 mile from the firetower.  A board walk connects the high marsh site and the low marsh site.  OL is in the Oyster Landing basin. 
+ The high marsh site is located on the north side of the road which leads to the landing. The low marsh site lies between the boardwalk to the MET station and the small channel to the boat landing. GI is the older marsh site: the marsh sediments are about 50 cm deep, Organic content is somewhat higher, and it is closer to the ocean than OL. OL is a young marsh near the forest and close to a stream which drains a  small forested watershed after big rainfalls.  Salinities are often, but not always lower at OL.  Spartina stem densities are lower at OL than at GI but annual production at the two sites is similar.
+     </geographicDescription>
+<boundingCoordinates>
+<westBoundingCoordinate>-79.2936</westBoundingCoordinate>
+<eastBoundingCoordinate>-79.1042</eastBoundingCoordinate>
+<northBoundingCoordinate>33.357</northBoundingCoordinate>
+<southBoundingCoordinate>33.2125</southBoundingCoordinate>
+</boundingCoordinates>
+</geographicCoverage>
+<temporalCoverage id="temporalReference">
+<rangeOfDates>
+	<beginDate>
+		<calendarDate>1984-05-01</calendarDate>
+	</beginDate>
+	<endDate>
+		<calendarDate>1992-01-01</calendarDate>
+	</endDate>
+</rangeOfDates>
+</temporalCoverage>
+</coverage>
+<maintenance>
+<description>
+<section><title>Entry verification</title>
+<para><literalLayout>     Multiple levels of entry verification were performed.  Data were initially     checked for entry errors by Betsy Haskin.  Once all data entry errors were     corrected, hard copies of the data on the system were proofed against the     original raw data sheets. Flags in the programs caught missing months,     duplicate plant numbers, and large increases in plant height.</literalLayout></para></section>
+<section><title>Data last update while at North Inlet</title>
+<para><literalLayout>     December 1992</literalLayout></para></section>
+<section><title>Data last archive date while at North Inlet</title>
+<para><literalLayout>     10 January, 1992.</literalLayout></para></section>
+<section><title>Last Modification at LTER Network Office</title>
+<para><literalLayout>Data files format was converted from delimited to comma separated. Data was revised for consistency, agreement with metadata. Date: November 2006</literalLayout></para></section>
+</description>
+</maintenance>
+<contact>
+<organizationName>LTER Network Office</organizationName>
+<address>
+<deliveryPoint>UNM Biology Department, MSC03-2020</deliveryPoint>
+<deliveryPoint>1 University of New Mexico</deliveryPoint>
+<city>Albuquerque</city>
+<administrativeArea>NM</administrativeArea>
+<postalCode>87131-0001</postalCode>
+<country>USA</country>
+</address><phone phonetype="voice">505 277 2535</phone><phone phonetype="fax">505 277 2541</phone><electronicMailAddress>dman@lternet.edu</electronicMailAddress>
+<onlineUrl>http://www.lternet.edu</onlineUrl>
+</contact>
+<publisher>
+<organizationName>LTER Network Office</organizationName>
+<address>
+<deliveryPoint>UNM Biology Department, MSC03-2020</deliveryPoint>
+<deliveryPoint>1 University of New Mexico</deliveryPoint>
+<city>Albuquerque</city>
+<administrativeArea>NM</administrativeArea>
+<postalCode>87131-0001</postalCode>
+<country>USA</country>
+</address><phone phonetype="voice">505 277 2535</phone><phone phonetype="fax">505 277 2541</phone><electronicMailAddress>dman@lternet.edu</electronicMailAddress>
+<onlineUrl>http://www.lternet.edu</onlineUrl>
+</publisher>
+<pubPlace>Long Term Ecological Research Network Office</pubPlace>
+<methods>
+<methodStep>
+<description>
+<section>
+<title>Experimental Design</title>
+   <para><literalLayout>See publication: Ecology, 71(6), 1990, Morris and Haskin.</literalLayout></para>
+   <para><literalLayout>each study site three plots (1.2 m x 1.2 m) were laid out.
+     Inside each plot there were two subplots in which all stems were tagged.
+     The stems were censused monthly and biomass and production were
+     calculated. At Goat Island there were 3 nitrogen fertilized plots in
+     addition to the 3 control plots.</literalLayout></para>
+</section>
+</description>
+</methodStep>
+<methodStep>
+	<description>
+<section>
+	<title>Research methods</title>
+	<para><literalLayout>
+	 Plant heights (the raw data) were converted to biomass by a series
+     of algorithms. The equations were derived from seasonal harvests of
+     hundreds of Spartina stems.  Production was calculated for each plot by
+     summing all the individual increases in stem biomass within the plot.</literalLayout></para>
+</section>
+ </description>
+</methodStep>
+</methods>
+<access scope="document" order="allowFirst" authSystem="knb">
+<allow><principal>uid=LNO,o=lter,dc=ecoinformatics,dc=org</principal>
+<permission>ALL</permission></allow>
+<allow><principal>public</principal>
+<permission>READ</permission></allow>
+</access>
+<dataTable>
+<entityName>nin_spartina_census92.txt</entityName>
+<entityDescription>Table containing tabular data about spartina census</entityDescription>
+<physical>
+<objectName>nin_spartina_census.txt</objectName>
+<dataFormat>
+<textFormat>
+<numHeaderLines>1</numHeaderLines>
+<recordDelimiter>\n</recordDelimiter>
+<physicalLineDelimiter>\n</physicalLineDelimiter>
+<attributeOrientation>column</attributeOrientation>
+<simpleDelimited>
+<fieldDelimiter>,</fieldDelimiter>
+</simpleDelimited>
+</textFormat>
+</dataFormat>
+<distribution><references>distributionReference</references></distribution>
+</physical>
+<coverage>
+<geographicCoverage><references>geoReference</references></geographicCoverage>
+<temporalCoverage><references>temporalReference</references></temporalCoverage>
+</coverage>
+<attributeList>
+<attribute>
+<attributeName> PlotSuplot</attributeName>
+<attributeLabel>  PLOTSubplot</attributeLabel>
+<attributeDefinition>Plot and Subplot identifier codes</attributeDefinition>
+<measurementScale>
+<nominal>
+<nonNumericDomain>
+<textDomain>
+<definition> Plot and Subplot identifier codes . For the first two digits 5,9,12 are control plots and plots 2,13,14 are nitrogen fertilized. The second two digits represent the subplot.
+</definition>
+</textDomain>
+</nonNumericDomain>
+</nominal>
+</measurementScale>
+</attribute>
+<attribute>
+<attributeName> PlantID</attributeName>
+<attributeLabel>      PLANT</attributeLabel>
+<attributeDefinition> Indentifier for the plant: is 12 digit with a decimal between the first 6 and the second six. The first 6 digits specify the parent of a stem if it is known. The second 6 digits specify the stem. 
+</attributeDefinition>
+<measurementScale>
+<nominal>
+<nonNumericDomain>
+<textDomain>
+<definition> Indentifier for the plant: is 12 digit with a decimal between the first 6 and the second six. The first 6 digits specify the parent of a stem if it is known. The second 6 digits specify the stem. 
+Example:      117901.112302
+Stems large enough to hold a band are tagged. Band color is indicated by the first digit: 1=red,2=blue,3=yellow,4=white,5=pink. Digits 2,3,4 are the band number (1-200). Digits 5 and 6 are the number of times the particular tag has been used. A sprout that is too small for a tag is identified (as in above example) by its parent  and then is numbered 1,2,3 etc. for as many small sprouts as the parent has.
+</definition>
+</textDomain>
+</nonNumericDomain>
+</nominal>
+</measurementScale>
+</attribute>
+<attribute>
+<attributeName> Date</attributeName>
+<attributeLabel> DATE</attributeLabel>
+<attributeDefinition> Date in which the measure was carried 
+</attributeDefinition>
+<measurementScale>
+<datetime>
+<formatString>YYYY-MM-DD</formatString>
+</datetime>
+</measurementScale>
+</attribute>
+<attribute>
+<attributeName> Height </attributeName>
+<attributeLabel> HEIGHT</attributeLabel>
+<attributeDefinition>Height of the stem</attributeDefinition>
+<measurementScale>
+<ratio>
+	<unit>
+		<standardUnit>centimeter</standardUnit>
+	</unit>
+	<numericDomain>
+		<numberType>real</numberType>
+	</numericDomain>	
+</ratio>
+</measurementScale>
+</attribute>
+</attributeList>
+</dataTable>
+</dataset>
+</eml:eml>

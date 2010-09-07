@@ -1,0 +1,188 @@
+<?xml version="1.0"?>
+
+<project name="hive-rs" basedir="." default="deploy">
+
+  <property file="build.properties" />
+
+	<!-- Properties for building and deploying -->
+	<property name="build.dir" location="build" />
+  <property name="src.dir" value="src" />
+  <property name="web.dir" value="WebRoot" />
+  <property name="classes.dir" value="${web.dir}/WEB-INF/classes" />
+  <property name="hive-core.conf.dir" value="../hive-core/conf" />
+  <property name="hive-core.lib.dir" value="../hive-core/lib" />
+  <property name="hive-rs.conf.dir" value="${web.dir}/WEB-INF/conf" />
+  <property name="hive-rs.lib.dir" value="${web.dir}/WEB-INF/lib" />
+  <property name="webapp.name" value="hive-rs" />
+  <property name="deploy.dir" 
+  	        value="${appserver.home}/webapps/${webapp.name}"
+  />
+
+  <!-- Properties for JUnit testing -->
+  <property name="test.dir" location="${build.dir}/test" />
+  <property name="test.classes.dir" location="${test.dir}/classes" />
+  <property name="test.data.dir" location="${test.dir}/data" />
+  <property name="test.reports.dir" location="${test.dir}/reports" />
+
+  <!-- Path for compiling the source code -->
+  <path id="compile.classpath">
+    <fileset dir="${hive-core.lib.dir}">
+      <include name="*.jar" />
+    </fileset>
+    <fileset dir="${hive-rs.lib.dir}">
+      <include name="*.jar" />
+    </fileset>
+    <fileset dir="${appserver.lib}">
+      <include name="servlet*.jar" />
+    </fileset>
+    <pathelement path="${web.dir}/WEB-INF" />
+  </path>
+
+  <!-- Path for compiling the JUnit test code -->
+  <path id="test.compile.classpath">
+    <path refid="compile.classpath"/>
+    <pathelement location="${classes.dir}"/>
+  </path>
+  
+  <!-- Path for executing the JUnit test code -->
+  <path id="test.classpath">
+    <path refid="test.compile.classpath"/>
+    <pathelement location="${test.classes.dir}"/>
+  </path>
+  
+  <!-- Initializsation tasks prior to compilation -->
+  <target name="init" description="Initialization">
+
+  	<!-- Copy hive-core conf files into hive-rs 
+  	     For now, exclude the 'vocabularies' file. hive-rs
+  	     has only been tested with the 'lter' and 'nbii' vocabularies
+  	     so far, so it will use its own 'vocabularies' file which
+  	     lists only these two vocabularies.
+  	  -->
+    <copy todir="${hive-rs.conf.dir}" 
+          preservelastmodified="true"
+          verbose="true"
+          filtering="no">
+      <fileset dir="${hive-core.conf.dir}">
+        <include name="**/*.properties"/>
+        <exclude name="**/vocabularies"/>
+        <exclude name="**/.svn*"/>
+        <exclude name="**/.#*"/>
+      </fileset>
+    </copy>  
+
+  	<!-- Copy hive-core library jar files into hive-rs -->
+    <copy todir="${hive-rs.lib.dir}" 
+          preservelastmodified="true"
+          verbose="true"
+          filtering="no">
+      <fileset dir="${hive-core.lib.dir}">
+        <include name="**/*.*"/>
+        <include name="**/vocabularies"/>
+        <exclude name="**/.svn*"/>
+        <exclude name="**/.#*"/>
+      </fileset>
+    </copy>  
+  </target>
+
+  <target name="clean" description="Deletes compiled classes">
+    <delete dir="${classes.dir}" />
+  </target>
+
+  <target name="compile" 
+  	      depends="init"
+  	      description="Compiles all Java source files">
+    <mkdir dir="${classes.dir}" />
+    <javac destdir="${classes.dir}" 
+           debug="true" 
+           deprecation="true" 
+           failonerror="true" 
+           optimize="false">
+      <src path="${src.dir}" />
+      <classpath refid="compile.classpath" />
+    </javac>
+  </target>
+
+  <!-- Cleans and initializes the JUnit test directories -->
+  <target name="test-init">
+    <mkdir dir="${test.classes.dir}"/>
+    <delete dir="${test.data.dir}"/>
+    <delete dir="${test.reports.dir}"/>
+    <mkdir dir="${test.data.dir}"/>
+    <mkdir dir="${test.reports.dir}"/>
+  </target>
+  
+  <target name="test-compile" 
+  	      depends="compile,test-init" 
+  	      description="Compiles all JUnit test files">
+    <javac destdir="${test.classes.dir}"
+           debug="true"
+           srcdir="test">
+      <classpath refid="test.compile.classpath"/>
+    </javac>
+  </target>
+  
+  <target name="test" 
+  	      depends="test-compile"
+  	      description="Executes the JUnit test suite">
+    <junit printsummary="false" 
+    	     haltonfailure="false"
+    	     errorProperty="test.failed"
+  	       failureProperty="test.failed">
+      <formatter type="brief" usefile="false" />
+      <formatter type="xml" />
+      <classpath refid="test.classpath"/>
+      <batchtest fork="yes" todir="${test.data.dir}">
+        <fileset dir="test">
+          <include name="**/*Test.java"/>
+        </fileset>
+      </batchtest>
+    </junit>
+  	<junitreport todir="${test.data.dir}">
+  		<fileset dir="${test.data.dir}">
+  			<include name="TEST-*.xml" />
+  	  </fileset>
+  	  <report format="frames" todir="${test.reports.dir}" />
+    </junitreport>
+  	<fail if="test.failed">
+      One or more JUnit tests failed or had errors.
+  		Check ${test.reports.dir}.
+    </fail>
+  </target>
+  
+  <target name="help" description="Displays help summary">
+    <echo message="${webapp.name} web application build file" />
+    <echo message="" />
+    <echo message="Available targets are:" />
+    <echo message="" />
+    <echo message="clean        Deletes compiled classes" />
+    <echo message="compile      Compiles all Java source files" />
+    <echo message="deploy       Deploys the web application to Tomcat (default target)" />
+    <echo message="help         Displays this help summary" />
+    <echo message="test-compile Compiles all JUnit test files" />
+    <echo message="test         Executes the basic JUnit test suite" />
+  </target>
+    
+  <target name="deploy" 
+          depends="compile" 
+          description="Deploys the web application to Tomcat (default target)">
+    <!-- Create a directory to hold the web application -->
+    <mkdir dir="${deploy.dir}" />
+        
+    <!-- Copy hive-rs project files to the web app -->
+    <copy todir="${deploy.dir}" 
+          preservelastmodified="true"
+          verbose="true"
+          filtering="no">
+      <fileset dir="${web.dir}">
+        <include name="**/*.*"/>
+        <include name="**/vocabularies"/>
+        <exclude name="**/junit*.jar"/>
+        <exclude name="**/.svn*"/>
+        <exclude name="**/.#*"/>
+      </fileset>
+    </copy>
+  	
+  </target>
+        
+</project>
