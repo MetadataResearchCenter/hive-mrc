@@ -2,7 +2,7 @@
 
 == What is HIVE ==
 
-HIVE tries to solve problems traditionally associated with using controlled vocabularies in digital environments. We can enumerate these problems as follow:
+HIVE tries to solve problems traditionally associated with using controlled vocabularies in digital environments. Some of these problems are:
 
  * Concept Retrieval
  * Automatic annotation
@@ -16,13 +16,12 @@ HIVE Core is a SKOS Core based library written entirely in Java. It is suitable 
 
 == HIVE core architecture ==
 
-HIVE Core allow users to access to the vocabularies in different ways, As you can see in the image below, the system can be queried in two different ways:
+HIVE Core allows users to access vocabularies in different ways. The system can be queried in two different ways:
 
  * Natural Language Interface
  * SPARQL interface
 
-HIVE integrate different libraries to allow these access. Natural Language interface allow us to use keyword based queries to retrieve concepts from the vocabularies. 
-This interface is based on Lucene, so each query is fired against a Lucene index where the concepts are stored.
+HIVE integrates different libraries to allow these access. The Natural Language interface allow us to use keyword-based queries to retrieve concepts. This interface is based on Lucene. Each query is evaluated against a Lucene index where the concepts are stored.
 
 <img src="http://hive-mrc.googlecode.com/svn/trunk/doc/HIVE-Documentation/img/hive-architecture.jpg" />
  
