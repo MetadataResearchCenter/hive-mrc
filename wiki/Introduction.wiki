@@ -80,13 +80,11 @@ The Importer creates two additional indexes for every vocabulary, in order to op
   * Alphabetical index: an alphabetically ordered list which makes it easier to represent concepts alphabetically
   * Hierarchical index: a hierarchical representation of the data in order to implement representations based on the hierarchical structure of the vocabularies.
 
-All indexes and databases can be stored wherever you need in your file systems. The location of each database and index is defined in the properties file for the vocabulary in the conf directory.
+All indexes and databases can be stored wherever you need in your file system. The location of each database and index is defined in the properties file for the vocabulary in the conf directory.
 
 == Creating training data for automatic metadata generation ==
 
-HIVE automatic metadata generation system is based in KEA. When a vocabulary is imported we have the chance to create a model to use the vocabulary for automatic 
-metadata generation. In this section we will explain how create this model and when locate the information about this model. The theoretical framework of KEA and 
-how the model is used for automatic metadata generation will be explained in chapter \ref{kea}.
+HIVE automatic metadata generation system is based on [http://www.nzdl.org/Kea/ KEA]. When a vocabulary is imported we must create a language model to use the vocabulary for automatic metadata generation. In this section we will explain how to create the model. The theoretical framework of KEA and how the model is used for automatic metadata generation will be explained in chapter \ref{kea}.
 
 KEA algorithm is based on machine learning techniques and more specifically in a Naïve Bayes based classification system. Machine Learning algorithms use to need 
 two different sets of data: Training data and Test data.
