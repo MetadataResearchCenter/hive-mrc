@@ -84,13 +84,9 @@ All indexes and databases can be stored wherever you need in your file system. T
 
 == Creating training data for automatic metadata generation ==
 
-HIVE automatic metadata generation system is based on [http://www.nzdl.org/Kea/ KEA]. When a vocabulary is imported we must create a language model to use the vocabulary for automatic metadata generation. In this section we will explain how to create the model. The theoretical framework of KEA and how the model is used for automatic metadata generation will be explained in chapter \ref{kea}.
+HIVE automatic metadata generation system is based on [http://www.nzdl.org/Kea/ KEA]. When a vocabulary is imported we must create a language model to use the vocabulary for automatic metadata generation. 
 
-KEA algorithm is based on machine learning techniques and more specifically in a Naïve Bayes based classification system. Machine Learning algorithms use to need 
-two different sets of data: Training data and Test data.
-
-Training data are used to build an statistical model which is used by the algorithm to recognize positive and negative examples. This statistical models use to 
-be based on real world example, so for automatic metadata generation we will use a corpus of documents where keywords and metadata has been assigned by hand.
+The KEA algorithm is based on a Naïve Bayes based classification system. Training data is used to build a statistical model which is used to recognize positive and negative examples. This statistical model is based on real world examples, so for automatic metadata generation we use a corpus of documents where keywords and metadata has been assigned by hand.
 
 == SKOS Server ==
 
@@ -104,10 +100,7 @@ where the method's argument makes reference to the configuration file where the 
 
 <img src="http://hive-mrc.googlecode.com/svn/trunk/doc/HIVE-Documentation/img/skosserver.jpg" />
 
-SKOSServer manages the three basic classes which take the work to implement the HIVE basic functionalities: Concept Search 
-(SKOSSearcher), Vocabularies management (SKOSScheme) and indexing SKOSTagger.
-
-Any of theses classes are actually interfaces which are implemented using different libraries,
+SKOSServer manages the three basic classes used to implement the HIVE basic functionalities: Concept Search(SKOSSearcher), Vocabularies management (SKOSScheme) and indexing SKOSTagger. All of theses classes are interfaces which are implemented using different libraries.
 
 == SKOS Scheme ==
 
@@ -140,8 +133,7 @@ Iterator<String> it = keys.iterator();
 
 == Search functionalities with SKOSSearcher ==
 
-SKOSSearcher, is the interface which defines the search functionalities in HIVE. Theses functionalities can be divided into two different 
-kind of search:
+SKOSSearcher, is the interface which defines the search features in HIVE. These features can be divided into two kinds of search:
 
  * Formal Search
  * Keyword based search
@@ -149,8 +141,7 @@ kind of search:
 === Formal Search based on SPARQL ===
 
 Formal search is based on SPARQL, a formal language to get information from RDF databases. SPARQL is the standard query language for 
-Semantic Web application and it is useful to implemented Web Services based on SPARQL end points, and so allowing third part application 
-retrieve information from a RDF database.
+Semantic Web application and it is useful to implement Web Services based on SPARQL end points, and so allowing third part applications to retrieve information from a RDF database.
 
 {{{
  searcher.SPARQLSelect(
@@ -175,10 +166,7 @@ retrieve information from a RDF database.
 
 === Keyword based search ===
 
-Keyword based search is based in natural language search, so the user of the system can write queries without any constraint. HIVE keyword 
-based search is based our research on Concept and Entity retrieval which has been described in José R. Pérez-Agüera, Javier Arroyo, 
-Jane Greenberg, Joaquin Perez-Iglesias and Victor Fresno. Using BM25F for Semantic Search. Semantic Search Workshop at the 19th Int. 
-World Wide Web Conference WWW2010 April 26, 2010 (Workshop Day), Raleigh, NC, USA
+Keyword based search is based on natural language search, so the user of the system can write queries without constraints. HIVE keyword search is described in detail in José R. Pérez-Agüera, Javier Arroyo, Jane Greenberg, Joaquin Perez-Iglesias and Victor Fresno. Using BM25F for Semantic Search. Semantic Search Workshop at the 19th Int. World Wide Web Conference WWW2010 April 26, 2010 (Workshop Day), Raleigh, NC, USA
 
 {{{
 System.out.println("Search by keyword:");
@@ -201,7 +189,7 @@ String lp = "";
 
 === URI based search ===
 
-Concepts can be retrieved using their URI. Following code show you how to do that:
+Concepts can be retrieved using their URI:
 
 {{{
 System.out.println("Search by URI:");
@@ -234,11 +222,9 @@ for (String c : children.keySet()) {
 
 == Tagging documents with SKOS Tagger ==
 
-One of the most important features of HIVE is the module for automatic metadata extraction. Use this functionality is quite easy using the SKOSTagger class. 
-This class is accesed via SKOSServer using the method getSKOSTagger().
+One of the most important features of HIVE is the module for automatic metadata extraction. This is performed using the SKOSTagger class. This class is accesed via the SKOSServer method getSKOSTagger().
 
-Once we have an SKOSTagger we can use the method getTags(), to get the keywords for a given document. The arguments required for this method are the source 
-of the text, usually a document, the list of vocabularies to normalize the keywords and a SKOSSearcher object. Following there is an example about how to use HIVE tagger.
+Once we have an SKOSTagger we can use the method getTags() to get the keywords for a given document. The arguments required for this method are the source of the text, usually a document, the list of vocabularies to normalize the keywords and a SKOSSearcher object. An example:
 
 {{{
 SKOSTagger tagger = server.getSKOSTagger();
