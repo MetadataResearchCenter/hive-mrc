@@ -104,7 +104,8 @@
   </target>
 
   <!-- Cleans and initializes the JUnit test directories -->
-  <target name="test-init">
+  <target name="test-init"
+          depends="init">
     <mkdir dir="${test.classes.dir}"/>
     <delete dir="${test.data.dir}"/>
     <delete dir="${test.reports.dir}"/>
