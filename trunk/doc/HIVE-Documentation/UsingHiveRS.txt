@@ -1,6 +1,79 @@
+I. Introduction to HIVE-RS
+
+HIVE-RS provides a web services interface to much of the HIVE Core API. 
+It is designed as a RESTful web service and implemented in Java using the
+Jersey implementation of JAX-RS.
+
+
+II. Configuration, Build, Test, and Deployment
+
+A. Configuration
+
+HIVE-RS is hosted in the 'hive-rs' sub-tree of the 'hive-mrc' repository.
+HIVE-RS assumes that 'hive-core' is checked out as a sibling directory
+to the 'hive-rs' directory. HIVE-RS uses the configuration files from
+the 'hive-mrc/hive-core/conf' directory, allowing these files can be configured 
+in 'hive-core' and re-used in 'hive-rs'. (The configuration files from
+'../hive-core/conf' are copied into './hive-rs/WebRoot/WEB-INF/conf' by the
+'ant init' target.)
+
+The only configuration file native to HIVE-RS is its 'build.properties' file.
+Edit this file to configure the home directory of the Tomcat installation
+to which HIVE-RS is to be deployed.
+
+B. Build, Test, and Deployment
+
+The 'build.xml' Ant file offers a number of build, test, and deployment
+targets that can be executed from 'ant':
+
+clean        Deletes compiled classes                               
+compile      Compiles all Java source files                         
+deploy       Deploys the web application to Tomcat (default target)
+help         Displays this help summary                             
+test-compile Compiles all JUnit test files                          
+test         Executes the basic JUnit test suite
+
+A typical build/test/deploy procedure might be:
+  $ ant clean
+  $ ant compile
+  [ Shut down Tomcat ]
+  ant test
+  ant deploy
+  [ Restart Tomcat ]
+
+Note: The 'ant test' target should only be executed while the HIVE-RS
+web application is not running in Tomcat.
+
+Note: The 'ant init' target copies a number of java archive (jar) files
+from the 'hive-core' sub-tree into the 'hive-rs' sub-tree. As with the
+configuration files discussed above, the intent was for these jar files 
+to be committed once in 'hive-core' and then re-used in 'hive-rs'.
+(The library files from '../hive-core/lib' are copied into
+'./hive-rs/WebRoot/WEB-INF/lib' by the 'ant init' target.)
+
+C. HIVE-RS Web Application in Tomcat
+
+HIVE-RS executes as a Tomcat web application. The default web application
+name is 'hive-rs'. The default web application name can easily be changed
+by editing the value of the 'webapp.name' property in the build.xml file:
+
+  <property name="webapp.name" value="hive-rs" />
+
+For example:
+
+  <property name="webapp.name" value="lter-hive" />
+
+Note: The sample URLs furnished in Part III below display the web application
+name as 'lter-hive' instead of the default value of 'hive-rs'. This is because 
+the sample URLs are based on an actual web application running at LTER where 
+the 'lter-hive' web application name is used.
+
+
+III. HIVE-RS Web Services API
+
 The tables below display classes and methods in the HIVE-CORE API, and their 
-corresponding services in the HIVE-CORE Restful Web Services API, together 
-with sample URLs that demonstrate actual calls to the HIVE-CORE Restful Web 
+corresponding services in the HIVE-RS Web Services API, together 
+with sample URLs that demonstrate actual calls to the HIVE-RS Restful Web 
 Service.
 
 Legend
