@@ -52,6 +52,8 @@ conf/
        
 == AdminVocabularies ==
 
+Before running AdminVocabularies, make sure Tomcat is not running.
+
 AdminVocabularies takes these parameters:
     # Path to configuration directory
     # Name of the vocabulary
@@ -60,7 +62,9 @@ AdminVocabularies takes these parameters:
 
 For example (with training): 
 {{{
-java  -Djava.ext.dirs=/home/hive-rs/WebRoot/WEB-INF/lib  edu.unc.ils.mrc.hive.admin.AdminVocabularies /home/hive-rs2/WebRoot/WEB-INF/conf/ lter train
+java  -Djava.ext.dirs=/home/hive-rs/WebRoot/WEB-INF/lib  edu.unc.ils.mrc.hive.admin.AdminVocabularies /home/hive-rs/WebRoot/WEB-INF/conf/ lter train
 }}}
 
 To load the vocabulary without training, omit the parameter "train".
+
+Once the vocabulary has been loaded, you may start Tomcat and test to make sure the vocabulary is working properly.
