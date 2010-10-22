@@ -60,7 +60,7 @@ AdminVocabularies takes these parameters:
 
 For example (with training): 
 {{{
-java AdminVocabularies /home/hive/conf lcsh train                                                                                     
+java  -Djava.ext.dirs=/home/hive-rs/WebRoot/WEB-INF/lib  edu.unc.ils.mrc.hive.admin.AdminVocabularies /home/hive-rs2/WebRoot/WEB-INF/conf/ lter train
 }}}
 
 To load the vocabulary without training, omit the parameter "train".
