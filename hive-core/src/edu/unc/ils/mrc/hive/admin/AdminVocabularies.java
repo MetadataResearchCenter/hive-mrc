@@ -54,7 +54,7 @@ public class AdminVocabularies {
 		importer.importThesaurustoDB();
 		importer.importThesaurustoInvertedIndex();
 		importer.close();
-		System.out.println("Import finished");
+		System.out.println("Vocabulary import finished");
 //		if (args[2].equals("train")) {
 //			TaggerTrainer trainer = new TaggerTrainer(schema);
 //			trainer.trainAutomaticIndexingModule();
