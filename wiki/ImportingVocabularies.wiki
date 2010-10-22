@@ -68,3 +68,17 @@ java  -Djava.ext.dirs=/home/hive-rs/WebRoot/WEB-INF/lib  edu.unc.ils.mrc.hive.ad
 To load the vocabulary without training, omit the parameter "train".
 
 Once the vocabulary has been loaded, you may start Tomcat and test to make sure the vocabulary is working properly.
+
+== Effects of AdminVocabularies ==
+
+The AdminVocabularies class uses a SKOSScheme that represents a SKOS vocabulary and an Importer which implements the import process. Importer is implemented as a Factory, although at this moment there is only one importer, for SKOS. Once an importer has been selected, the appropriate methods are called to store the thesaurus in appropriately indexed formats:
+
+  * importThesaurustoDB(): adds data to the Sesame database. HIVE uses NativeStore, so vocabularies will be stored on the file system.
+  * importThesaurustoInvertedIndex(): creates a Lucene index to store concepts. We are following a document-oriented approach to represent concepts in the inverted index, so each concept is represented as a document with multiple fields. Each field represent the elements in the vocabulary: preferred term, broader terms, scope notes, etc.
+
+The Importer creates two additional indexes for every vocabulary, in order to optimize the access to different representations of the same vocabulary:
+
+  * Alphabetical index: an alphabetically ordered list which makes it easier to represent concepts alphabetically
+  * Hierarchical index: a hierarchical representation of the data in order to implement representations based on the hierarchical structure of the vocabularies.
+
+All indexes and databases can be stored wherever you need in your file system. The location of each database and index is defined in the properties file for the vocabulary in the conf directory.
