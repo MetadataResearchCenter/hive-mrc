@@ -1,3 +1,7 @@
 #summary Overview of HIVE's REST service
 
-The HIVE REST service was developed by Duane Costa.
+The HIVE REST service was developed by Duane Costa. A demonstration instance is deployed at the Long-Term Ecological Research network office.
+
+[http://hive-mrc.googlecode.com/svn/trunk/doc/sample-lter-hive-urls.txt Sample LTER hive-rs URLs]
+
+[http://hive-mrc.googlecode.com/svn/trunk/doc/hive-restful-web-services-api.txt Full hive-rs API documentation]
