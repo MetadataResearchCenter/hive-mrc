@@ -18,23 +18,23 @@ longName = CSA/NBII Biocomplexity Thesaurus
 uri = http://thesaurus.nbii.gov 
 
 #Sesame Store
-store = /home/hive/hive-data/nbii/nbiiStore                                                                   
+store = /home/hive-data/nbii/store
 
 #Lucene Inverted Index 
-index = /home/hive/hive-data/nbii/nbiiIndex                                                                   
+index = /home/hive-data/nbii/index
 
 #Alphabetical Index
-alpha_file = /home/hive/hive-data/nbii/nbiiAlphaIndex                                                         
+alpha_file = /home/hive-data/nbii/alphaIndex
 
-#Top Concept Index                                                                                            
-top_concept_file = /home/hive/hive-data/nbii/nbiiTopConceptIndex                                              
+#Top Concept Index       
+top_concept_file = /home/hive-data/nbii/topConceptIndex
 
-#KEA data files                                                                                               
-stopwords = /home/hive/hive-data/nbii/nbiiKEA/data/stopwords/stopwords_en.txt                                 
-kea_training_set = /home/hive/hive-data/nbii/nbiiKEA/train                                                    
-kea_test_set = /home/hive/hive-data/nbii/nbiiKEA/test                                                         
-rdf_file = /home/hive/hive-data/nbii/nbii3.rdf
-kea_model = /home/hive/hive-data/nbii/nbiiKEA/nbii
+#KEA data files          
+stopwords = /home/hive-data/nbii/KEA/data/stopwords/stopwords_en.txt
+kea_training_set = /home/hive-data/nbii/KEA/train
+kea_test_set = /home/hive-data/nbii/KEA/test
+rdf_file = /home/hive-data/nbii/nbii3.rdf
+kea_model = /home/hive-data/nbii/KEA/nbii
 }}}
                                                                                    
 Place the configuration file in the same directory as the file "vocabularies". The vocabularies is used by SKOSServer identify which vocabularies will be opened.
