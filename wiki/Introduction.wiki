@@ -25,62 +25,6 @@ HIVE integrates different libraries to allow these access. The Natural Language 
 
 <img src="http://hive-mrc.googlecode.com/svn/trunk/doc/HIVE-Documentation/img/hive-architecture.jpg" />
  
-== Loading vocabularies from SKOS Core ==
-
-Loading new vocabularies in HIVE is quite simple. HIVE is able to load any vocabulary in SKOS Core format from RDF files. So If we have 
-a vocabulary in a file with SKOS Core format, you could import it into HIVE very easily.
-
-To import a vocabulary, use the AdminVocabularies class, which has a main method that performs the import. The parameters to execute this class are:
-
-  # the path to the conf directory for HIVE, where the configuration file for the HIVE server and for every vocabulary are. 
-  # the name of the vocabulary to load
-
-In each vocabulary configuration file you must define the directories that HIVE will use to store the vocabulary and define the location of the RDF file that contains the vocabulary. The format of the vocabulary configuration file is as follows:
-
-{{{
-#Vocabularies data
-name = LCSH
-longName = Library of Congress Subject Headings
-uri = http://id.loc.gov/authorities
-
-#Sesame Store
-store = /home/hive/hive-data/lcsh/lcshStore
-
-#Lucene Inverted Index
-index = /home/hive/hive-data/lcsh/lcshIndex
-
-#Alphabetical Index
-alpha_file = /home/hive/hive-data/lcsh/lcshAlphaIndex
-
-#Top Concept Index
-top_concept_file = /home/hive/hive-data/lcsh/lcshTopConceptIndex
-
-#Dummy tagger data files
-lingpipe_model = /home/hive/hive-data/lingpipe/postagger/models/medtagModel
-
-#KEA data files
-stopwords = /home/hive/hive-data/lcsh/lcshKEA/data/stopwords/stopwords_en.txt
-kea_training_set = /home/hive/hive-data/lcsh/lcshKEA/train
-kea_test_set = /home/hive/hive-data/lcsh/lcshKEA/test
-rdf_file = /home/hive/hive-data/lcsh/lcsh.rdf
-kea_model = /home/hive/hive-data/lcsh/lcshKEA/lcsh
-}}}
-
-You should have one file like this for every vocabulary that you want load in HIVE.
-
-== Creating databases and indices ==
-
-The AdminVocabularies class uses a SKOSScheme that represents a SKOS vocabulary and an Importer which implements the import process. Importer is implemented as a Factory, although at this moment there is only one importer, for SKOS. Once an importer has been selected, the appropriate methods are called to store the thesaurus in appropriately indexed formats:
-
-  * importThesaurustoDB(): adds data to the Sesame database. HIVE uses NativeStore, so vocabularies will be stored on the file system.
-  * importThesaurustoInvertedIndex(): creates a Lucene index to store concepts. We are following a document-oriented approach to represent concepts in the inverted index, so each concept is represented as a document with multiple fields. Each field represent the elements in the vocabulary: preferred term, broader terms, scope notes, etc.
-
-The Importer creates two additional indexes for every vocabulary, in order to optimize the access to different representations of the same vocabulary:
-
-  * Alphabetical index: an alphabetically ordered list which makes it easier to represent concepts alphabetically
-  * Hierarchical index: a hierarchical representation of the data in order to implement representations based on the hierarchical structure of the vocabularies.
-
-All indexes and databases can be stored wherever you need in your file system. The location of each database and index is defined in the properties file for the vocabulary in the conf directory.
 
 == Creating training data for automatic metadata generation ==
 
