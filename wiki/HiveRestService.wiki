@@ -5,3 +5,5 @@ The HIVE REST service was developed by Duane Costa. A demonstration instance is 
 [http://hive-mrc.googlecode.com/svn/trunk/doc/sample-lter-hive-urls.txt Sample LTER hive-rs URLs]
 
 [http://hive-mrc.googlecode.com/svn/trunk/doc/hive-restful-web-services-api.txt Full hive-rs API documentation]
+
+[http://hive-mrc.googlecode.com/svn/trunk/doc/sampleAbstract.txt Sample Article Abstract] for testing tagging service
