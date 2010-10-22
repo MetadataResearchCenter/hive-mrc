@@ -29,11 +29,11 @@ public class Hivey2 {
 			       + voc.getNumberOfRelations());
 	    System.out.println("\t DATE: " + voc.getLastDate());
 	    System.out.println();
-	    System.out.println("\t SIZE: " + voc.getSubAlphaIndex("a").size());
+	    System.out.println("\t SIZE: "  + voc.getSubAlphaIndex("a").size());
 	    System.out.println();
 	    System.out.println("\t TOP CONCEPTS: "
 			       + voc.getTopConceptIndex().size());
-	}
+
 
 	/**
 	 * Search by keyword test
@@ -51,7 +51,7 @@ public class Hivey2 {
 	    System.out.println("\t URI: " + uri + " Local part: " + lp);
 	}
 	System.out.println();
-	
+	}	
 
     }
 }
