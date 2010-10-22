@@ -13,7 +13,7 @@ public class Hivey2 {
 
 	System.out.println("Hiya");
 	
-	SKOSServer skosServer = new SKOSServerImpl("/Users/ryan/lib/hive-mrc/hive-core/conf/vocabularies");
+	SKOSServer skosServer = new SKOSServerImpl("/Users/ryan/lib/hive-mrc/trunk/hive-core/conf/vocabularies");
 	SKOSSearcher searcher = skosServer.getSKOSSearcher();
 
 	TreeMap<String, SKOSScheme> vocabularies = skosServer.getSKOSSchemas();
