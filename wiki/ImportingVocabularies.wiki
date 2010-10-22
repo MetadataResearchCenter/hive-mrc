@@ -13,7 +13,7 @@ Each vocabulary has its own configuration file, with the following format:
                                                                                  
 {{{
 #Vocabulary data
-  name = NBII
+name = NBII
 longName = CSA/NBII Biocomplexity Thesaurus 
 uri = http://thesaurus.nbii.gov 
 
