@@ -25,6 +25,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package edu.unc.ils.mrc.hive.importers;
 
+import edu.unc.ils.mrc.hive.HiveException;
 import edu.unc.ils.mrc.hive.api.SKOSScheme;
 
 public class ImporterFactory {
@@ -37,7 +38,7 @@ public class ImporterFactory {
 		ImporterFactory.importer = importer;
 	}
 
-	public static Importer getImporter(SKOSScheme scheme) {
+	public static Importer getImporter(SKOSScheme scheme) throws HiveException {
 		if (importer == SKOSIMPORTER)
 			return new SKOSImporter(scheme);
 		else
