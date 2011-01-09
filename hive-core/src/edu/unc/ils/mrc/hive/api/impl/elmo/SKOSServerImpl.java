@@ -26,6 +26,8 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package edu.unc.ils.mrc.hive.api.impl.elmo;
 
 import java.io.BufferedReader;
+
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -42,16 +44,17 @@ import java.util.TreeMap;
 
 import javax.xml.namespace.QName;
 
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
+import edu.unc.ils.mrc.hive.HiveException;
 import edu.unc.ils.mrc.hive.api.SKOSScheme;
 import edu.unc.ils.mrc.hive.api.SKOSSearcher;
 import edu.unc.ils.mrc.hive.api.SKOSServer;
 import edu.unc.ils.mrc.hive.api.SKOSTagger;
 
 public class SKOSServerImpl implements SKOSServer {
-	private static Logger log = Logger.getLogger(SKOSServerImpl.class);
+    private static final Log logger = LogFactory.getLog(SKOSServerImpl.class);
 
 	private SKOSSearcher searcher;
 	private SKOSTagger tagger;
@@ -74,18 +77,21 @@ public class SKOSServerImpl implements SKOSServer {
 				line = br.readLine();
 			}
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		    logger.error("Failure initializing SKOS Server", e);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		    logger.error("Failure initializing SKOS Server", e);
 		}
 
 		this.schemes = new TreeMap<String, SKOSScheme>();
 
-		for (String voc : vocabularies) {
-			SKOSScheme schema = new SKOSSchemeImpl(path, voc, false);
-			this.schemes.put(voc, schema);
+		try
+		{
+    		for (String voc : vocabularies) {
+    			SKOSScheme schema = new SKOSSchemeImpl(path, voc, false);
+    			this.schemes.put(voc, schema);
+    		}
+		} catch (HiveException e) {
+		    logger.error("Failure initializing vocabulary", e);
 		}
 
 		this.searcher = new SKOSSearcherImpl(this.schemes);
@@ -118,8 +124,7 @@ public class SKOSServerImpl implements SKOSServer {
 				}
 			}
 		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		    logger.error(e);
 		}
 
 		return null;
@@ -132,9 +137,8 @@ public class SKOSServerImpl implements SKOSServer {
 	}
 
 	public static void main(String[] args) throws IOException {
-		BasicConfigurator.configure();
 		
-		log.debug("starting SKOSServerImpl");
+		logger.debug("starting SKOSServerImpl");
 		// Levanto el servidor de vocabularios
 		SKOSServer server = new SKOSServerImpl(args[0]);
 		// Le pido un Searcher
