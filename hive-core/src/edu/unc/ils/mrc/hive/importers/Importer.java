@@ -25,9 +25,11 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package edu.unc.ils.mrc.hive.importers;
 
+import edu.unc.ils.mrc.hive.HiveException;
+
 public interface Importer {
 	
-	public void importThesaurustoDB();
-	public void importThesaurustoInvertedIndex();
-	public void close();
+	public void importThesaurustoDB() throws HiveException;
+	public void importThesaurustoInvertedIndex() throws HiveException;
+	public void close() throws HiveException;
 }
