@@ -32,6 +32,8 @@ import java.util.Set;
 
 import javax.xml.namespace.QName;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.CorruptIndexException;
@@ -55,6 +57,8 @@ import edu.unc.ils.mrc.hive.api.impl.elmo.SKOSConceptImpl;
 
 public class ConceptMultiSearcher implements Searcher {
 
+    private static final Log logger = LogFactory.getLog(ConceptMultiSearcher.class);
+    
 	private static int NUMBER_RESULTS = 1500;
 
 	private Searchable[] searchers;
@@ -67,6 +71,7 @@ public class ConceptMultiSearcher implements Searcher {
 
 	@Override
 	public List<SKOSConcept> search(String word, SesameManager[] managers) {
+	    logger.trace("search " + word);
 		String[] fields = { "prefLabel", "altLabel" };
 		MultiFieldQueryParser parser = new MultiFieldQueryParser(fields,
 				new StandardAnalyzer());
@@ -78,8 +83,7 @@ public class ConceptMultiSearcher implements Searcher {
 			TopDocCollector collector = new TopDocCollector(NUMBER_RESULTS);
 			this.searcher.search(query, collector);
 			ScoreDoc[] hits = collector.topDocs().scoreDocs;
-			System.out.println("Numero total de resultados: "
-					+ collector.getTotalHits());
+			logger.debug("Total number of results: " + collector.getTotalHits());
 			for (int i = 0; i < hits.length; i++) {
 				Concept concept;
 				int docId = hits[i].doc;
@@ -95,11 +99,9 @@ public class ConceptMultiSearcher implements Searcher {
 
 			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e);
 		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		    logger.error(e);
 		}
 
 		List<SKOSConcept> skosConceptList = new ArrayList<SKOSConcept>();
@@ -139,29 +141,29 @@ public class ConceptMultiSearcher implements Searcher {
 	}
 
 	private void initIndex(String[] indexList) {
+	    logger.trace("initIndex");
 		try {
 			for (int i = 0; i < indexList.length; i++)
 				this.searchers[i] = new IndexSearcher(indexList[i]);
 			this.searcher = new MultiSearcher(this.searchers);
 		} catch (CorruptIndexException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+            logger.error(e);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+            logger.error(e);
 		}
 
 	}
 
 	@Override
 	public void close() {
+	    logger.trace("close");
+	    
 		try {
 			this.searcher.close();
 			for (Searchable s : this.searchers)
 				s.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+            logger.error(e);
 		}
 	}
 
