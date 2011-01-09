@@ -25,6 +25,8 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package edu.unc.ils.mrc.hive.api.impl.elmo;
 
+import java.io.File;
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -33,74 +35,86 @@ import java.util.TreeMap;
 
 import javax.xml.namespace.QName;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openrdf.elmo.sesame.SesameManager;
 
+import edu.unc.ils.mrc.hive.HiveException;
 import edu.unc.ils.mrc.hive.api.SKOSScheme;
 import edu.unc.ils.mrc.hive.ir.lucene.indexing.IndexAdministrator;
 
+/**
+ * This class represents a HIVE vocabulary and associated indexes as 
+ * described in the HIVE vocabulary property file.
+ * 
+ * Each HIVE vocabulary consists of a Sesame store, Lucene index, and 
+ * two serialized TreeMaps representing the alphabetic and top-concept
+ * indexes.
+ */
 public class SKOSSchemeImpl implements SKOSScheme {
 
+    private static final Log logger = LogFactory.getLog(SKOSSchemeImpl.class);
+	
+	/* Vocabulary/scheme name */
 	private String schemeName;
+	
+	/* Vocabulary/scheme long name */	
 	private String longName;
-	private String indexDirectory;
-	private String storeDirectory;
-	private String alphaFilePath;
-	private String topConceptIndexPath;
 
+	/* Vocabulary/scheme URI*/
 	private String schemaURI;
 
+	/* Lucene index directory */
+	private String indexDirectory;
+	
+	/* Sesame store directory */
+	private String storeDirectory;
+	
+	/* Alphabetic index file name */
+	private String alphaFilePath;
+	
+	/* Top concept index file name */
+	private String topConceptIndexPath;
+
+	/* KEA+ stopwords file path */
+	private String stopwordsPath;
+	
+	/* SKOS RDF/XML file path */
+	private String rdfPath;
+	
+	/* KAE+ training set path */
+	private String KEAtrainSetDir;
+	
+	/* KEA+ test set path */
+	private String KEAtestSetDir;
+	
+	/* KEA+ model path */
+	private String KEAModelPath;
+	
+	/* Lingpipe model path */
+	private String lingpipeModel;
+	
+	/* Sesame store manager */
 	private SesameManager manager;
 
+	/* Alphabetic index (serialized TreeMap) */
+	private TreeMap<String, QName> alphaIndex;
+	
+	/* Top-concept index (serialized TreeMap) */
+	private TreeMap<String, QName> topConceptIndex;
+	
 	private String date;
 	private int numberOfConcepts;
 	private int numberOfRelations;
 	private int numberOfBroaders;
 	private int numberOfNarrowers;
-	private int numberOfRelated;
-
-	private String stopwordsPath;
-	private String rdfPath;
-	private String KEAtrainSetDir;
-	private String KEAtestSetDir;
-	private String KEAModelPath;
-	
-	private String lingpipeModel;
-
-	private TreeMap<String, QName> alphaIndex;
-	private TreeMap<String, QName> topConceptIndex;
+	private int numberOfRelated;	
 
 	public SKOSSchemeImpl(String confPath, String vocabularyName,
-			boolean firstTime) {
-		String propertiesFile = confPath + vocabularyName + ".properties";
-		Properties properties = new Properties();
-		try {
-			FileInputStream fis = new FileInputStream(propertiesFile);
-			properties.load(fis);
-			this.schemeName = properties.getProperty("name");
-			this.indexDirectory = properties.getProperty("index");
-			this.storeDirectory = properties.getProperty("store");
-			this.longName = properties.getProperty("longName");
-			this.schemaURI = properties.getProperty("uri");
-
-			this.alphaFilePath = properties.getProperty("alpha_file");
-			this.topConceptIndexPath = properties
-					.getProperty("top_concept_file");
-			this.KEAModelPath = properties.getProperty("kea_model");
-			this.KEAtestSetDir = properties.getProperty("kea_test_set");
-			this.KEAtrainSetDir = properties.getProperty("kea_training_set");
-			this.stopwordsPath = properties.getProperty("stopwords");
-			this.rdfPath = properties.getProperty("rdf_file");
-
-			this.lingpipeModel = properties.getProperty("lingpipe_model");
-			
-			fis.close();
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+			boolean firstTime) throws HiveException
+	{		
+		String propertiesFile = confPath + File.separator + vocabularyName + ".properties";		
+		init(propertiesFile);
 
 		if (!firstTime) {
 			this.alphaIndex = IndexAdministrator
@@ -122,6 +136,96 @@ public class SKOSSchemeImpl implements SKOSScheme {
 		}
 	}
 
+	/**
+	 * Initialize the scheme based on the specified properties file
+	 * @param propertiesFile
+	 */
+	private void init(String propertiesFile) throws HiveException
+	{
+	    logger.trace("init " + propertiesFile);
+	    
+		logger.info("Loading vocabulary configuration from " + propertiesFile);
+			
+		Properties properties = new Properties();
+		try {
+			FileInputStream fis = new FileInputStream(propertiesFile);
+			properties.load(fis);
+			
+			// Scheme name
+			this.schemeName = properties.getProperty("name");
+			if (schemeName.isEmpty())
+				logger.warn("name property is empty");
+
+			// Scheme long name
+			this.longName = properties.getProperty("longName");
+			if (longName.isEmpty())
+				logger.warn("longName property is empty");
+
+			// Scheme URI
+			this.schemaURI = properties.getProperty("uri");
+			if (schemaURI.isEmpty())
+				logger.warn("uri property is empty");
+			
+			// Lucene index path
+			this.indexDirectory = properties.getProperty("index");
+			if (indexDirectory.isEmpty())
+				logger.warn("index property is empty");			
+				
+			// Sesame store path
+			this.storeDirectory = properties.getProperty("store");
+			if (storeDirectory.isEmpty())
+				logger.warn("store property is empty");
+			
+			// Alphabetic index file name
+			this.alphaFilePath = properties.getProperty("alpha_file");
+			if (alphaFilePath.isEmpty())
+				logger.warn("alpha_file property is empty");
+			
+			// Top concept index file name
+			this.topConceptIndexPath = properties.getProperty("top_concept_file");
+			if (topConceptIndexPath.isEmpty())
+				logger.warn("top_concept_file property is empty");
+
+			// KEA+ model path
+			this.KEAModelPath = properties.getProperty("kea_model");
+			if (KEAModelPath.isEmpty())
+				logger.warn("kea_model property is empty");
+
+			// KEA+ test set path
+			this.KEAtestSetDir = properties.getProperty("kea_test_set");
+			if (KEAtestSetDir.isEmpty())
+				logger.warn("kea_test_set property is empty");
+
+			// KEA+ training set path
+			this.KEAtrainSetDir = properties.getProperty("kea_training_set");
+			if (KEAtrainSetDir.isEmpty())
+				logger.warn("kea_training_set property is empty");
+
+			// KEA+ stopwords path
+			this.stopwordsPath = properties.getProperty("stopwords");
+			if (stopwordsPath.isEmpty())
+				logger.warn("stopwords property is empty");
+			
+			// Path to SKOS/RDF file
+			this.rdfPath = properties.getProperty("rdf_file");
+			if (rdfPath.isEmpty())
+				logger.warn("rdf_file property is empty");			
+
+			// Lingpipe model path
+			this.lingpipeModel = properties.getProperty("lingpipe_model");
+			if (lingpipeModel == null || lingpipeModel.isEmpty())
+				logger.warn("lingpipe_model property is empty");		
+			
+			fis.close();
+			
+		} catch (FileNotFoundException e) {
+			throw new HiveException("Property file not found", e);
+		} catch (IOException e) {
+			throw new HiveException ("Error occurred during scheme initialization", e);
+		}
+	}
+	
+	
 	@Override
 	public String getStopwordsPath() {
 		return stopwordsPath;
@@ -254,5 +358,4 @@ public class SKOSSchemeImpl implements SKOSScheme {
 	public String getLingpipeModel() {
 		return this.lingpipeModel;
 	}
-
 }
