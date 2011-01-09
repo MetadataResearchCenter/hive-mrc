@@ -1,5 +1,6 @@
 /**
  * Copyright (c) 2010, UNC-Chapel Hill and Nescent
+
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided 
@@ -26,39 +27,59 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package edu.unc.ils.mrc.hive.admin;
 
+
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import edu.unc.ils.mrc.hive.HiveException;
 import edu.unc.ils.mrc.hive.api.SKOSScheme;
 import edu.unc.ils.mrc.hive.api.impl.elmo.SKOSSchemeImpl;
 import edu.unc.ils.mrc.hive.importers.Importer;
 import edu.unc.ils.mrc.hive.importers.ImporterFactory;
 
 /**
- * This class create Sesame Store, Lucene Index and AlphaIndex 
- * for a SKOS/RDF file
+ * This class is used to administer the HIVE vocabularies. For the specified
+ * vocabulary in SKOS RDF/XML format, create the Sesame store (NativeStore),
+ * Lucene index, alphabetic and top-concept indexes (serialized TreeMaps). 
+ * Optionally, create and train the KEA+ index.
+ * 
+ * This class expects the following:
+ *  - SKOS vocabulary file in RDF/XML format
+ *  - Valid HIVE vocabulary property file
  */
-
 public class AdminVocabularies {
 
+    private static final Log logger = LogFactory.getLog(AdminVocabularies.class);
+	
 	/**
 	 * This method is a main to run HIVE importers
-	 */
-	
+	 */	
 	public static void main(String[] args) {
 
 		String configpath = args[0];
 		String vocabularyName = args[1].toLowerCase();
 
-		SKOSScheme schema = new SKOSSchemeImpl(configpath, vocabularyName, true);
-
+		logger.info("Starting import of vocabulary " + vocabularyName);
 		ImporterFactory.selectImporter(ImporterFactory.SKOSIMPORTER);
-		Importer importer = ImporterFactory.getImporter(schema);
-		importer.importThesaurustoDB();
-		importer.importThesaurustoInvertedIndex();
-		importer.close();
-		System.out.println("Vocabulary import finished");
-//		if (args[2].equals("train")) {
-//			TaggerTrainer trainer = new TaggerTrainer(schema);
-//			trainer.trainAutomaticIndexingModule();
-// 		}
+		try
+		{
+			SKOSScheme schema = new SKOSSchemeImpl(configpath, vocabularyName, true);
+			
+			Importer importer = ImporterFactory.getImporter(schema);
+			importer.importThesaurustoDB();
+			importer.importThesaurustoInvertedIndex();
+			importer.close();
+			logger.info("Vocabulary import complete");
+		
+			if (args[2].equals("train")) {
+				logger.info("Training KEA");
+				TaggerTrainer trainer = new TaggerTrainer(schema);
+				trainer.trainAutomaticIndexingModule();
+				logger.info("KEA training complete");
+	 		}
+		} catch (HiveException e) {
+			logger.error("Vocabulary import failed", e);
+		}
 	}
-
 }
