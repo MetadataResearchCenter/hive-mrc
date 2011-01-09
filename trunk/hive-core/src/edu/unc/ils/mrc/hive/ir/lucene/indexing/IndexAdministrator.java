@@ -38,6 +38,8 @@ import java.util.TreeMap;
 
 import javax.xml.namespace.QName;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
@@ -46,16 +48,16 @@ import org.apache.lucene.search.IndexSearcher;
 
 public class IndexAdministrator {
 
+    private static final Log logger = LogFactory.getLog(IndexAdministrator.class);
+    
 	public static String getDate(String indexName) {
 		try {
 			Long date = IndexReader.lastModified(indexName);
 			return new Date(date).toString();
 		} catch (CorruptIndexException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		    logger.error(e);
 		}
 		return null;
 	}
@@ -85,13 +87,13 @@ public class IndexAdministrator {
 
 		TreeMap<String, QName> tree = null;
 		if (j > 1) {
-			SortedMap<String, QName> l2 = index.subMap(start, end);
-			System.out.println("Result size: " + l2.size());
+			SortedMap<String, QName> l2 = index.subMap(start, end);		
+			logger.debug("Result size: " + l2.size());			
 			return tree = new TreeMap<String, QName>(l2);
 		} else if (j == 1) {
 			tree = new TreeMap<String, QName>();
 			tree.put(start,index.get(start));
-			System.out.println("Result size: " + tree.size());
+			logger.debug("Result size: " + tree.size());
 			return tree;
 		}
 
@@ -104,21 +106,16 @@ public class IndexAdministrator {
 		ObjectInputStream ois;
 		try {
 			ois = new ObjectInputStream(new FileInputStream(fichero));
-			TreeMap<String, QName> l = (TreeMap<String, QName>) ois
-					.readObject();
+			TreeMap<String, QName> l = (TreeMap<String, QName>) ois.readObject();
 			ois.close();
-			System.err.println("Top Concpet Index loaded from "
-					+ topConceptFilePath);
+			logger.debug("Top concept index loaded from " + topConceptFilePath);
 			return l;
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		    logger.error(e);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		    logger.error(e);
 		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+            logger.error(e);
 		}
 		return null;
 	}
@@ -128,20 +125,16 @@ public class IndexAdministrator {
 		ObjectInputStream ois;
 		try {
 			ois = new ObjectInputStream(new FileInputStream(fichero));
-			TreeMap<String, QName> l = (TreeMap<String, QName>) ois
-					.readObject();
+			TreeMap<String, QName> l = (TreeMap<String, QName>) ois.readObject();
 			ois.close();
-			System.err.println("AlphaIndex loaded from " + alphaFilePath);
+			logger.debug("AlphaIndex loaded from " + alphaFilePath);
 			return l;
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+            logger.error(e);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+            logger.error(e);
 		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+            logger.error(e);
 		}
 		return null;
 	}
@@ -150,11 +143,9 @@ public class IndexAdministrator {
 		try {
 			return IndexReader.open(indexName).numDocs();
 		} catch (CorruptIndexException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+            logger.error(e);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+            logger.error(e);
 		}
 		return 0;
 	}
@@ -175,11 +166,9 @@ public class IndexAdministrator {
 			is.close();
 			return broader;
 		} catch (CorruptIndexException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+            logger.error(e);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+            logger.error(e);
 		}
 		return 0;
 	}
@@ -200,11 +189,9 @@ public class IndexAdministrator {
 			is.close();
 			return narrower;
 		} catch (CorruptIndexException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+            logger.error(e);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+            logger.error(e);
 		}
 		return 0;
 	}
@@ -225,11 +212,9 @@ public class IndexAdministrator {
 			is.close();
 			return related;
 		} catch (CorruptIndexException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+            logger.error(e);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+            logger.error(e);
 		}
 		return 0;
 	}
@@ -256,11 +241,9 @@ public class IndexAdministrator {
 			is.close();
 			return broader + narrower + related;
 		} catch (CorruptIndexException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+            logger.error(e);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+            logger.error(e);
 		}
 		return 0;
 
