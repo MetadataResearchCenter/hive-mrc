@@ -35,6 +35,8 @@ import java.util.TreeMap;
 
 import javax.xml.namespace.QName;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openrdf.concepts.skos.core.Concept;
 import org.openrdf.elmo.ElmoModule;
 import org.openrdf.elmo.sesame.SesameManager;
@@ -63,6 +65,8 @@ import edu.unc.ils.mrc.hive.ir.lucene.search.SearcherFactory;
 
 public class SKOSSearcherImpl implements SKOSSearcher {
 
+    private static final Log logger = LogFactory.getLog(SKOSSearcherImpl.class);
+    
 	private Map<String, SKOSScheme> vocabularies;
 	private String[] indexes;
 	private Repository[] repositories;
@@ -86,7 +90,7 @@ public class SKOSSearcherImpl implements SKOSSearcher {
 			for (String schemeName : keys) {
 				this.files[i] = new File(this.vocabularies.get(schemeName)
 						.getStoreDirectory());
-				System.out.println(this.files[i].getAbsolutePath());
+				logger.debug(this.files[i].getAbsolutePath());
 				this.stores[i] = new NativeStore(this.files[i]);
 				// create repository
 				repositories[i] = new SailRepository(stores[i]);
@@ -100,8 +104,8 @@ public class SKOSSearcherImpl implements SKOSSearcher {
 				this.vocabularies.get(schemeName).setManager(this.managers[i]);
 				i++;
 			}
-		} catch (RepositoryException r) {
-			r.printStackTrace();
+		} catch (RepositoryException e) {
+			logger.error(e);
 		}
 
 		SearcherFactory
@@ -111,6 +115,8 @@ public class SKOSSearcherImpl implements SKOSSearcher {
 
 	@Override
 	public List<SKOSConcept> searchConceptByKeyword(String keyword) {
+	    logger.trace("searchConceptByKeyword " + keyword);
+	    
 		// Retrieve a concept from lucene indexes
 		List<SKOSConcept> ranking = searcher.search(keyword, this.managers);
 		return ranking;
@@ -118,6 +124,8 @@ public class SKOSSearcherImpl implements SKOSSearcher {
 
 	@Override
 	public SKOSConcept searchConceptByURI(String uri, String lp) {
+	    logger.trace("searchConceptByURI " + uri + "," + lp);
+	    
 		Concept elmoConcept = null;
 		QName qName = new QName(uri, lp);
 		for (int n = 0; n < managers.length; n++) {
@@ -157,6 +165,8 @@ public class SKOSSearcherImpl implements SKOSSearcher {
 	}
 
 	public TreeMap<String,QName> searchChildrenByURI(String uri, String lp) {
+	    logger.trace("searchChildrenByURI " + uri + "," + lp);
+	    
 		Concept elmoConcept = null;
 		QName qName = new QName(uri, lp);
 		
@@ -197,6 +207,8 @@ public class SKOSSearcherImpl implements SKOSSearcher {
 	}
 	
 	public List<HashMap> SPARQLSelect(String qs, String vocabulary) {
+	    logger.trace("SPARQLSelect " + qs + "," + vocabulary);
+	    
 		try {
 			List<String> voc = new ArrayList<String>();
 			voc.addAll(this.vocabularies.keySet());
@@ -237,21 +249,22 @@ public class SKOSSearcherImpl implements SKOSSearcher {
 	}
 
 	public void close() {
+	    logger.trace("close");
+	    
 		for (int i = 0; i < this.managers.length; i++) {
 			this.managers[i].close();
-			System.out.println("Manager " + i + " closed OK");
+			logger.debug("Manager " + i + " closed OK");
 			this.factories[i].close();
-			System.out.println("Factory " + i + " closed OK");
+			logger.debug("Factory " + i + " closed OK");
 			try {
 				this.repositories[i].shutDown();
-				System.out.println("Repository " + i + " closed OK");
+				logger.debug("Repository " + i + " closed OK");
 			} catch (RepositoryException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.error(e);
 			}
 		}
 		this.searcher.close();
-		System.out.println("Indexes closed OK");
+		logger.debug("Indexes closed OK");
 	}
 
 }
