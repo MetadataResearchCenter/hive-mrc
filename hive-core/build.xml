@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+
+<project name="hive-core" basedir="." default="usage">
+
+    <property name="name" value="hive-core" />
+    <property name="version" value="1.0" />
+    
+	<property name="src.dir" value="src" />
+	<property name="lib.dir" value="lib" />
+	<property name="build.dir" value="classes" />
+	<property name="dist.dir" value="dist" />
+	
+	<path id="compile.classpath">
+		<fileset dir="${lib.dir}">
+			<include name="*.jar" />
+		</fileset>
+		<pathelement path="${build.dir}" />
+	</path>
+
+	<target name="help">
+		<echo></echo>
+		<echo>${name} build file</echo>
+		<echo>-----------------------------------</echo>
+    	<echo>Targets:</echo>
+    	<echo></echo>
+    	<echo>  help    : (default) Prints this message </echo>
+    	<echo>  all     : Cleans, compiles, and packages application</echo>
+    	<echo>  clean   : Deletes work directories</echo>
+    	<echo>  compile : Compiles classes</echo>
+    	<echo>  dist    : Packages JAR</echo>
+    	<echo></echo>
+    	<echo>For example, to clean, compile, and package all at once, run:</echo>
+    	<echo>prompt> ant all </echo>
+	</target>
+
+	<target name="all" depends="clean,compile,dist"
+          description="Clean work dirs, then compile and create JAR"/>
+
+ 	<target name="clean"
+          description="Delete build directory">
+    	<delete dir="${build.dir}"/>
+    	<delete dir="${dist.dir}"/>
+  	</target>
+
+	<target name="compile" description="Compile classes">
+		<mkdir  dir="${build.dir}"/>
+		<mkdir  dir="${dist.dir}"/>
+		<javac srcdir="${src.dir}" destdir="${build.dir}" 
+			source="1.5" target="1.5" debug="off" includeAntRuntime="false">	
+        	<classpath refid="compile.classpath"/>
+    	</javac>
+  	</target>
+
+ 	<target name="dist" depends="compile"
+          description="Create JAR file">
+    	<jar jarfile="${dist.dir}/${name}.jar"
+        	 basedir="${build.dir}"/>
+  	</target>
+</project>
