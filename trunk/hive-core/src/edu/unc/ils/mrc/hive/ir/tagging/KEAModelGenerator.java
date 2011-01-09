@@ -25,6 +25,13 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package edu.unc.ils.mrc.hive.ir.tagging;
 
+import org.apache.commons.logging.Log;
+
+import org.apache.commons.logging.LogFactory;
+import org.perf4j.StopWatch;
+import org.perf4j.log4j.Log4JStopWatch;
+
+import edu.unc.ils.mrc.hive.HiveException;
 import edu.unc.ils.mrc.hive.api.SKOSScheme;
 import kea.main.KEAModelBuilder;
 import kea.stemmers.PorterStemmer;
@@ -32,6 +39,8 @@ import kea.stopwords.StopwordsEnglish;
 
 public class KEAModelGenerator {
 
+    private static final Log logger = LogFactory.getLog(KEAModelGenerator.class);
+	
 	private KEAModelBuilder km;
 	private String trainDirName;
 	private String modelName;
@@ -135,14 +144,18 @@ public class KEAModelGenerator {
 		return modelName;
 	}
 
-	public void createModel(String stopwordsPath) {
+	public void createModel(String stopwordsPath) throws HiveException {
+		
 		try {
+			StopWatch stopWatch = new Log4JStopWatch();
+			logger.info("Create KEA model");
 			km.buildModel(km.collectStems(),this.vocabulary,stopwordsPath,this.scheme.getManager());
 			km.saveModel();
+			logger.info("KEA model created");
+			stopWatch.lap(vocabulary + " KEA model create");
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw new HiveException ("Error creating KEA model", e);
 		}
-
 	}
 
 }
