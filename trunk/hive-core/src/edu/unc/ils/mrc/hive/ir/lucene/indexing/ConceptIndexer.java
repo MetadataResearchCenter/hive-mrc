@@ -27,6 +27,9 @@ package edu.unc.ils.mrc.hive.ir.lucene.indexing;
 
 import java.io.IOException;
 
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -35,47 +38,64 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.LockObtainFailedException;
 
 import org.openrdf.concepts.skos.core.Concept;
-import org.openrdf.elmo.Entity;
 
-
-public class ConceptIndexer implements Indexer {
-
+/**
+ * Create or update a Lucene index of SKOS concepts. This class uses a document-oriented
+ * approach to represent SKOS concepts in the inverted index, where each concept is 
+ * represented as a document with multiple fields. Each field is an element in the SKOS
+ * vocabulary (preferred term, broader term, scope notes, etc).
+ */
+public class ConceptIndexer implements Indexer 
+{
+    private static final Log logger = LogFactory.getLog(ConceptIndexer.class);
+	
 	private IndexWriter writer;
 
+	/**
+	 * Construct a ConceptIndexer in the specified directory.
+	 * @param indexDir
+	 * @param create
+	 */
 	public ConceptIndexer(String indexDir, boolean create) {
 		try {
 			this.writer = new IndexWriter(indexDir,
 					new StandardAnalyzer(), create,
 					IndexWriter.MaxFieldLength.UNLIMITED);
 		} catch (CorruptIndexException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e);
 		} catch (LockObtainFailedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e);
 		}
 	}
 
-	public void indexConcept(Concept concept) {
+	/**
+	 * Index the specified Concept
+	 */
+	public void indexConcept(Concept concept) 
+	{
+		logger.trace("indexConcept " + concept.getQName());
+		
 		Document docLucene = new Document();
-
+		
 		// URI
 		String uri = concept.getQName().getNamespaceURI();
 		Field uriL = new Field("uri", uri , Field.Store.YES,
 				Field.Index.NOT_ANALYZED);
+		docLucene.add(uriL);
 		
 		// Local Part
 		String lp = concept.getQName().getLocalPart();
 		Field lpL = new Field("localPart", lp , Field.Store.YES,
 				Field.Index.NOT_ANALYZED);
+		docLucene.add(lpL);
 		
 		// PrefLabel
 		Field prefLabelL = new Field("prefLabel",
 				concept.getSkosPrefLabel(), Field.Store.YES,
 				Field.Index.ANALYZED);
+		docLucene.add(prefLabelL);
 
 		// altLabels
 		String a = "";
@@ -84,6 +104,7 @@ public class ConceptIndexer implements Indexer {
 		}
 		Field altLabelL = new Field("altLabel", a.trim(), Field.Store.YES,
 				Field.Index.ANALYZED);
+		docLucene.add(altLabelL);
 
 		// Scope Notes
 		String sc = "";
@@ -93,100 +114,120 @@ public class ConceptIndexer implements Indexer {
 		Field scopeNoteL = new Field("scopeNote",
 				sc, Field.Store.YES,
 				Field.Index.ANALYZED);
+		docLucene.add(scopeNoteL);
 
-		// Broader Terms
-		String b = "";
-		for (Concept c : concept.getSkosBroaders()) {
-			if (b.equals(""))
-				b = c.getSkosPrefLabel();
-			else
-				b = b + "#" + c.getSkosPrefLabel();
-		}
-		Field broaderL = new Field("broader", b.trim(), Field.Store.YES,
-				Field.Index.ANALYZED);
+		try
+		{
+			// Broader Terms
+			String b = "";
+			for (Concept c : concept.getSkosBroaders()) {
+				if (b.equals(""))
+					b = c.getSkosPrefLabel();
+				else
+					b = b + "#" + c.getSkosPrefLabel();
+			}
+			Field broaderL = new Field("broader", b.trim(), Field.Store.YES,
+					Field.Index.ANALYZED);
+			docLucene.add(broaderL);
+	
+			// Broader URIs
+			String buri = "";
+			for (Concept c : concept.getSkosBroaders()) {
+				buri = buri + " " + c.getQName().getNamespaceURI() + c.getQName().getLocalPart();
+			}
+			Field broaderURIL = new Field("broaderURI", buri.trim(),
+					Field.Store.YES, Field.Index.NOT_ANALYZED);
+			docLucene.add(broaderURIL);
+			
+		} catch (ClassCastException e) {
+			// If the broader concept does not exist, a ClassCastException is thrown. 
+			// This can prevent the file from being indexed. Warn and continue.			
+			logger.warn("Error retrieving broader concept, may not exist in store. Skipping.");
+		}			
 
-		// Broader URIs
-		String buri = "";
-		for (Concept c : concept.getSkosBroaders()) {
-			buri = buri + " " + c.getQName().getNamespaceURI() + c.getQName().getLocalPart();
+		try
+		{
+			// Narrower Terms
+			String n = "";
+			for (Concept c : concept.getSkosNarrowers()) {
+				//logger.debug("Narrower: " + c.getQName().getNamespaceURI() + " lp: " + c.getQName().getLocalPart());
+				if (n.equals(""))
+					n = c.getSkosPrefLabel();
+				else
+					n = n + "#" + c;
+			}
+			Field narrowerL = new Field("narrower", n.trim(), Field.Store.YES,
+					Field.Index.ANALYZED);
+			docLucene.add(narrowerL);
+	
+			// Narrower URIs
+			String nuri = "";
+			for (Concept c : concept.getSkosNarrowers()) {
+				nuri = nuri + " " + c.getQName().getNamespaceURI() + c.getQName().getLocalPart();
+			}
+			Field narrowerURIL = new Field("narrowerURI", nuri.trim(),
+					Field.Store.YES, Field.Index.NOT_ANALYZED);			
+			docLucene.add(narrowerURIL);			
+		} catch (ClassCastException e) {
+			// If the narrower concept does not exist, a ClassCastException is thrown. 
+			// This can prevent the file from being indexed. Warn and continue.			
+			logger.warn("Error retrieving narrower concept, may not exist in store. Skipping.");
 		}
-		Field broaderURIL = new Field("broaderURI", buri.trim(),
-				Field.Store.YES, Field.Index.NOT_ANALYZED);
-
-		// Narrower Terms
-		String n = "";
-		for (Concept c : concept.getSkosNarrowers()) {
-			//System.out.println("CULO: " + c.getQName().getNamespaceURI() + " lp: " + c.getQName().getLocalPart());
-			if (n.equals(""))
-				n = c.getSkosPrefLabel();
-			else
-				n = n + "#" + c;
-		}
-		Field narrowerL = new Field("narrower", n.trim(), Field.Store.YES,
-				Field.Index.ANALYZED);
-
-		// Narrower URIs
-		String nuri = "";
-		for (Concept c : concept.getSkosNarrowers()) {
-			nuri = nuri + " " + c.getQName().getNamespaceURI() + c.getQName().getLocalPart();
-		}
-		Field narrowerURIL = new Field("narrowerURI", nuri.trim(),
-				Field.Store.YES, Field.Index.NOT_ANALYZED);
 
 		// Related Terms
 		String r = "";
-		for (Concept c : concept.getSkosRelated()) {
-			if (r.equals(""))
-				r = c.getSkosPrefLabel();
-			else
-				r = r + "#" + c.getSkosRelated();
-		}
-		Field relatedL = new Field("related", r.trim(), Field.Store.YES,
-				Field.Index.ANALYZED);
+		try
+		{
+			for (Concept c : concept.getSkosRelated()) {
+				if (r.equals(""))
+					r = c.getSkosPrefLabel();
+				else
+					r = r + "#" + c.getSkosRelated();
+			}
+			Field relatedL = new Field("related", r.trim(), Field.Store.YES,
+					Field.Index.ANALYZED);			
+			docLucene.add(relatedL);
+			
+			// Related URIs
+			String ruri = "";
+			for (Concept c : concept.getSkosRelated()) {
+				ruri = ruri + " " + c.getQName().getNamespaceURI() + c.getQName().getLocalPart();
+			}
+			Field relatedURIL = new Field("relatedURI", ruri.trim(),
+					Field.Store.YES, Field.Index.NOT_ANALYZED);
+			docLucene.add(relatedURIL);
 
-		// Related URIs
-		String ruri = "";
-		for (Concept c : concept.getSkosRelated()) {
-			ruri = ruri + " " + c.getQName().getNamespaceURI() + c.getQName().getLocalPart();
+		} catch (ClassCastException e) {
+			// If the related concept does not exist, a ClassCastException is thrown. 
+			// This can prevent the file from being indexed. Warn and continue.			
+			logger.warn("Error retrieving related concept, may not exist in store. Skipping.");			
 		}
-		Field relatedURIL = new Field("relatedURI", ruri.trim(),
-				Field.Store.YES, Field.Index.NOT_ANALYZED);
-
+		
 		// titleField.setBoost(4);
 		// categoryField.setBoost(2);
-		docLucene.add(uriL);
-		docLucene.add(lpL);
-		docLucene.add(prefLabelL);
-		docLucene.add(altLabelL);
-		docLucene.add(scopeNoteL);
-		docLucene.add(broaderL);
-		docLucene.add(narrowerL);
-		docLucene.add(relatedL);
-		docLucene.add(broaderURIL);
-		docLucene.add(narrowerURIL);
-		docLucene.add(relatedURIL);
+
 		try {
 			writer.addDocument(docLucene);
-			System.out.println(concept.getSkosPrefLabel() + " " + uri + " has been indexed");
+			logger.debug("Indexed: " + concept.getSkosPrefLabel() + " " + uri);
 		} catch (CorruptIndexException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e);
 		}
-
 	}
 
+	/**
+	 * Close the index
+	 */
 	public void close() {
+	    logger.trace("close");
+	    
 		try {
 			this.writer.close();
 		} catch (CorruptIndexException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e);
 		}
 	}
 
