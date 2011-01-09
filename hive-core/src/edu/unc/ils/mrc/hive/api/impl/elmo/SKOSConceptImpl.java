@@ -31,10 +31,15 @@ import java.util.TreeMap;
 
 import javax.xml.namespace.QName;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import edu.unc.ils.mrc.hive.api.SKOSConcept;
 
 public class SKOSConceptImpl implements SKOSConcept {
 
+    private static final Log logger = LogFactory.getLog(SKOSConceptImpl.class);
+            
 	private QName qname;
 	private String prefLabel;
 	private TreeMap<String, QName> broaders;
@@ -135,8 +140,10 @@ public class SKOSConceptImpl implements SKOSConcept {
 		this.scopeNotes.add(scopeNote);
 	}
 
-	public String getSKOSFormat(){
-		
+	public String getSKOSFormat()
+	{
+	    logger.trace("getSKOSFormat");
+	    
 		String output = "<rdf:RDF>" + "\n";
 		output = output + "\t<rdf:Description rdf:about=\"" + this.getQName().getNamespaceURI() + getQName().getLocalPart() + "\">\n";
 		output = output + "\t<rdf:type rdf:resource=\"http://www.w3.org/2004/02/skos/core#Concept\"/>\n";
