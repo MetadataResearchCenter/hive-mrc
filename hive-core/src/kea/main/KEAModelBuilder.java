@@ -2,6 +2,7 @@ package kea.main;
 
 
 import java.io.BufferedOutputStream;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -11,6 +12,8 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openrdf.elmo.ElmoModule;
 import org.openrdf.elmo.sesame.SesameManager;
 import org.openrdf.elmo.sesame.SesameManagerFactory;
@@ -19,9 +22,9 @@ import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.sail.SailRepository;
 import org.openrdf.sail.nativerdf.NativeStore;
 
+import edu.unc.ils.mrc.hive.HiveException;
 import edu.unc.ils.mrc.hive.api.SKOSScheme;
 import edu.unc.ils.mrc.hive.api.impl.elmo.SKOSSchemeImpl;
-import edu.unc.ils.mrc.hive.ir.tagging.KEAModelGenerator;
 
 import weka.core.Attribute;
 import weka.core.FastVector;
@@ -98,6 +101,8 @@ import kea.vocab.VocabularySesame;
  */
 public class KEAModelBuilder implements OptionHandler {
 	
+    private static final Log logger = LogFactory.getLog(KEAModelBuilder.class);
+	
 	/** Stopwords path */
 	String m_stopwordsPath;
 	
@@ -120,7 +125,7 @@ public class KEAModelBuilder implements OptionHandler {
 	String m_encoding = "default";
 	
 	/** Debugging mode? */
-	boolean m_debug = false;
+	boolean m_debug = true;
 	
 	/** Use keyphrase frequency attribute? */
 	boolean m_useKFrequency = false;
@@ -780,7 +785,7 @@ public class KEAModelBuilder implements OptionHandler {
 		m_KEAFilter.loadThesaurus(getStemmer(),getStopwords(),this.vocabulary);
 		m_KEAFilter.setNumFeature();
 		
-		System.err.println("-- Reading the Documents... ");
+		logger.info("-- Reading the documents");
 		
 		Enumeration elem = stems.keys();
 		while (elem.hasMoreElements()) {
@@ -864,40 +869,45 @@ public class KEAModelBuilder implements OptionHandler {
 		String confPath = "/home/hive/workspace/hive-core/conf/";
 		String vocabularyName = "nbii";
 		
-		SKOSScheme schema = new SKOSSchemeImpl(confPath, vocabularyName, false);
-
-		NativeStore store  = new NativeStore(new File(schema.getStoreDirectory()));
-		Repository repository = new SailRepository(store);
-		repository.initialize();
-		ElmoModule module = new ElmoModule();
-		SesameManagerFactory factory = new SesameManagerFactory(module, repository);
-		SesameManager manager = factory.createElmoManager();
-		
-		schema.setManager(manager);
-		
-		
-		KEAModelBuilder kmb = new KEAModelBuilder(schema);
-		try {
-			kmb.setOptions(ops);
-			kmb.setDirName(trainDir);
-			System.err.print("Building model with options: ");
-			String[] optionSettings = kmb.getOptions();
-			for (int i = 0; i < optionSettings.length; i++) {
-				System.err.print(optionSettings[i] + " ");
+		try
+		{
+			SKOSScheme schema = new SKOSSchemeImpl(confPath, vocabularyName, false);
+	
+			NativeStore store  = new NativeStore(new File(schema.getStoreDirectory()));
+			Repository repository = new SailRepository(store);
+			repository.initialize();
+			ElmoModule module = new ElmoModule();
+			SesameManagerFactory factory = new SesameManagerFactory(module, repository);
+			SesameManager manager = factory.createElmoManager();
+			
+			schema.setManager(manager);
+			
+			
+			KEAModelBuilder kmb = new KEAModelBuilder(schema);
+			try {
+				kmb.setOptions(ops);
+				kmb.setDirName(trainDir);
+				System.err.print("Building model with options: ");
+				String[] optionSettings = kmb.getOptions();
+				for (int i = 0; i < optionSettings.length; i++) {
+					System.err.print(optionSettings[i] + " ");
+				}
+				System.err.println();
+				kmb.buildModel(kmb.collectStems(),vocabularyPath,stopwordsPath,null);
+				kmb.saveModel();
+			} catch (Exception e) {
+				e.printStackTrace();
+				System.err.println(e.getMessage());
+				System.err.println("\nOptions:\n");
+				Enumeration en = kmb.listOptions();
+				while (en.hasMoreElements()) {
+					Option option = (Option) en.nextElement();
+					System.err.println(option.synopsis());
+					System.err.println(option.description());
+				}
 			}
-			System.err.println();
-			kmb.buildModel(kmb.collectStems(),vocabularyPath,stopwordsPath,null);
-			kmb.saveModel();
-		} catch (Exception e) {
+		} catch (HiveException e) {
 			e.printStackTrace();
-			System.err.println(e.getMessage());
-			System.err.println("\nOptions:\n");
-			Enumeration en = kmb.listOptions();
-			while (en.hasMoreElements()) {
-				Option option = (Option) en.nextElement();
-				System.err.println(option.synopsis());
-				System.err.println(option.description());
-			}
 		}
 	}
 }
