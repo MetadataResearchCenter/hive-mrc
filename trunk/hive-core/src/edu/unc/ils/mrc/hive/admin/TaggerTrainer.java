@@ -27,6 +27,8 @@ package edu.unc.ils.mrc.hive.admin;
 
 import java.io.File;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openrdf.elmo.ElmoModule;
 import org.openrdf.elmo.sesame.SesameManager;
 import org.openrdf.elmo.sesame.SesameManagerFactory;
@@ -35,6 +37,7 @@ import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.sail.SailRepository;
 import org.openrdf.sail.nativerdf.NativeStore;
 
+import edu.unc.ils.mrc.hive.HiveException;
 import edu.unc.ils.mrc.hive.api.SKOSScheme;
 import edu.unc.ils.mrc.hive.ir.tagging.KEAModelGenerator;
 
@@ -45,6 +48,8 @@ import edu.unc.ils.mrc.hive.ir.tagging.KEAModelGenerator;
 
 public class TaggerTrainer {
 	
+    private static final Log logger = LogFactory.getLog(TaggerTrainer.class);
+	
 	private SKOSScheme schema;
 
 	public TaggerTrainer(SKOSScheme schema) {
@@ -52,15 +57,17 @@ public class TaggerTrainer {
 
 	}
 
-	public void trainAutomaticIndexingModule() {
+	public void trainAutomaticIndexingModule() throws HiveException {
+		logger.trace("trainAutomaticIndexingModule");
+		
+		logger.info("Initializing Sesame store");		
 		NativeStore store = new NativeStore(
 				new File(schema.getStoreDirectory()));
 		Repository repository = new SailRepository(store);
 		try {
 			repository.initialize();
 		} catch (RepositoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new HiveException("Failed to initialize Sesame store", e);
 		}
 		ElmoModule module = new ElmoModule();
 		SesameManagerFactory factory = new SesameManagerFactory(module,
@@ -68,16 +75,15 @@ public class TaggerTrainer {
 		SesameManager manager = factory.createElmoManager();
 
 		this.schema.setManager(manager);
+				
 		KEAModelGenerator generator = new KEAModelGenerator(this.schema);
 		generator.createModel(this.schema.getStopwordsPath());
-		System.out.println("Model created");
 		manager.close();
 		factory.close();
 		try {
 			repository.shutDown();
 		} catch (RepositoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new HiveException("Error during shutdown of Sesame store", e);
 		}
 	}
 
