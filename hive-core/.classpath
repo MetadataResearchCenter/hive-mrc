@@ -17,7 +17,6 @@
 	<classpathentry kind="lib" path="lib/openrdf-sesame-2.2.4-onejar.jar"/>
 	<classpathentry kind="lib" path="lib/persistence-api-1.0.jar"/>
 	<classpathentry kind="lib" path="lib/slf4j-api-1.5.0.jar"/>
-	<classpathentry kind="lib" path="lib/slf4j-jdk14-1.5.0.jar"/>
 	<classpathentry kind="lib" path="lib/snowball.jar"/>
 	<classpathentry kind="lib" path="lib/tika-app-0.4.jar"/>
 	<classpathentry kind="lib" path="lib/trove.jar"/>
@@ -25,5 +24,8 @@
 	<classpathentry kind="lib" path="lib/wikipediaminer1.1.jar"/>
 	<classpathentry kind="lib" path="lib/xercesImpl.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="lib/log4j-1.2.13.jar"/>
+	<classpathentry kind="lib" path="lib/perf4j-0.9.13.jar"/>
+	<classpathentry kind="lib" path="lib/slf4j-log4j12-1.5.0.jar"/>
 	<classpathentry kind="output" path="target"/>
 </classpath>
