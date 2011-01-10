@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<project name="hive-core" basedir="." default="usage">
+<project name="hive-core" basedir="." default="help">
 
     <property name="name" value="hive-core" />
     <property name="version" value="1.0" />
