@@ -962,6 +962,15 @@ public class KEAFilter extends Filter implements OptionHandler {
 			HashMap hashKeyphrases = getGivenKeyphrases(keyphrases, false,vocabulary);
 			HashMap hashKeysEval = getGivenKeyphrases(keyphrases, true,vocabulary);
 
+            // KEA expects all training documents to include author assigned keyphrases
+            // that match entries in the vocabulary. If no keyphrases are found that
+            // match, classifier construction fails silently below.
+            // Skip this instance if no keyphrases match.
+            if (hashKeysEval == null) {
+                System.err.println("No keyphrases found for author assigned keyphrases");
+                continue;
+            }
+
 			// Get the phrases for the document
 			HashMap hash = new HashMap();
 			int length = getPhrases(hash, current.stringValue(m_DocumentAtt),vocabulary);
