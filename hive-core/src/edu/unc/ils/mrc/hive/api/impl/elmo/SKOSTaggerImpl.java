@@ -106,7 +106,7 @@ public class SKOSTaggerImpl implements SKOSTagger {
 			Date date = new Date();
 			for (String voc : vocabulary) {
 				String path = this.vocabularies.get(voc).getKEAtestSetDir();
-				String fileName = path + "/" + date.getTime();
+				String fileName = path + File.separator + date.getTime();
 				File keaInputFile = new File(fileName + voc + ".txt");
 				FileOutputStream fos;
 				try {
@@ -148,6 +148,10 @@ public class SKOSTaggerImpl implements SKOSTagger {
 				} catch (IOException e) {
 				    logger.error("file processing problem", e);
 				}
+				// If we do not delete these files, they are re-read during subsequent
+				// extractKeyphrases and cause performance degradation.
+				keaInputFile.delete();
+				keaOutputFile.delete();
 			}
 		} else if (this.algorithm.equals("dummy")) {
 			Tagger tagger = this.taggers.get("Dummytagger");
