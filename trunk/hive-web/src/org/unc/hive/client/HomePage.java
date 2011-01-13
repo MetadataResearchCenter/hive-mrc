@@ -140,7 +140,6 @@ public class HomePage implements EntryPoint {
 
 						vocabularyStatistics.add(new Label(
 								"Cannot get the information!"));
-						Window.alert("Lina is sleeping!");
 					}
 
 					@Override
