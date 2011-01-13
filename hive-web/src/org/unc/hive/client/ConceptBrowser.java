@@ -122,7 +122,7 @@ public class ConceptBrowser implements EntryPoint, ValueChangeHandler<String> {
 			public void onFailure(Throwable caught) {
 				// TODO Auto-generated method stub
 				
-				Window.alert("Get all vocabularies failed!");
+				Window.alert("Get all vocabularies failed.");
 				
 			}
 
@@ -544,7 +544,7 @@ public class ConceptBrowser implements EntryPoint, ValueChangeHandler<String> {
 				if (event.getCharCode() == KeyCodes.KEY_ENTER) {
 					String query = queryBox.getValue();
 					if (query.equals("")) {
-						Window.alert("Please enter a query!");
+						Window.alert("Please enter a query.");
 					} else {
 						loadingResultList(query);
 					}
@@ -559,7 +559,7 @@ public class ConceptBrowser implements EntryPoint, ValueChangeHandler<String> {
 
 				final String query = queryBox.getValue();
 				if (query.equals("")) {
-					Window.alert("please enter query!");
+					Window.alert("please enter query.");
 				} else {
 					loadingResultList(query);
 				}

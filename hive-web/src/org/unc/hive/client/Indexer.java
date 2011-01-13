@@ -273,7 +273,7 @@ public class Indexer implements EntryPoint {
 				
 			//	Window.alert(path);
 				if (upload.getFilename().length() == 0) {
-					Window.alert("Please choose the file you want to upload!");
+					Window.alert("Please choose the file you want to upload.");
 					event.cancel();
 				}
 				else
@@ -369,7 +369,7 @@ public class Indexer implements EntryPoint {
 				String url = docURL.getValue();
 				if(openedVocabularies.isEmpty())
 				{
-					Window.alert("Please select at least one vocabulary!");
+					Window.alert("Please select at least one vocabulary.");
 				}
 				else if(isFileUploaded == true && url.equals(""))
 				{
@@ -383,7 +383,7 @@ public class Indexer implements EntryPoint {
 				}
 				else if(isFileUploaded == true && !url.equals(""))
 				{
-					Window.alert("You can only upload a document or enter a URL. But don't do both.");
+					Window.alert("You can only upload a document or enter a URL, but not both.");
 				}
 				else if(isFileUploaded == false && url.equals(""))
 				{
