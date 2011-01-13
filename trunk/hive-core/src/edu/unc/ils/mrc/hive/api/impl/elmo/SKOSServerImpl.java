@@ -44,6 +44,9 @@ import java.util.TreeMap;
 
 import javax.xml.namespace.QName;
 
+import org.apache.commons.configuration.Configuration;
+import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -61,42 +64,37 @@ public class SKOSServerImpl implements SKOSServer {
 	private TreeMap<String, SKOSScheme> schemes;
 
 	public SKOSServerImpl(String configFile) {
-		List<String> vocabularies = new ArrayList<String>();
+        List<String> vocabularies = new ArrayList<String>();
 
-		File file = new File(configFile);
-		String path = file.getPath().replaceAll("vocabularies", "");
+        String taggerAlgorithm = "dummy";
+        String path = "";
+        
+        try {
+            Configuration config = new PropertiesConfiguration(configFile);
+            taggerAlgorithm = config.getString("hive.tagger", "dummy");
+            path = config.getString("hive.schemePath", "");
+            if (path.isEmpty()) 
+                path = new File(configFile).getParentFile().getAbsolutePath();            
+            vocabularies = config.getList("hive.vocabulary");
+                            
+        } catch (ConfigurationException e) {
+            logger.error("Failure initializing SKOS Server", e);
+        }
 
-		FileInputStream fis;
-		try {
-			fis = new FileInputStream(file);
-			InputStreamReader isr = new InputStreamReader(fis);
-			BufferedReader br = new BufferedReader(isr);
-			String line = br.readLine();
-			while (line != null) {
-				vocabularies.add(line);
-				line = br.readLine();
-			}
-		} catch (FileNotFoundException e) {
-		    logger.error("Failure initializing SKOS Server", e);
-		} catch (IOException e) {
-		    logger.error("Failure initializing SKOS Server", e);
-		}
+        this.schemes = new TreeMap<String, SKOSScheme>();
 
-		this.schemes = new TreeMap<String, SKOSScheme>();
+        try
+        {
+            for (String voc : vocabularies) {
+                SKOSScheme schema = new SKOSSchemeImpl(path, voc, false);
+                this.schemes.put(voc, schema);
+            }
+        } catch (HiveException e) {     
+            logger.error("Failure initializing vocabulary", e);
+        }
 
-		try
-		{
-    		for (String voc : vocabularies) {
-    			SKOSScheme schema = new SKOSSchemeImpl(path, voc, false);
-    			this.schemes.put(voc, schema);
-    		}
-		} catch (HiveException e) {
-		    logger.error("Failure initializing vocabulary", e);
-		}
-
-		this.searcher = new SKOSSearcherImpl(this.schemes);
-		this.tagger = new SKOSTaggerImpl(this.schemes, "kea");//kea or dummy
-
+        this.searcher = new SKOSSearcherImpl(this.schemes);
+        this.tagger = new SKOSTaggerImpl(this.schemes, taggerAlgorithm);//kea or dummy
 	}
 
 	public SKOSTagger getSKOSTagger() {
