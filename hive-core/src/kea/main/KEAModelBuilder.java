@@ -125,7 +125,7 @@ public class KEAModelBuilder implements OptionHandler {
 	String m_encoding = "default";
 	
 	/** Debugging mode? */
-	boolean m_debug = true;
+	boolean m_debug = false;
 	
 	/** Use keyphrase frequency attribute? */
 	boolean m_useKFrequency = false;
