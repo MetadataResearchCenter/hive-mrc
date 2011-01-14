@@ -140,6 +140,9 @@ public class HomePage implements EntryPoint {
 
 						vocabularyStatistics.add(new Label(
 								"Cannot get the information!"));
+						
+						Window.alert("Unable to retrieve vocabularies.");
+
 					}
 
 					@Override
