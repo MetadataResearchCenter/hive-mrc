@@ -41,7 +41,7 @@ public class ConceptBrowserServiceImpl extends RemoteServiceServlet implements
 		} 
 		ServletContext context = this.getServletContext();
 		String path = context.getRealPath("");
-		this.service = VocabularyService.getInstance(path + "/WEB-INF/conf/vocabularies");
+		this.service = VocabularyService.getInstance(path + "/WEB-INF/conf/hive.properties");
 	}
 	
 	public void setVocabularyService(VocabularyService service) {
