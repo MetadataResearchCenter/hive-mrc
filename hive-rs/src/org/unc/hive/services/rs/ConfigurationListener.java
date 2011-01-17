@@ -126,7 +126,7 @@ public class ConfigurationListener implements ServletContextListener {
     String log4jPropertiesPath = dirPath + "/log4j.properties";
     PropertyConfigurator.configureAndWatch(log4jPropertiesPath);
     
-    String vocabulariesPath = dirPath + "/vocabularies";
+    String vocabulariesPath = dirPath + "/hive.properties";
     skosServer = new SKOSServerImpl(vocabulariesPath);
     
     if (skosServer != null) {
