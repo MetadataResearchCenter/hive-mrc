@@ -305,7 +305,7 @@ public class VocabularyService {
 
 	public static void main(String[] args) {
 		VocabularyService service = VocabularyService
-				.getInstance("war/WEB-INF/conf/vocabularies");
+				.getInstance("war/WEB-INF/conf/hive.properties");
 		System.out.println("Number of Concepts: " + service.getNumberOfConcept("mesh"));
 		TreeMap<String, SKOSScheme> voc = service.skosServer.getSKOSSchemas();
 		Set<String> set = voc.keySet();

@@ -36,7 +36,7 @@ public class IndexerServiceImpl extends RemoteServiceServlet implements
 		} 
 		ServletContext context = this.getServletContext();
 		this.path = context.getRealPath("");
-		this.service = VocabularyService.getInstance(this.path + "/WEB-INF/conf/vocabularies");
+		this.service = VocabularyService.getInstance(this.path + "/WEB-INF/conf/hive.properties");
 	}
 
 	@Override
