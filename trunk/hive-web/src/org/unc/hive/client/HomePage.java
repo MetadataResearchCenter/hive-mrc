@@ -90,8 +90,9 @@ public class HomePage implements EntryPoint {
 				true);
 		final HorizontalPanel search = new HorizontalPanel();
 		search.setSpacing(5);
-		search.add(queryBox);
-		search.add(searchBtn);
+		// 2011/1/20 craig.willis: Disabled non-functioning search box and button.
+		//search.add(queryBox);
+		//search.add(searchBtn);
 		final HTML gotoCB = new HTML(
 				"Go to<a href = 'ConceptBrowser.html'> Concept Browser </a>");
 		final VerticalPanel searchVP = new VerticalPanel();
@@ -106,13 +107,15 @@ public class HomePage implements EntryPoint {
 		final HTML gotoIndex = new HTML(
 				"Go to <a href = 'indexing.html'>Indexing</a>");
 		gotoIndex.addStyleName("footerByline");
+		
 		final Button submitBtn = new Button("Upload");
 		submitBtn.addStyleName("uploadBtn");
 
 		final HorizontalPanel uploaderPanel = new HorizontalPanel();
 		uploaderPanel.setSpacing(0);
 		uploaderPanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_TOP);
-		uploaderPanel.add(submitBtn);
+		// 2011/1/20 - craig.willis: Disabled non-functioning upload button.
+		//uploaderPanel.add(submitBtn);
 
 		final VerticalPanel indexVP = new VerticalPanel();
 		indexVP.add(introIndex);
