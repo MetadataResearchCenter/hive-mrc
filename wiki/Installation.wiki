@@ -38,8 +38,8 @@ To operate HIVE with all vocabularies using the KEA++ indexer requires ~3.5GB of
 The HIVE services can be installed using any Java servlet container or application server. For the purpose of this document, Tomcat 6.0 is assumed.
 
  * Download the latest [http://tomcat.apache.org/download-60.cgi Tomcat 6.x release]
- * Following the Tomcat [http://tomcat.apache.org/tomcat-6.0-doc/setup.html install instructions]
- * Optional: Modify the {{{catalina.sh}}} to set {{{CATALINA_OPTS}}} for increased heap allocation.
+ * Follow the Tomcat [http://tomcat.apache.org/tomcat-6.0-doc/setup.html install instructions]
+ * Optional: Modify the {{{catalina.sh}}} to set {{{CATALINA_OPTS}}} for increased heap allocation (see memory requirements above).
 
 
 == Installing the HIVE Web Service ==
@@ -65,6 +65,16 @@ The HIVE services can be installed using any Java servlet container or applicati
  * Create a file {{{<vocabulary>.properties}}} for each vocabulary listed in the {{{hive.properties}}} file.
 
 
+== HIVE Sample Data ==
+
+To get started quickly, you can also download the AGROVOC [http://code.google.com/p/hive-mrc/downloads/list sample data] from. This sample data includes pre-initialized indexes and KEA++ model.
+
+  # Download and extract {{{hive-agrovoc-sample.zip}}} from the Downloads page
+  # Move the {{{hive-data}}} directory to the desired location (default is {{{/usr/local/hive/hive-data}}})
+  # Copy {{{agrovoc.properties}}} to the {{{WEB-INF/conf}}} directory
+  # Edit {{{agrovoc.properties}}}, update paths to location of {{{hive-data}}} directory.
+
+
 == Import Vocabulary into HIVE ==
 
 The HIVE services require the initialization of several indexes from one orm ore vocabularies in SKOS RDF/XML format. You will not be able to start the HIVE Web or Rest services until this initialization process is complete. This process creates a [[http://www.openrdf.org/ Sesame]] store, [[http://lucene.apache.org/ Lucene]] index, alphabetic and top-concept indexes from the source RDF. If [[http://www.nzdl.org/Kea/ KEA++]] indexing is enabled, the import process also creates and trains the KEA++ mode.
@@ -74,16 +84,6 @@ The import process is detailed in the ImportingVocabularies section. A brief sum
   # A HIVE vocabulary configuration file ((e.g., {{{<vocabulary>.properties}}}
   # A hive.properties file
   # If "kea" indexing is enabled, a set of training documents
-
-
-== HIVE Sample Data ==
-
-To get started quickly, you can also download the AGROVOC [http://code.google.com/p/hive-mrc/downloads/list sample data] from. This sample data includes pre-initialized indexes and KEA++ model.
-
-  # Download and extract {{{hive-agrovoc-sample.zip}}} from the Downloads page
-  # Move the {{{hive-data}}} directory to the desired location (default is {{{/usr/local/hive/hive-data}}})
-  # Copy {{{agrovoc.properties}}} to the {{{WEB-INF/conf}}} directory
-  # Edit {{{agrovoc.properties}}}, update paths to location of {{{hive-data}}} directory.
 
 
 == Installing the HIVE Rest Service ==
