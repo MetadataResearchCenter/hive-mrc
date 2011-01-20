@@ -1,8 +1,94 @@
 #summary Installing HIVE services
+= Installing HIVE Services =
 
-= Installing the HIVE Rest Service =
+This page describes how to install and initialize the HIVE services, including:
 
-  # Download and install [http://tomcat.apache.org/ Tomcat]
+ * HIVE Web Service
+ * HIVE Rest Service
+ * Importing vocabularies into HIVE
+ * Training KEA++
+
+== System Requirements ==
+
+ * Java 1.6
+ * Java servlet container/application server (Tomcat 6.0 recommended)
+ * See memory requirements below
+
+== HIVE Memory Usage ==
+
+When using the KEA++ indexer, depending on the size of the vocabularies used with HIVE, the service may require a significant amount of system memory. 
+
+To increase the maximum JVM heap size, use the -Xmx option. To limit the proportion of VM spent in garbage collection before an OutOfMemoryError is thrown, use -XX:UseGCOverheadLimit. In Tomcat, this can be set using the CATALINA_OPTS variable, as in {{{catalina.sh}}}:
+
+{{{
+CATALINA_OPTS="-Xmx1512m -XX:-UseGCOverheadLimit"
+}}}
+
+Below are per-vocabulary memory requirements (this is in addition to basic Tomcat overhead). Memory requirements are slightly higher during the vocabulary import process.
+||Agrovoc||115MB||
+||LCSH||800MB||
+||MeSH||100MB||
+||NBII||45MB||
+||TGN||1.5GB||
+
+To operate HIVE with all vocabularies using the KEA++ indexer requires ~3.5GB of heap.
+
+== Installing Tomcat ==
+
+The HIVE services can be installed using any Java servlet container or application server. For the purpose of this document, Tomcat 6.0 is assumed.
+
+ * Download the latest [http://tomcat.apache.org/download-60.cgi Tomcat 6.x release]
+ * Following the Tomcat [http://tomcat.apache.org/tomcat-6.0-doc/setup.html install instructions]
+ * Optional: Modify the {{{catalina.sh}}} to set {{{CATALINA_OPTS}}} for increased heap allocation.
+
+
+== Installing the HIVE Web Service ==
+ * [http://code.google.com/p/hive-mrc/downloads/list Download] or build the {{{hiveweb.war}}}
+ * Note: Due to a [http://claudiushauptmann.com/gwt-multipage/ limitation] in the version of GWT used by HIVE, the HIVE Web application must be installed as the ROOT webapp. 
+ * Extract the contents of the hiveweb.war into the ROOT webapp directory
+{{{
+  cd /path/to/tomcat6/webapps/ROOT
+  unzip /path/to/hiveweb.war
+}}}
+
+ * Modify the {{{WEB-INF/conf/hive.properties}}} file. This file contains the list of vocabularies configured for this HIVE Web instance and the "tagger" used for automatic indexing.
+{{{
+  # Configured vocabularies
+  hive.vocabulary = # vocabulary name, e.g., "lcsh"
+
+  # Selected tagger
+  hive.tagger = # "kea" or "dummy"
+}}}
+
+ * Create a {{{hive.vocabulary}}} row for each configured vocabulary.
+ * Set the {{{hive.tagger}}} value to either "kea" for KEA++ indexing or "dummy" for basic indexer.
+ * Create a file {{{<vocabulary>.properties}}} for each vocabulary listed in the {{{hive.properties}}} file.
+
+
+== Import Vocabulary into HIVE ==
+
+The HIVE services require the initialization of several indexes from one orm ore vocabularies in SKOS RDF/XML format. You will not be able to start the HIVE Web or Rest services until this initialization process is complete. This process creates a [[http://www.openrdf.org/ Sesame]] store, [[http://lucene.apache.org/ Lucene]] index, alphabetic and top-concept indexes from the source RDF. If [[http://www.nzdl.org/Kea/ KEA++]] indexing is enabled, the import process also creates and trains the KEA++ mode.
+
+The import process is detailed in the ImportingVocabularies section. A brief summary of the requirements include:
+  # A vocabulary in SKOS RDF/XML format
+  # A HIVE vocabulary configuration file ((e.g., {{{<vocabulary>.properties}}}
+  # A hive.properties file
+  # If "kea" indexing is enabled, a set of training documents
+
+
+== HIVE Sample Data ==
+
+To get started quickly, you can also download the AGROVOC [http://code.google.com/p/hive-mrc/downloads/list sample data] from. This sample data includes pre-initialized indexes and KEA++ model.
+
+  # Download and extract {{{hive-agrovoc-sample.zip}}} from the Downloads page
+  # Move the {{{hive-data}}} directory to the desired location (default is {{{/usr/local/hive/hive-data}}})
+  # Copy {{{agrovoc.properties}}} to the {{{WEB-INF/conf}}} directory
+  # Edit {{{agrovoc.properties}}}, update paths to location of {{{hive-data}}} directory.
+
+
+== Installing the HIVE Rest Service ==
+
+  # Download and install Tomcat
   # Run tomcat and confirm you can see the default screen
   # Note the catalina.out file will contain much of the HIVE output
   # Download the [http://hive-mrc.googlecode.com HIVE code]
