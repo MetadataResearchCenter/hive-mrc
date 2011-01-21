@@ -1,4 +1,7 @@
-#summary One-sentence summary of this page.
+#summary Instructions for configuring your development environment.
+
+= Development Environment = 
+
 
 = Prerequisites = 
  * Eclipse IDE for Java EE Developers
@@ -9,7 +12,7 @@
  * Subversion client
  * JDK 1.6
 
-= Install Prerequisites =
+= Installation =
 
  * Download and install Tomcat 
    * http://tomcat.apache.org/download-60.cgi 
@@ -20,18 +23,22 @@
 
  * Download and install GWT 1.7.1   
    * http://code.google.com/webtoolkit/versions.html
-   * TODO: Need to upgrade to latest GWT
 
  * Download and install Eclipse IDE for Java EE Developers
    * http://www.eclipse.org/downloads/
    * Eclipse Helios (3.6) used for this documentation
- * Install Subclipse
-   * http://subclipse.tigris.org/update_1.6.x
- * Install Google Plugin
-   * http://dl.google.com/eclipse/plugin/3.6
-   * Select "Plugin" 
-   * Note: HIVE Web currently uses GWT 1.7. Do not install the latest SDK here.
- * Add Server
+
+ * Install Subclipse Eclipse Plugin
+   * Using the Eclipse Update Manager
+   * Site: http://subclipse.tigris.org/update_1.6.x
+
+ * Install Google Eclipse Plugin
+   * Note: HIVE Web currently uses GWT 1.7. Do not install the latest SDK.
+   * Using the Eclipse Update Manager
+   * Site: http://dl.google.com/eclipse/plugin/3.6
+   * Select "Plugin" only
+
+ * Configure Tomcat Server in Eclipse
    * Window > Preferences > Server > Runtime Environment
    * Add "Apache Tomcat v 6.0"
 
@@ -41,8 +48,9 @@
    * Text File Encoding: ISO-8859-1 (This needs to be fixed)
  * Window > Show View > Other > SVN Repositories
   * Add SVN Repository 
-   * https://hive-mrc.googlecode.com/svn/trunk
+   * Location: https://hive-mrc.googlecode.com/svn/trunk
  * Checkout hive-core
+   * Basic Java project
  * Checkout hive-rs
    * Select "Checkout as a project configured using the New Project Wizard"
    * Select "Web > Dynamic Web Project"
@@ -56,7 +64,8 @@
      * Select "Configure SDKs..."
      * Web Toolkit > Add > Path to gwt 1.7.1
 
-= Running Locally = 
+= Running HIVE in Eclipse = 
+
  * Note: Before you can run the hive-web or hive-rs projects, you need to initialize the HIVE indexes. 
    * Quick start: Download and configure the sample HIVE vocabulary
    * Advanced: Importing vocabularies into HIVE
