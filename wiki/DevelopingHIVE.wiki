@@ -80,3 +80,46 @@
    * Select module "hive-web"
    * Document base: hive-web
    * Path: / (Root)
+
+= Working with GWT (hive-web only) = 
+Changes to GWT classes require a recompile prior to Ant build (GWT is not currently part of the Ant build):
+
+ * hive-web project
+ * Google > GWT Compile 
+  * Entrypoint module is always ConceptBrowser
+  * Compile
+
+If you see the following error, move the GWT SDK to the top of the build order. (Project > Properties > Java Build Path > Order and Export):
+
+{{{
+[ERROR] Unexpected
+java.lang.NoSuchMethodError: org.eclipse.jdt.internal.compiler.lookup.ProblemReferenceBinding.closestReferenceMatch()Lorg/eclipse/jdt/internal/compiler/lookup/ReferenceBinding; 
+}}}
+ 
+= Building HIVE in Eclipse = 
+
+= Building HIVE with Ant =
+
+= Debugging GWT =
+ * Project > Debug As > Google Web Application 
+  * Select "home.html"
+  * Launches GWT in Hosted Mode
+
+ * Troubleshooting: 
+   * "You must use a 32-bit Java runtime to run GWT Hosted Mode."
+     * http://code.google.com/p/google-web-toolkit/issues/detail?id=135
+     * Install a 32-bit JRE
+       * Download JRE http://www.oracle.com/technetwork/java/javase/downloads/index.html
+       * In Eclipse
+         * Window > Preferences > Java > Installed JREs
+          * Add 32-bit JRE
+         * Project > Properties
+          * Run/Debug Settings > JRE > Alternate JRE
+           * Select 32-bit JRE
+    * "libstdc++.so.5: cannot open shared object file: No such file or directory"
+     * yum install compat-libstdc++-33-3.2.3-61            
+    * Unknown argument: -codeServerPort
+     * Debug Configuration > Arguments
+       * Change "codeServerPort" to "portHosted"
+
+
