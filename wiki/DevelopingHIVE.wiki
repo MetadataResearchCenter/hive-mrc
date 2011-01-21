@@ -9,7 +9,18 @@
  * Subversion client
  * JDK 1.6
 
-= Building HIVE =
+= Install Prerequisites =
+
+ * Download and install Tomcat 
+   * http://tomcat.apache.org/download-60.cgi 
+   * apache-tomcat-6.0.30 used for this documentation
+
+ * Download and install Apache Ant (http://ant.apache.org/)
+   * apache-ant-1.8.2 used for this documentation
+
+ * Download and install GWT 1.7.1   
+   * http://code.google.com/webtoolkit/versions.html
+   * TODO: Need to upgrade to latest GWT
 
  * Download and install Eclipse IDE for Java EE Developers
    * http://www.eclipse.org/downloads/
@@ -24,14 +35,8 @@
    * Window > Preferences > Server > Runtime Environment
    * Add "Apache Tomcat v 6.0"
 
- * Download and install Apache Ant (http://ant.apache.org/)
-   * apache-ant-1.8.2 used for this documentation
-
- * Download and install GWT 1.7.1   
-   * http://code.google.com/webtoolkit/versions.html
-   * TODO: Need to upgrade to latest GWT
-
 = Checkout the Projects = 
+
  * Window > Preferences > General > Workspace 
    * Text File Encoding: ISO-8859-1 (This needs to be fixed)
  * Window > Show View > Other > SVN Repositories
@@ -50,3 +55,19 @@
      * Check "Use Web Toolkit"
      * Select "Configure SDKs..."
      * Web Toolkit > Add > Path to gwt 1.7.1
+
+= Running Locally = 
+ * Note: Before you can run the hive-web or hive-rs projects, you need to initialize the HIVE indexes. 
+   * Quick start: Download and configure the sample HIVE vocabulary
+   * Advanced: Importing vocabularies into HIVE
+   * Creating your own vocabulary
+ * Window > Show View > Servers
+ * New Server 
+   * Do not add projects here
+   * Start/stop server to confirm it is working
+ * Open Server
+   * Select Modules tab
+   * Add Web Module ...
+   * Select module "hive-web"
+   * Document base: hive-web
+   * Path: / (Root)
