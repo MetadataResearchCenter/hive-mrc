@@ -1,0 +1,44 @@
+#summary One-sentence summary of this page.
+
+= Prerequisites = 
+ * Eclipse IDE for Java EE Developers
+   * Subclipse (http://subclipse.tigris.org/update_1.6.x)
+   * Google Plugin for Eclipse (http://code.google.com/eclipse/)
+ * Apache Tomcat 
+ * Apache Ant
+ * Subversion client
+ * JDK 1.6
+
+= Building HIVE =
+
+ * Download and install Eclipse IDE for Java EE Developers
+   * http://www.eclipse.org/downloads/
+   * Eclipse Helios (3.6) used for this documentation
+ * Install Subclipse
+   * http://subclipse.tigris.org/update_1.6.x
+ * Install Google Plugin
+   * http://dl.google.com/eclipse/plugin/3.6
+   * Select "Plugin" 
+   * Note: HIVE Web currently uses GWT 1.7. Do not install the latest SDK here.
+ * Add Server
+   * Window > Preferences > Server > Runtime Environment
+   * Add "Apache Tomcat v 6.0"
+
+ * Download and install Apache Ant (http://ant.apache.org/)
+   * apache-ant-1.8.2 used for this documentation
+ 
+= Checkout the Projects = 
+ * Window > Preferences > General > Workspace 
+   * Text File Encoding: ISO-8859-1 (This needs to be fixed)
+ * Window > Show View > Other > SVN Repositories
+  * Add SVN Repository 
+   * https://hive-mrc.googlecode.com/svn/trunk
+ * Checkout hive-core
+ * Checkout hive-rs
+   * Select "Checkout as a project configured using the New Project Wizard"
+   * Select "Web > Dynamic Web Project"
+   * Content directory: WebRoot
+ * Checkout hive-web
+   * Select "Checkout as a project configured using the New Project Wizard"
+   * Select "Web > Dynamic Web Project"
+   * Content directory: war
