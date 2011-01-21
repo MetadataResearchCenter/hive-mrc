@@ -64,12 +64,20 @@
      * Select "Configure SDKs..."
      * Web Toolkit > Add > Path to gwt 1.7.1
 
+= Vocabulary Quick Start = 
+
+Before you can run the hive-web or hive-rs projects, you need to initialize the HIVE indexes with one or more vocabularies. For a quick start, download and configure the sample HIVE vocabulary:
+ * Download and extract hive-agrovoc-sample.zip from http://code.google.com/p/hive-mrc/downloads/
+ * In the hive-web project, edit WEB-INF/conf/hive.properties
+  * Comment out all vocabularies except agrovoc
+   * Select hive.tagger = kea
+  * In the hive-web project, edit WEB-INF/conf/agrovoc.properties
+   * Change the path to the location of your extracted agrovoc sample data
+
+For more advanced users, review the ImportingVocabularies page.
+
 = Running HIVE in Eclipse = 
 
- * Note: Before you can run the hive-web or hive-rs projects, you need to initialize the HIVE indexes. 
-   * Quick start: Download and configure the sample HIVE vocabulary
-   * Advanced: Importing vocabularies into HIVE
-   * Creating your own vocabulary
  * Window > Show View > Servers
  * New Server 
    * Do not add projects here
@@ -121,5 +129,3 @@ java.lang.NoSuchMethodError: org.eclipse.jdt.internal.compiler.lookup.ProblemRef
     * Unknown argument: -codeServerPort
      * Debug Configuration > Arguments
        * Change "codeServerPort" to "portHosted"
-
-
