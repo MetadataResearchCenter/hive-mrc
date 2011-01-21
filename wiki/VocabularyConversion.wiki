@@ -1,0 +1,5 @@
+#summary How to convert a vocabulary to SKOS RDF/XML.
+
+= Introduction =
+
+This document describes the process used to convert a vocabulary to SKOS RDF/XML for import into HIVE.
