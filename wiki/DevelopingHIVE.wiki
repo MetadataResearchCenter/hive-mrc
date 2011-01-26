@@ -21,8 +21,9 @@
  * Download and install Apache Ant (http://ant.apache.org/)
    * apache-ant-1.8.2 used for this documentation
 
- * Download and install GWT 1.7.1   
+ * Download and install GWT 1.7.1 
    * http://code.google.com/webtoolkit/versions.html
+   * TODO: Upgrade to latest GWT
 
  * Download and install Eclipse IDE for Java EE Developers
    * http://www.eclipse.org/downloads/
@@ -45,7 +46,8 @@
 = Checkout the Projects = 
 
  * Window > Preferences > General > Workspace 
-   * Text File Encoding: ISO-8859-1 (This needs to be fixed)
+   * Text File Encoding: ISO-8859-1
+   * TODO: Convert to UTF-8
  * Window > Show View > Other > SVN Repositories
   * Add SVN Repository 
    * Location: https://hive-mrc.googlecode.com/svn/trunk
