@@ -1,4 +1,4 @@
-#summary One-sentence summary of this page.
+#summary Instructions for training KEA for use with HIVE
 
 = Introduction = 
 
