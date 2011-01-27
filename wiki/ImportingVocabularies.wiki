@@ -1,5 +1,7 @@
 #summary How to import a new vocabulary into HIVE
  
+<wiki:toc max_depth="1" />
+
 HIVE is able to import any vocabulary from a RDF/SKOS file. If the
 vocabulary is in another format, it must be converted into SKOS before importing.
 
