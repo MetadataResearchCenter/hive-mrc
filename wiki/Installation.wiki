@@ -1,4 +1,7 @@
 #summary Installing HIVE services
+
+<wiki:toc max_depth="1" />
+
 = Installing HIVE Services =
 
 This page describes how to install and initialize the HIVE services, including:
