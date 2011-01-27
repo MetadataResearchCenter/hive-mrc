@@ -9,7 +9,6 @@ This page describes how to install and initialize the HIVE services, including:
  * HIVE Web Service
  * HIVE Rest Service
  * Importing vocabularies into HIVE
- * Training KEA++
 
 == System Requirements ==
 
