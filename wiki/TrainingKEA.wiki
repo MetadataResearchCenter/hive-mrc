@@ -1,5 +1,7 @@
 #summary Instructions for training KEA for use with HIVE
 
+<wiki:toc max_depth="1" />
+
 = Introduction = 
 
 The HIVE automatic metadata generation system is based on [http://www.nzdl.org/Kea/description.html KEA++], an algorithm for controlled keyphrase indexing. 
