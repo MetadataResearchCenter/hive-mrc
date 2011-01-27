@@ -1,5 +1,7 @@
 #summary Instructions for configuring a HIVE development environment.
 
+<wiki:toc max_depth="1" />
+
 = Development Environment = 
 
 
