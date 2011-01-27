@@ -1,6 +1,6 @@
 #summary Installing HIVE services
 
-<wiki:toc max_depth="1" />
+<wiki:toc max_depth="2" />
 
 = Installing HIVE Services =
 
