@@ -1,4 +1,4 @@
-#summary Instructions for configuring your development environment.
+#summary Instructions for configuring a HIVE development environment.
 
 = Development Environment = 
 
