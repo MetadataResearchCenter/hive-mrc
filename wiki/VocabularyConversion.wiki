@@ -3,3 +3,63 @@
 = Introduction =
 
 This document describes the process used to convert a vocabulary to SKOS RDF/XML for import into HIVE.
+
+== LCSH ==
+
+SKOS versions of LCSH can be downloaded directly from the Library of Congress. No conversion is required.
+
+ * http://id.loc.gov/download/
+   * Select "LCSH RDF/XML"
+
+== AGROVOC ==
+
+SKOS versions of AGROVOC can be downloaded directly from the FAO:
+
+  * http://aims.fao.org/website/Download/sub
+
+== NBII ==
+
+The NBII Biocomplexity Thesaurus is available as a SKOS web-service. The NBII data is also available for direct download in CSV and XML format. XML is currently used by HIVE for SKOS conversion.
+
+ * http://my.nbii.gov
+   * Directory > Browse directory
+     * NBII Thesaurus
+       * repgen.csv (3/6/2009)
+       * repgen.xml (3/6/2009)
+     * Latest update: 3/6/2009 as of 1/26/2011
+ * Open SKOSCoverter project
+   * Edit utils.myreaders.xml.NBIIXMLReader
+     * In main(), specify path to repgen.xml and output directory for nbii.rdf
+   * Run NBIIXMLReader
+ * Note: NBII 
+
+ 
+== ITIS ==
+  
+Integrated Taxinomic Information System (ITIS) is available in a variety of formats. MySQL is currently used by HIVE for SKOS conversion.
+
+  * Requires MySQL
+  * Download ITIS (http://www.itis.gov/downloads/itisMySQL121610_v3.TAR.gz)
+  * Extract archive
+  * Follow instructions in README.txt to import ITIS data
+  * Creates database ITIS
+  * Open ITIS2SKOS project
+  * Modify SKOSGenerator:
+    * Specify itis.rdf output directory
+    * Specify MySQL connection information 
+  * Run SKOSGenerator
+
+== TGN ==
+
+TGN is available in relational and XML formats. Access to source TGN vocabularies requires licensing from the Getty. After you receive your TGN access information
+  
+ * Extract tgn_rel_10_utf8_zip 
+ * Open TGN2SKOS
+ * Edit TGNReader, update path to source directory and output path
+ * Run TGNReader 
+
+== MeSH ==
+
+Note: The current SKOS version of MeSH available from http://thesauri.cs.vu.nl/eswc06/ is not compatible with HIVE. A new converter is underway based on source MeSH files.
+
+ * Download from http://www.nlm.nih.gov/mesh/filelist.html
