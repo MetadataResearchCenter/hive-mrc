@@ -1,0 +1,67 @@
+#summary Describes the MeSH to SKOS conversion process
+
+
+http://www.nlm.nih.gov/mesh/filelist.html
+ * desc2011.xml
+ * qual2011.xml
+ * supp2011.xml
+
+Overview
+ * Descriptor
+   * Tree Number
+   * Concept List
+     * Concept
+       * Preferred Concept Y/N
+       * Scope Note
+       * Concept Relation List
+         * Narrower, Broader, Related
+       * Term List
+         * Term 
+           * Preferred Term for Concept Y/N
+   * See Related List
+     * Descriptor UI
+   * Pharmacological Action List
+     * Descriptor UI
+
+Broader and Narrower Concepts:
+ * Determined by Tree Number
+   * Which Concepts are a parent of this Concept (broader)
+   * Which Concepts are children of this Concept (narrower)
+ * Determined by Concept Relation
+   * What is the relationship between Concepts in a Descriptor (BRD, NRW)
+ 
+Related Concepts:
+ * See Related List
+   * Related Concepts are based on related Descriptors
+ * Concept Relation
+   * What is the relationship between Concepts in a Descriptor (REL)
+
+ * Each Descriptor includes one or more Concepts
+ * A Concept may be preferred or non-preferred
+ * Each Concept includes one or more Terms
+ * A Term may be preferred or non-preferred
+ * Each Descriptor includes one or more Tree Numbers
+ * All Concepts within a Descriptor share common Tree Numbers
+ * All Concepts within a Descriptor are related by ConceptRelations
+ * ConceptRelations are NRW, BRD, or REL
+ * A Descriptor may include related descriptors (DescriptorReferredTo)
+   * PharmacologicalAction 
+   * SeeRelatedDescriptor
+   * ECIN and ECOUT are ignored (Qualifiers are not supported)
+
+
+The current MeSH-to-SKOS converter 
+ * edu.unc.ils.mrc.MeshTreeParser
+ * SAX-based XML parser
+ * Reads desc2011.xml
+ * Constructs a set of Concepts from Descriptors
+   * Descriptors are only used to identify relations between Concepts
+ * For each Concept:
+   * Get broader concepts based on tree number
+   * Get narrower concepts based on tree number
+   * Get terms 
+   * Get related concepts based on descriptors
+   * Get broader concepts based on Concept relation
+   * Get narrower concepts based on Concept relation
+   * Get related concepts based on Concept relation
+  
