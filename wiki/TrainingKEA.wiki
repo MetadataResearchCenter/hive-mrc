@@ -31,17 +31,11 @@ Before HIVE can extract controlled keyphrases for new documents, a keyphrase ext
 }}}
 
   # Download or convert the desired controlled vocabulary into SKOS RDF/XML format.
-
   # Configure the vocabulary in HIVE.
-
   # Identify a set of documents to train the keyphrase extractor. For examples, refer to the [http://code.google.com/p/hive-mrc/downloads/detail?name=hive-agrovoc-sample.zip&can=2&q= AGROVOC sample]. 
-
-  # Create a directory that will contain the documents used to train the keyphrase extractor (e.g., "train").
- 
+  # Create a directory that will contain the documents used to train the keyphrase extractor (e.g., "train"). 
   # Documents must be in plain text format. For PDFs, see TrainingKEA#Converting_PDFs_to_text below.
-
-  # Place author or indexer-assigned terms into a separate ".key" file. For example, if the document is called "doc1.txt", the file would be called "doc1.key". Each keyphrase must be on a separate line.
- 
+  # Place author or indexer-assigned terms into a separate ".key" file. For example, if the document is called "doc1.txt", the file would be called "doc1.key". Each keyphrase must be on a separate line. 
   # Initialize the HIVE vocabularies with the "train" option.
 
 
@@ -50,4 +44,17 @@ To get good results, it is important that the input text for KEA is as
 need to be deleted before the model is built and before keyphrases are
 extracted from new documents. Also, make sure that you have enough documents in both training and extraction phase. For example, for training at least 20-30 manually indexed documents are required. It is important that manually assigned keyphrases in the files ".key" correspond to the entries in the controlled vocabulary that you use.
 
+= Sample Files = 
+
+The following sample files are available in the [http://code.google.com/p/hive-mrc/downloads/ downloads] section. For a more complete example, download and extract [http://hive-mrc.googlecode.com/files/hive-agrovoc-sample.zip Agrovoc sample] and review the files in the "agrovocKEA/training" directory.
+
+ * [http://hive-mrc.googlecode.com/files/bostid_b02moe.txt Sample training document]
+ * [http://hive-mrc.googlecode.com/files/bostid_b02moe.key Sample key file]
+
 = Converting PDFs to Text = 
+
+HIVE uses the [http://tika.apache.org/ Apache Tika] toolkit for PDF conversion. To convert PDFs to text for use with HIVE, use the following:
+
+{{{
+java edu.unc.ils.mrc.hive.util.TextManager <path>
+}}}
