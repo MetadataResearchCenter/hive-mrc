@@ -33,7 +33,7 @@ import com.hp.hpl.jena.rdf.model.StmtIterator;
 * @author Olena Medelyan
 */
 
-public class Vocabulary implements Serializable {
+public class VocabularyJena implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 	
@@ -97,7 +97,7 @@ public class Vocabulary implements Serializable {
 	 * @param vocabularyFormat The format of the vocabulary (skos or text).
 	 * */
 	
-	public Vocabulary(String vocabularyName, String vocabularyFormat, String documentLanguage) {
+	public VocabularyJena(String vocabularyName, String vocabularyFormat, String documentLanguage) {
 		m_language = documentLanguage;
 		if (vocabularyFormat.equals("skos")) {
 			SKOS = new File("VOCABULARIES/" + vocabularyName + ".rdf");
