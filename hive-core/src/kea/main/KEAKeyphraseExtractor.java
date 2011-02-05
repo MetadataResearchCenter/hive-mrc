@@ -19,6 +19,7 @@ package kea.main;
  *    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 import java.io.BufferedInputStream;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -31,8 +32,6 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Vector;
-
-import org.openrdf.elmo.sesame.SesameManager;
 
 import edu.unc.ils.mrc.hive.api.SKOSScheme;
 
@@ -49,8 +48,8 @@ import kea.stemmers.SremovalStemmer;
 import kea.stemmers.Stemmer;
 import kea.stopwords.Stopwords;
 import kea.stopwords.StopwordsEnglish;
-import kea.stopwords.StopwordsSpanish;
 import kea.util.Counter;
+import kea.vocab.Vocabulary;
 import kea.vocab.VocabularySesame;
 
 /**
@@ -162,12 +161,13 @@ public class KEAKeyphraseExtractor implements OptionHandler {
 	
 	private SKOSScheme schema;
 	
-	private VocabularySesame vocabulary;
+	private Vocabulary vocabulary;
 	
 	public KEAKeyphraseExtractor(SKOSScheme schema) {
 		this.m_KEAFilter = new KEAFilter();
 		this.schema = schema;
 		m_vocabularyFormat = "skos";
+	
 		this.vocabulary = new VocabularySesame(m_vocabulary, m_vocabularyFormat,
 				m_documentLanguage, schema.getManager());
 	}

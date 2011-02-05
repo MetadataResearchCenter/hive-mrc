@@ -33,7 +33,7 @@ import com.hp.hpl.jena.rdf.model.StmtIterator;
 * @author Olena Medelyan
 */
 
-public class VocabularyJena implements Serializable {
+public class VocabularyJena extends Vocabulary {
 	
 	private static final long serialVersionUID = 1L;
 	
@@ -97,8 +97,9 @@ public class VocabularyJena implements Serializable {
 	 * @param vocabularyFormat The format of the vocabulary (skos or text).
 	 * */
 	
-	public VocabularyJena(String vocabularyName, String vocabularyFormat, String documentLanguage) {
-		m_language = documentLanguage;
+	public VocabularyJena(String vocabularyName, String vocabularyFormat, String documentLanguage) 
+	{
+		super(documentLanguage);
 		if (vocabularyFormat.equals("skos")) {
 			SKOS = new File("VOCABULARIES/" + vocabularyName + ".rdf");
 			if (!SKOS.exists()){
@@ -315,7 +316,6 @@ public class VocabularyJena implements Serializable {
         	    	}	else {      	    		
         	    		Vector rt = (Vector)VocabularyREL.get(id);
         	    		rt.add(id_related);         	    		
-        	    		VocabularyREL.put(id,rt);        	    		        	    		
         	    	}
         	    	
         	    	VocabularyRT.put(id + "-" + id_related,rel);
@@ -476,6 +476,8 @@ public class VocabularyJena implements Serializable {
 		
 	}	
 	
+	public void buildRT() throws Exception {
+	}
 // Might be useful later, when the kind of relation is important
 // or wether two terms are related or not
 //	public void buildRT() throws Exception {
@@ -565,9 +567,9 @@ public class VocabularyJena implements Serializable {
 	 * @param id, relation
 	 * @return a vector with ids related to the input id by a specified relation
 	 */
-	public Vector getRelated (String id, String relation) {
-		Vector related = new Vector(); 
-		Vector all_related = (Vector)VocabularyREL.get(id);
+	public Vector<String> getRelated (String id, String relation) {
+		Vector<String> related = new Vector<String>(); 
+		Vector<String> all_related = (Vector<String>)VocabularyREL.get(id);
 		if (all_related != null) {
     	
 			for (int d = 0; d < all_related.size(); d++) {
@@ -586,102 +588,6 @@ public class VocabularyJena implements Serializable {
     	}
     	return related;
 	}
-	
-	
-	/** 
-	 * Generates the preudo phrase from a string.
-	 * A pseudo phrase is a version of a phrase
-	 * that only contains non-stopwords,
-	 * which are stemmed and sorted into alphabetical order. 
-	 */
-	public String pseudoPhrase(String str) {
-		// System.err.print(str + "\t");
-		String[] pseudophrase;
-		String[] words;
-		String str_nostop;
-		String stemmed;
-		
-		
-		str = str.toLowerCase();
-		
-		
-		// This is often the case with Mesh Terms,
-		// where a term is accompanied by another specifying term
-		// e.g. Monocytes/*immunology/microbiology
-		// we ignore everything after the "/" symbol.
-		if (str.matches(".+?/.+?")) {
-			String[] elements = str.split("/");		
-			str = elements[0];
-		}	
-				
-		// removes scop notes in brackets
-		// should be replaced with a cleaner solution !!
-		if (str.matches(".+?\\(.+?")) {
-			String[] elements = str.split("\\(");		
-			str = elements[0];			
-		}	
-
-	
-		
-		// Remove some non-alphanumeric characters
-		
-		// str = str.replace('/', ' ');
-		str = str.replace('-', ' ');
-		str = str.replace('&', ' ');
-		
-
-		str = str.replaceAll("\\*", "");
-		str = str.replaceAll("\\, "," ");
-		str = str.replaceAll("\\. "," ");
-		str = str.replaceAll("\\:","");
-	
-		
-		str = str.trim();
-		
-		// Stem string
-		words = str.split(" ");
-		str_nostop = "";
-	
-		for (int i = 0; i < words.length; i++) {
-			String word = words[i];
-			if (!m_Stopwords.isStopword(word)) {
-				
-				if (word.matches(".+?\\'.+?")) {
-					String[] elements = word.split("\\'");		
-					word = elements[1];			
-				}	
-
-				
-				if (str_nostop.equals("")) {
-					str_nostop = word;
-				} else {
-					str_nostop = str_nostop + " " + word;
-				}
-			}
-		}
-
-		stemmed = m_Stemmer.stemString(str_nostop);
-		// System.err.println(stemmed + "\t" + str_nostop + "\t"+ str);
-		pseudophrase = stemmed.split(" ");
-		Arrays.sort(pseudophrase);
-		//System.err.println(join(pseudophrase));
-		return join(pseudophrase);
-	}
-	
-	/** 
-	 * Joins an array of strings to a single string.
-	 */
-	private static String join(String[] str) {
-		String result = "";
-		for(int i = 0; i < str.length; i++) {
-			if (result != "") {
-				result = result + " " + str[i];
-			} else {
-				result = str[i];
-			}
-		}
-		return result;
-	}	
 	
 }
 
