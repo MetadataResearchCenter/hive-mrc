@@ -17,6 +17,7 @@ import kea.stopwords.Stopwords;
 import kea.stopwords.StopwordsEnglish;
 import kea.stopwords.StopwordsSpanish;
 import kea.util.Counter;
+import kea.vocab.Vocabulary;
 import kea.vocab.VocabularySesame;
 import weka.core.Attribute;
 import weka.core.Capabilities;
@@ -531,13 +532,13 @@ public class KEAFilter extends Filter implements OptionHandler {
 		m_DisallowInternalPeriods = disallow;
 	}
 
-	public void loadThesaurus(Stemmer st, Stopwords sw, VocabularySesame vocabulary) {
+	public void loadThesaurus(Stemmer st, Stopwords sw, Vocabulary vocabulary) {
 		System.out.println("Loading " + m_vocabulary + "..............................");
-		VocabularySesame m_Vocabulary = vocabulary;
+		Vocabulary m_Vocabulary = vocabulary;
 
 		m_Vocabulary.setStemmer(st);
 		m_Vocabulary.setStopwords(sw);
-		m_Vocabulary.initialize();
+		m_Vocabulary.initialize();   
 		try {
 
 			if (m_DESCRreplace) {
@@ -791,7 +792,7 @@ public class KEAFilter extends Filter implements OptionHandler {
 	 *                if the input instance was not of the correct format or if
 	 *                there was a problem with the filtering.
 	 */
-	public boolean input(Instance instance, VocabularySesame vocabulary) throws Exception {
+	public boolean input(Instance instance, Vocabulary vocabulary) throws Exception {
 		if (getInputFormat() == null) {
 			throw new Exception("No input instance format defined");
 		}
@@ -839,7 +840,7 @@ public class KEAFilter extends Filter implements OptionHandler {
 	 *                if no input structure has been defined
 	 */
 	
-	public boolean batchFinished(VocabularySesame vocabulary) throws Exception {
+	public boolean batchFinished(Vocabulary vocabulary) throws Exception {
 
 		if (getInputFormat() == null) {
 			throw new Exception("No input instance format defined");
@@ -858,7 +859,7 @@ public class KEAFilter extends Filter implements OptionHandler {
 	/**
 	 * Builds the global dictionaries.
 	 */
-	public void buildGlobalDictionaries(VocabularySesame vocabulary) throws Exception {
+	public void buildGlobalDictionaries(Vocabulary vocabulary) throws Exception {
 		if (m_Debug) {
 			System.err.println("--- Building global dictionaries");
 		}
@@ -920,7 +921,7 @@ public class KEAFilter extends Filter implements OptionHandler {
 	 * Builds the classifier.
 	 */
 	// aly: The main function, where everything important happens
-	private void buildClassifier(VocabularySesame vocabulary) throws Exception {
+	private void buildClassifier(Vocabulary vocabulary) throws Exception {
 		// Generate input format for classifier
 		FastVector atts = new FastVector();
 		for (int i = 0; i < getInputFormat().numAttributes(); i++) {
@@ -1070,7 +1071,7 @@ public class KEAFilter extends Filter implements OptionHandler {
 	 */
 	private double[] featVals(String id, FastVector phraseInfo,
 			boolean training, HashMap hashKeysEval, HashMap hashKeyphrases,
-			int length, HashMap hash, VocabularySesame vocabulary) {
+			int length, HashMap hash, Vocabulary vocabulary) {
 
 		// Compute feature values
 		Counter counterLocal = (Counter) phraseInfo.elementAt(1);
@@ -1223,7 +1224,7 @@ public class KEAFilter extends Filter implements OptionHandler {
 	/**
 	 * Sets output format and converts pending input instances.
 	 */
-	private void convertPendingInstances(VocabularySesame vocabulary) throws Exception {
+	private void convertPendingInstances(Vocabulary vocabulary) throws Exception {
 
 		if (m_Debug) {
 			System.err.println("--- Converting pending instances");
@@ -1289,7 +1290,7 @@ public class KEAFilter extends Filter implements OptionHandler {
 	/**
 	 * Converts an instance.
 	 */
-	private FastVector convertInstance(Instance instance, boolean training, VocabularySesame vocabulary)
+	private FastVector convertInstance(Instance instance, boolean training, Vocabulary vocabulary)
 			throws Exception {
 
 		FastVector vector = new FastVector();
@@ -1611,7 +1612,7 @@ public class KEAFilter extends Filter implements OptionHandler {
 	 * Returns a hashtable. Fills the hashtable with the stemmed n-grams
 	 * occuring in the given string (as keys) and the number of times it occurs.
 	 */
-	public HashMap getPhrasesForDictionary(String str, VocabularySesame vocabulary) {
+	public HashMap getPhrasesForDictionary(String str, Vocabulary vocabulary) {
 
 		String[] buffer = new String[m_MaxPhraseLength];
 		HashMap hash = new HashMap();
@@ -1703,7 +1704,7 @@ public class KEAFilter extends Filter implements OptionHandler {
 	 * 
 	 * Returns the total number of words (!) in the string.
 	 */
-	private int getPhrases(HashMap hash, String str, VocabularySesame vocabulary) {
+	private int getPhrases(HashMap hash, String str, Vocabulary vocabulary) {
 
 		// FileOutputStream out = new FileOutputStream("candidates_kea41.txt");
 		// PrintWriter printer = new PrintWriter(new OutputStreamWriter(out));
@@ -1777,7 +1778,7 @@ public class KEAFilter extends Filter implements OptionHandler {
 							// Match against the Vocabulary
 							id = (String) vocabulary.getID(orig);
 						}
-
+						
 						// System.out.println(orig + "\t" + pseudo + " \t " +
 						// id);
 
@@ -1895,7 +1896,7 @@ public class KEAFilter extends Filter implements OptionHandler {
 	 * hashtable. Also stores the original version of the stemmed phrase in the
 	 * hash table.
 	 */
-	private HashMap getGivenKeyphrases(String str, boolean forEval, VocabularySesame vocabulary) {
+	private HashMap getGivenKeyphrases(String str, boolean forEval, Vocabulary vocabulary) {
 
 		HashMap hash = new HashMap();
 		// m_Indexers = 1;

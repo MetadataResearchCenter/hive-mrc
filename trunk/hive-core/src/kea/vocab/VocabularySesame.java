@@ -1,20 +1,18 @@
 package kea.vocab;
 
 import java.io.BufferedReader;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Set;
 import java.util.Vector;
 
 import org.openrdf.concepts.skos.core.Concept;
 import org.openrdf.elmo.sesame.SesameManager;
 
-import kea.stemmers.SpanishStemmerSB;
 import kea.stemmers.Stemmer;
 import kea.stopwords.Stopwords;
 
@@ -30,9 +28,7 @@ import kea.stopwords.Stopwords;
  * Modifications by Jose R. Perez-Aguera
  */
 
-public class VocabularySesame implements Serializable {
-
-	private static final long serialVersionUID = 1L;
+public class VocabularySesame extends Vocabulary {
 
 	/**
 	 * Location of the rdf version of the controlled vocabulary it needs to be
@@ -105,8 +101,8 @@ public class VocabularySesame implements Serializable {
 
 	public VocabularySesame(String vocabularyName, String vocabularyFormat,
 			String documentLanguage, SesameManager manager) {
+		super(documentLanguage);
 		this.manager = manager;
-		m_language = documentLanguage;
 		if (vocabularyFormat.equals("skos")) {
 			// SKOS = new File(vocabularyDir + "/" + vocabularyName + ".rdf");
 			//SKOS = new File(vocabularyName);
@@ -674,20 +670,6 @@ public class VocabularySesame implements Serializable {
 		return join(pseudophrase);
 	}
 
-	/**
-	 * Joins an array of strings to a single string.
-	 */
-	private static String join(String[] str) {
-		String result = "";
-		for (int i = 0; i < str.length; i++) {
-			if (result != "") {
-				result = result + " " + str[i];
-			} else {
-				result = str[i];
-			}
-		}
-		return result;
-	}
 
 	/**
 	 * overloaded swap method: exchange 2 locations in an array of Strings.
@@ -732,5 +714,11 @@ public class VocabularySesame implements Serializable {
 		}
 		return a;
 	} // end method selectionSort
+
+	@Override
+	public void buildRT() throws Exception {
+		// TODO Auto-generated method stub
+		
+	}
 
 }
