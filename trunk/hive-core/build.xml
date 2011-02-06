@@ -45,8 +45,8 @@
 	<target name="compile" description="Compile classes">
 		<mkdir  dir="${build.dir}"/>
 		<mkdir  dir="${dist.dir}"/>
-		<javac srcdir="${src.dir}" destdir="${build.dir}" 
-			source="1.5" target="1.5" debug="off" includeAntRuntime="false">	
+		<javac srcdir="${src.dir}" destdir="${build.dir}" encoding="iso-8859-1" 
+			source="1.5" target="1.5" debug="true" includeAntRuntime="false">	
         	<classpath refid="compile.classpath"/>
     	</javac>
   	</target>
