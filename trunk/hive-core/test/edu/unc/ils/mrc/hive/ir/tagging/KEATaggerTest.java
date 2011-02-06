@@ -21,7 +21,7 @@ import junit.framework.TestCase;
 public class KEATaggerTest extends TestCase {
 	
 	public void testExtractKeyphrases() {
-		String confPath = "/Users/cwillis/dev/hive/conf";
+		String confPath = "/usr/local/hive/conf";
 		String vocabularyName = "agrovoc";
 		SKOSScheme scheme = null;
 		try {
@@ -70,9 +70,9 @@ public class KEATaggerTest extends TestCase {
 		long end = System.currentTimeMillis();
 		System.out.println("Duration: " + (end - start));
 
-		File keyFile = new File(fileName + ".key");
-		keyFile.delete();
-		outFile.delete();
+		//File keyFile = new File(fileName + ".key");
+		//keyFile.delete();
+		//outFile.delete();
 	}
 	
 	public static void main(String[] args) {
