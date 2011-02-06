@@ -39,7 +39,7 @@ public abstract class Vocabulary implements Serializable
 	/**
 	 * Builds the vocabulary index from text files.
 	 */
-	public abstract void build() throws Exception;
+	//public abstract void build() throws Exception;
 	
 	/**
 	 * Builds the vocabulary index with descriptors/non-descriptors relations.
@@ -51,22 +51,6 @@ public abstract class Vocabulary implements Serializable
 	 * Builds the vocabulary index with semantically related terms.
 	 */
 	public abstract void buildREL() throws Exception;
-	
-	/**
-	 * Builds the vocabulary index with semantically related terms.
-	 * @throws Exception
-	 */
-	public abstract void buildRT() throws Exception;
-	
-
-	/**
-	 * Checks whether a normalized version of a phrase (pseudo phrase)
-	 * is a valid vocabulary term.
-	 * 
-	 * @param phrase
-	 * @return true if phrase is in the vocabulary
-	 */
-	public abstract boolean containsEntry(String phrase);
 	
 	/**
 	 * Given a phrase returns its id in the vocabulary.
@@ -81,13 +65,6 @@ public abstract class Vocabulary implements Serializable
 	 * @return original version of the vocabulary term
 	 */
 	public abstract String getOrig(String id);
-	
-	/**
-	 * Given id of the non-descriptor returs the id of the corresponding descriptor
-	 * @param id of the non-descriptor
-	 * @return id of the descriptor
-	 */
-	public abstract String getDescriptor(String id);
 	
 	/**
 	 * Given id of a term returns the list with ids of terms related to this term.
