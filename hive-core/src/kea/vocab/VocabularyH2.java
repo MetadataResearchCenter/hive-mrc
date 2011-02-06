@@ -2,6 +2,7 @@ package kea.vocab;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -16,6 +17,8 @@ import org.apache.commons.dbcp.ConnectionFactory;
 import org.apache.commons.dbcp.DriverManagerConnectionFactory;
 import org.apache.commons.dbcp.PoolableConnectionFactory;
 import org.apache.commons.dbcp.PoolingDriver;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.commons.pool.ObjectPool;
 import org.apache.commons.pool.impl.GenericObjectPool;
 import org.openrdf.concepts.skos.core.Concept;
@@ -25,143 +28,118 @@ import org.openrdf.elmo.sesame.SesameManagerFactory;
 import org.openrdf.repository.Repository;
 import org.openrdf.repository.sail.SailRepository;
 import org.openrdf.sail.nativerdf.NativeStore;
+import org.perf4j.StopWatch;
+import org.perf4j.log4j.Log4JStopWatch;
 
 import kea.stemmers.PorterStemmer;
 import kea.stopwords.Stopwords;
 import kea.stopwords.StopwordsEnglish;
 
-public class VocabularyH2 extends Vocabulary {
-
-	private static final long serialVersionUID = 1563256111040433036L;
+/**
+ * Vocabulary implementation backed by an embedded H2 database
+ *     http://www.h2database.com/
+ * 
+ * The database table structure is identical to the default Jena-based
+ * Vocabulary implementation supplied with the KEA++ distribution.
+ * 
+ * Like the Sesame-based Vocabulary implementation developed for HIVE,
+ * the H2 implementation reads concepts from a Sesame database, loaded
+ * from original SKOS RDF/XML. This is actually likely unnecessary,
+ * but in place today to replicate existing behavior as closely as possible.
+ * 
+ * Insert directly into H2 for large vocabularies is slow. Instead,
+ * temporary delimited files are created and bulk-loaded using CSVREAD.
+ *
+ */
+public class VocabularyH2 extends Vocabulary 
+{
+	private static final Log logger = LogFactory.getLog(VocabularyH2.class);
+			
+	private static final long serialVersionUID = 7089304477568443576L;
 
 	private SesameManager manager;
+	
+	String name;
+	/* FileWriters used during H2 database initialization */
+	FileWriter vocabularyEN;
+	FileWriter vocabularyENrev;
+	FileWriter vocabularyUSE;
+	FileWriter vocabularyREL;
 
-	public VocabularyH2(String h2path, String documentLanguage, SesameManager manager) 
+	/**
+	 * Constructs a VocabularyH2 instance 
+	 * @param h2path Path to the H2 database for the current vocabulary
+	 * @param documentLanguage Language (not currently used)
+	 * @param manager SesameManager for the current vocabulary
+	 * @throws ClassNotFoundException
+	 * @throws SQLException
+	 */
+	public VocabularyH2(String name, String h2path, String documentLanguage, SesameManager manager) 
 		throws ClassNotFoundException, SQLException 
 	{
 		super(documentLanguage);
 		this.manager = manager;
+		this.name = name;
 		
+		logger.info("H2 store path: " + h2path);
+		// Initialize an H2 connection pool
 		String uri = "jdbc:h2:" + h2path;
-		Class.forName("org.h2.Driver");
-		
-		//initializeH2(h2path, uri);
+		Class.forName("org.h2.Driver");		
 		
 		ObjectPool connectionPool = new GenericObjectPool(null); 
 		ConnectionFactory connectionFactory = new DriverManagerConnectionFactory(uri, "", "");
 		PoolableConnectionFactory poolableConnectionFactory = new PoolableConnectionFactory(connectionFactory,connectionPool,null,null,false,true); 
 		Class.forName("org.apache.commons.dbcp.PoolingDriver"); 
 		PoolingDriver driver = (PoolingDriver) DriverManager.getDriver("jdbc:apache:commons:dbcp:"); 
-		driver.registerPool("hive", connectionPool); 	
-	}
-	
-
-	private void initializeH2(String h2path, String uri) throws SQLException {
-		File h2store = new File(h2path + ".h2.db");
-		if (!h2store.exists())
-		{
-			Connection con = DriverManager.getConnection(uri);
-			Statement s = con.createStatement();
-
-			s.execute("CREATE TABLE vocabulary_en (id varchar(512) , value varchar(1024));");
-			s.execute("CREATE INDEX idx1 on vocabulary_en(id);");
-			s.execute("CREATE TABLE vocabulary_enrev (id varchar(512) , value varchar(1024));");
-			s.execute("CREATE INDEX idx2 on vocabulary_enrev(id);");
-			s.execute("CREATE TABLE vocabulary_rel (id varchar(512) , value varchar(1024) , relation varchar(20));");
-			s.execute("CREATE INDEX idx3 on vocabulary_rel(id);");
-			s.execute("CREATE TABLE vocabulary_use ( id varchar(512) , value varchar(1024));");
-			s.execute("CREATE INDEX idx4 on vocabulary_use(id);");
-			s.close();
-		}
+		driver.registerPool(name, connectionPool);
 	}
 	
 	/**
-	 * Starts initialization of the vocabulary.
-	 * 
+	 * Returns a connection from the pool
+	 * @return
+	 * @throws Exception
 	 */
-	public void initialize() {
+	protected Connection getConnection() throws SQLException {
+		return DriverManager.getConnection("jdbc:apache:commons:dbcp:" + name);
+	}
+		
 	
+	@Override
+	public void initialize() 
+	{
+		// TODO?
 	}
 
-
-	protected Connection getConnection() throws Exception {
-		return DriverManager.getConnection("jdbc:apache:commons:dbcp:hive");
-	}
-	
+	/**
+	 * Initializes the H2 databases for the current vocabulary from an 
+	 * existing Sesame store.
+	 */
+	@Override
 	public void buildSKOS() throws Exception {
-
-		Connection con = null;
+		logger.trace("buildSKOS");
+		
+		// Temporary files used to store KEA++ maps prior to import into H2
+		File fileEN = File.createTempFile("vocabularyEN", null);
+		File fileENrev = File.createTempFile("vocabularyENrev", null);
+		File fileUSE = File.createTempFile("vocabularyUSE", null);
+		File fileREL = File.createTempFile("vocabularyREL", null);
 		
 		try {
-
-			con = getConnection();
-			Statement s = con.createStatement();
 			
-			long start = System.currentTimeMillis();
-			s.execute("CREATE TABLE vocabulary_en (id varchar(512) , value varchar(1024)) AS SELECT * FROM CSVREAD('/tmp/vocabularyEN.txt');");
-			s.execute("CREATE INDEX idx1 on vocabulary_en(id);");
-			long end = System.currentTimeMillis();
-			long dur = end - start;
-			System.out.println("VocabularyEN: " + dur);
+			vocabularyEN = new FileWriter(fileEN);
+			vocabularyENrev = new FileWriter(fileENrev);
+			vocabularyUSE = new FileWriter(fileUSE);
+			vocabularyREL = new FileWriter(fileREL);
 
-			start = System.currentTimeMillis();
-			s.execute("CREATE TABLE vocabulary_enrev (id varchar(512) , value varchar(1024)) AS SELECT * FROM CSVREAD('/tmp/vocabularyENrev.txt');");
-			s.execute("CREATE INDEX idx2 on vocabulary_enrev(id);");
-			end = System.currentTimeMillis();
-			dur = end - start;
-			System.out.println("VocabularyENrev: " + dur);
-			
-			start = System.currentTimeMillis();
-			s.execute("CREATE TABLE vocabulary_rel (id varchar(512) , value varchar(1024) , relation varchar(20)) AS SELECT * FROM CSVREAD('/tmp/vocabularyREL.txt');");
-			s.execute("CREATE INDEX idx3 on vocabulary_rel(id);");
-			end = System.currentTimeMillis();
-			dur = end - start;
-			System.out.println("VocabularyREL: " + dur);			
-			
-			start = System.currentTimeMillis();
-			s.execute("CREATE TABLE vocabulary_use ( id varchar(512) , value varchar(1024)) AS SELECT * FROM CSVREAD('/tmp/vocabularyUSE.txt');");
-			s.execute("CREATE INDEX idx4 on vocabulary_use(id);");
-			end = System.currentTimeMillis();
-			dur = end - start;
-			System.out.println("VocabularyUSE: " + dur);			
-			
-			s.close();
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			if (con != null) {
-				try {
-					con.close();
-				} catch (Exception e) { }
-			}
-		}
-	}
-	
-	/**
-	 * Builds the vocabulary indexes from SKOS file.
-	 */
-	public void buildSKOSFromSesame() throws Exception {
-
-		Connection con = null;
-		
-		try {
-
-			con = getConnection();
 			int count = 1;
 
+			// Iterate through all concepts in the vocabulary and write
+			// to temporary file
 			for (Concept concept : manager.findAll(Concept.class)) {
 
-				// id of the concept (Resource), e.g. "c_4828"
 				String uri = concept.getQName().getNamespaceURI()
 						+ concept.getQName().getLocalPart();
 
-				// value of the property, e.g. c_4828 has narrower term "c_4829"
-				//String val = concept.getSkosPrefLabel();
-
-				/*
-				 * For prefLabels
-				 */
 				String preferredLabel = concept.getSkosPrefLabel();
 				String pseudoPhrase = pseudoPhrase(preferredLabel);
 				if (pseudoPhrase == null) {
@@ -169,55 +147,77 @@ public class VocabularyH2 extends Vocabulary {
 				}
 
 				if (pseudoPhrase.length() > 1) {
-					addConcept(con, uri, pseudoPhrase, preferredLabel);
+					addConcept(uri, pseudoPhrase, preferredLabel);
 				}
 
-				/*
-				 * For altLabels
-				 */
 				Set<String> altLabels = concept.getSkosAltLabels();
 				for (String altLabel : altLabels) {
-					addNonDescriptor(con, count, uri, altLabel);
+					addNonDescriptor(count, uri, altLabel);
 					count++;
 				}
 
-				/*
-				 * For broader terms
-				 */
+
 				String uriBroader;
 				Set<Concept> broaders = concept.getSkosBroaders();
 				for (Concept b : broaders) {
 					uriBroader = b.getQName().getNamespaceURI()
 							+ b.getQName().getLocalPart();
-
-					addBroader(con, uri, uriBroader);
+					addBroader(uri, uriBroader);
 				}
 
-				/*
-				 * For narrower terms
-				 */
 				String uriNarrower;
 				Set<Concept> narrowers = concept.getSkosNarrowers();
 				for (Concept n : narrowers) {
 					uriNarrower = n.getQName().getNamespaceURI()
 							+ n.getQName().getLocalPart();
-					addNarrower(con, uri, uriNarrower);
+					addNarrower(uri, uriNarrower);
 				}
 
-				/*
-				 * For related terms
-				 */
 				String uriRelated;
 				Set<Concept> related = concept.getSkosRelated();
 				for (Concept r : related) {
 					uriRelated = r.getQName().getNamespaceURI()
 							+ r.getQName().getLocalPart();
-					addRelated(con, uri, uriRelated);
+					addRelated(uri, uriRelated);
 				}
 			}
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(e);
+		}
+		 
+		// Close the writers
+		vocabularyEN.close();
+		vocabularyENrev.close();
+		vocabularyREL.close();
+		vocabularyUSE.close();
+		
+		Connection con = null;
+		try {
+
+			con = getConnection();
+			Statement s = con.createStatement();
+		
+			StopWatch stopWatch = new Log4JStopWatch();
+			
+			// Bulk load KEA++ relations from temporary files
+			s.execute("CREATE TABLE vocabulary_en (id varchar(512) , value varchar(1024)) AS SELECT * FROM CSVREAD('" + fileEN.getAbsolutePath() + "',null, 'UTF-8', '|');");
+			s.execute("CREATE INDEX idx1 on vocabulary_en(id);");
+
+			s.execute("CREATE TABLE vocabulary_enrev (id varchar(512) , value varchar(1024)) AS SELECT * FROM CSVREAD('" + fileENrev.getAbsolutePath() + "',null, 'UTF-8', '|');");
+			s.execute("CREATE INDEX idx2 on vocabulary_enrev(id);");
+			
+			s.execute("CREATE TABLE vocabulary_rel (id varchar(512), value varchar(1024), relation varchar(20)) AS SELECT * FROM CSVREAD('" + fileREL.getAbsolutePath() + "',null, 'UTF-8', '|');");
+			s.execute("CREATE INDEX idx3 on vocabulary_rel(id);");
+					
+			s.execute("CREATE TABLE vocabulary_use ( id varchar(512) , value varchar(1024)) AS SELECT * FROM CSVREAD('" + fileUSE.getAbsolutePath() + "',null, 'UTF-8', '|');");
+			s.execute("CREATE INDEX idx4 on vocabulary_use(id);");		
+			
+			s.close();
+			stopWatch.lap("H2 Created");
+
+		} catch (Exception e) {
+			logger.error(e);
 		} finally {
 			if (con != null) {
 				try {
@@ -225,154 +225,86 @@ public class VocabularyH2 extends Vocabulary {
 				} catch (Exception e) { }
 			}
 		}
+		
+		// Delete the temporary files
+		//fileEN.delete();
+		//fileENrev.delete();
+		//fileREL.delete();
+		//fileUSE.delete();
 	}
 
 	
-	private void addConcept(Connection con, String uri, String pseudoPhrase, String preferredLabel) {
-		try {
-			String sql1 = "insert into vocabulary_en values (?,?)";
-			String sql2 = "insert into vocabulary_enrev values (?,?)";
-			
-			PreparedStatement ps1 = con.prepareStatement(sql1);
-			ps1.setString(1, pseudoPhrase);
-			ps1.setString(2, uri);
-			ps1.execute();
-			ps1.close();
-			
-			PreparedStatement ps2 = con.prepareStatement(sql2);
-			ps2.setString(1, uri);
-			ps2.setString(2, preferredLabel);
-			ps2.execute();
-			ps1.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-	
-
-	private void addBroader (Connection con, String uri, String uriBroader) 
+	private void addConcept(String uri, String pseudoPhrase, String preferredLabel) 
 	{
-		// insert into into related (uri, uri, 'broader');
-		try {
-			String sql = "insert into vocabulary_rel values (?,?, 'broader')";
-			
-			PreparedStatement ps = con.prepareStatement(sql);
-			ps.setString(1, uri);
-			ps.setString(2, uriBroader);
-			ps.execute();
-			ps.close();
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-	
-	
-	private void addNarrower (Connection con, String uri, String uriNarrower) {
+		logger.trace("addConcept: " + uri + "," + pseudoPhrase + "," + preferredLabel);
 		
-		// insert into related (uri, uri, 'narrower');
 		try {
-			String sql = "insert into vocabulary_rel values (?,?,'narrower')";
-
-			PreparedStatement ps = con.prepareStatement(sql);
-			ps.setString(1, uri);
-			ps.setString(2, uriNarrower);
-			ps.execute();
-			ps.close();
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+			vocabularyEN.write(pseudoPhrase + "|" + uri + "\n");
+			vocabularyENrev.write(uri + "|" + preferredLabel + "\n");			
+		} catch (IOException e) {
+			logger.error(e);
+		}		
 	}
 	
-	
-	private void addRelated (Connection con, String uri, String uriRelated) {
+
+	private void addBroader (String uri, String uriBroader) 
+	{
+		logger.trace("addBroader: " + uri + "," + uriBroader );
 		
-		// insert into related (uri, uri, 'related')
 		try {
-			String sql = "insert into vocabulary_rel values (?,?,'related')";
-			
-			PreparedStatement ps = con.prepareStatement(sql);
-			ps.setString(1, uri);
-			ps.setString(2, uriRelated);
-			ps.execute();
-			
-			ps.setString(1, uriRelated);
-			ps.setString(2, uri);
-			ps.execute();			
-			ps.close();
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+			vocabularyREL.write(uri + "|" + uriBroader + "|broader\n");
+		} catch (IOException e) {
+			logger.error(e);
+		}		
 	}
 	
-	private void addNonDescriptor(Connection con, int count, String uri, String altLabel) {
-
+	
+	private void addNarrower (String uri, String uriNarrower) 
+	{
+		logger.trace("addNarrower: " + uri + "," + uriNarrower );
+		
+		try {
+			vocabularyREL.write(uri + "|" + uriNarrower + "|narrower\n");
+		} catch (IOException e) {
+			logger.error(e);
+		}		
+	}
+		
+	private void addRelated (String uri, String uriRelated) 
+	{
+		logger.trace("addRelated: " + uri + "," + uriRelated );	
+		
+		try {
+			vocabularyREL.write(uri + "|" + uriRelated + "|related\n");
+			vocabularyREL.write(uriRelated + "|" + uri + "|related\n");
+		} catch (IOException e) {
+			logger.error(e);
+		}		
+	}
+	
+	private void addNonDescriptor(int count, String uri, String altLabel) 
+	{
+		logger.trace("addNonDescriptor: " + count + "," + uri + "," + altLabel );
+		
 		String id_non_descriptor = "d_" + count;
 		String avterm = pseudoPhrase(altLabel);
 		
 		try {
-			String sql1 = "insert into vocabulary_en values (?, ?)";
-			String sql2 = "insert into vocabulary_enrev values (?, ?)";
-			String sql3 = "insert into vocabulary_use values (?, ?)";
-			
 			if (avterm.length() > 2) {
-				PreparedStatement ps1 = con.prepareStatement(sql1);
-				ps1.setString(1, avterm);
-				ps1.setString(2, id_non_descriptor);
-				ps1.execute();
-				ps1.close();
-				
-				PreparedStatement ps2 = con.prepareStatement(sql2);
-				ps2.setString(1, id_non_descriptor);
-				ps2.setString(2, altLabel);
-				ps2.execute();
-				ps2.close();	
+				vocabularyEN.write(avterm + "|" + id_non_descriptor + "\n");
+				vocabularyENrev.write(id_non_descriptor + "|" + altLabel + "\n");	
 			}
-			
-			PreparedStatement ps3 = con.prepareStatement(sql3);
-			ps3.setString(1, id_non_descriptor);
-			ps3.setString(2, uri);
-			ps3.execute();
-			ps3.close();			
-
-		} catch (Exception e) {
-			e.printStackTrace();
+			vocabularyUSE.write(id_non_descriptor + "|" + uri + "\n");
+		} catch (IOException e) {
+			logger.error(e);
 		}		
 	}
 
-
-	/**
-	 * Checks whether a normalized version of a phrase (pseudo phrase) is a
-	 * valid vocabulary term.
-	 * 
-	 * @param phrase
-	 * @return true if phrase is in the vocabulary
-	 */
-	public boolean containsEntry(String phrase) {
+	@Override
+	public String getID(String phrase) 
+	{
+		logger.trace("getID: " + phrase );
 		
-		// return VocabularyEN.containsKey(phrase);
-		
-		boolean found = false;
-		try {
-			String sql = "select value from vocabulary_en where id = ?";
-			
-			Connection con = getConnection();
-			PreparedStatement ps = con.prepareStatement(sql);
-			ps.setString(1, phrase);
-			ResultSet rs = ps.executeQuery();
-			if (rs.next())
-				found = true;
-			ps.close();
-			//con.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return found;
-	}
-
-	public String getID(String phrase) {
 		String pseudo = pseudoPhrase(phrase);
 		String id = null;
 		if (pseudo != null) {
@@ -398,77 +330,44 @@ public class VocabularyH2 extends Vocabulary {
 					id = rs2.getString(1);
 				ps2.close();
 				con.close();
-			} catch (Exception e) {
+			} catch (SQLException e) {
 				e.printStackTrace();
+				logger.error(e);
 			}
 		}
 		return id;
 	}
 
-	/* (non-Javadoc)
-	 * @see kea.vocab.IVocabulary#getOrig(java.lang.String)
-	 */
 	@Override
-	public String getOrig(String id) {
-
+	public String getOrig(String id) 
+	{
+		logger.trace("getOrig: " + id );
 		
 		String orig = null;
-		// select preferredLabel from concept where id = id
-		try {
-			try {
-				String sql = "select value from vocabulary_enrev where id = ?";
-				
-				Connection con = getConnection();
-				PreparedStatement ps = con.prepareStatement(sql);
-				ps.setString(1, id);
-				ResultSet rs = ps.executeQuery();
-				if (rs.next())
-					orig = rs.getString(1);
-				ps.close();
 
-				con.close();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}			
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return orig;
-	}
-
-	/* (non-Javadoc)
-	 * @see kea.vocab.IVocabulary#getDescriptor(java.lang.String)
-	 */
-	@Override
-	public String getDescriptor(String id) {
-		
-		// return (String) VocabularyUSE.get(id);
-		
-		String desc = null;
 		try {
-			String sql = "select value from vocabulary_use where id = ?";
+			String sql = "select value from vocabulary_enrev where id = ?";
 			
 			Connection con = getConnection();
 			PreparedStatement ps = con.prepareStatement(sql);
 			ps.setString(1, id);
 			ResultSet rs = ps.executeQuery();
-			while (rs.next())
-				desc = rs.getString(1);
+			if (rs.next())
+				orig = rs.getString(1);
 			ps.close();
+
 			con.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return desc;
+		} catch (SQLException e) {
+			logger.error(e);
+		}		
+			
+		return orig;
 	}
 
-	/* (non-Javadoc)
-	 * @see kea.vocab.IVocabulary#getRelated(java.lang.String)
-	 */
 	@Override
-	public Vector<String> getRelated(String id) {
-		//return (Vector) VocabularyREL.get(id);
+	public Vector<String> getRelated(String id) 
+	{
+		logger.trace("getRelated: " + id );
 		
 		Vector<String> related = new Vector<String>();
 
@@ -484,15 +383,18 @@ public class VocabularyH2 extends Vocabulary {
 			}
 			ps.close();
 			con.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		} catch (SQLException e) {
+			logger.error(e);
+		}	
 		return related;
 		
 	}
 
 	@Override
-	public Vector<String> getRelated(String id, String relation) {
+	public Vector<String> getRelated(String id, String relation) 
+	{
+		logger.trace("getRelated: " + id + "," + relation);
+		
 		Vector<String> related = new Vector<String>();
 
 		try {
@@ -507,9 +409,9 @@ public class VocabularyH2 extends Vocabulary {
 				related.add(rs.getString(1));
 			}
 			ps.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		} catch (SQLException e) {
+			logger.error(e);
+		}	
 		return related;
 
 	}
@@ -519,15 +421,20 @@ public class VocabularyH2 extends Vocabulary {
 		
 		//NativeStore store = new NativeStore(new File("/usr/local/hive/hive-data/agrovoc/agrovocStore"));
 		NativeStore store = new NativeStore(new File("/usr/local/hive/hive-data/lcsh/lcshStore"));
+		//NativeStore store = new NativeStore(new File("/usr/local/hive/hive-data/nbii/nbiiStore"));
+		//NativeStore store = new NativeStore(new File("/usr/local/hive/hive-data/tgn/tgnStore"));
+        //String h2path = "/usr/local/hive/hive-data/agrovoc/agrovocH2/agrovoc";
+        String h2path = "/usr/local/hive/hive-data/lcsh/lcshH2/lcsh";
+		//String h2path = "/usr/local/hive/hive-data/tgn/tgnH2/tgn";
+		//String h2path = "/usr/local/hive/hive-data/nbii/nbiiH2/nbii";
+
 		Repository repository = new SailRepository(store);
         repository.initialize();            
         ElmoModule module = new ElmoModule();           
         SesameManagerFactory factory = new SesameManagerFactory(module, repository);         
         // Create a new ElmoManager with default locale
         SesameManager manager = factory.createElmoManager(); 
-        //String h2path = "/usr/local/hive/hive-data/agrovoc/agrovocH2/agrovoc";
-        String h2path = "/usr/local/hive/hive-data/lcsh/lcshH2/lcsh";
-		VocabularyH2 voc = new VocabularyH2(h2path, "en", manager);
+		VocabularyH2 voc = new VocabularyH2("hive", h2path, "en", manager);
 		Stopwords sw = new StopwordsEnglish("/usr/local/hive/hive-data/agrovoc//agrovocKEA/data/stopwords/stopwords_en.txt");
 		voc.setStopwords(sw);
 		voc.setStemmer(new PorterStemmer());
@@ -535,32 +442,18 @@ public class VocabularyH2 extends Vocabulary {
 		voc.buildSKOS();
 		long end = System.currentTimeMillis();
 		long dur = end - start;
-		System.out.println("Time: " + dur);		
-		
-	}
-
-
-	@Override
-	public void build() throws Exception {
-		// TODO Auto-generated method stub
+		System.out.println("Total Time: " + dur);
+		voc.getID("Universities");
 		
 	}
 
 	@Override
 	public void buildUSE() throws Exception {
-		// TODO Auto-generated method stub
-		
+		// Not implemented
 	}
 
 	@Override
 	public void buildREL() throws Exception {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void buildRT() throws Exception {
-		// TODO Auto-generated method stub
-		
+		// Not supported		
 	}
 }
