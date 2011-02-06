@@ -714,11 +714,4 @@ public class VocabularySesame extends Vocabulary {
 		}
 		return a;
 	} // end method selectionSort
-
-	@Override
-	public void buildRT() throws Exception {
-		// TODO Auto-generated method stub
-		
-	}
-
 }
