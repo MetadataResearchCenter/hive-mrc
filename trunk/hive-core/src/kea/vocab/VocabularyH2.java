@@ -1,6 +1,7 @@
 package kea.vocab;
 
 import java.io.File;
+import java.io.FileWriter;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -44,7 +45,7 @@ public class VocabularyH2 extends Vocabulary {
 		String uri = "jdbc:h2:" + h2path;
 		Class.forName("org.h2.Driver");
 		
-		initializeH2(h2path, uri);
+		//initializeH2(h2path, uri);
 		
 		ObjectPool connectionPool = new GenericObjectPool(null); 
 		ConnectionFactory connectionFactory = new DriverManagerConnectionFactory(uri, "", "");
@@ -63,27 +64,15 @@ public class VocabularyH2 extends Vocabulary {
 			Statement s = con.createStatement();
 
 			s.execute("CREATE TABLE vocabulary_en (id varchar(512) , value varchar(1024));");
-			//s.execute("CREATE INDEX idx1 on vocabulary_en(id);");
+			s.execute("CREATE INDEX idx1 on vocabulary_en(id);");
 			s.execute("CREATE TABLE vocabulary_enrev (id varchar(512) , value varchar(1024));");
-			//s.execute("CREATE INDEX idx2 on vocabulary_enrev(id);");
+			s.execute("CREATE INDEX idx2 on vocabulary_enrev(id);");
 			s.execute("CREATE TABLE vocabulary_rel (id varchar(512) , value varchar(1024) , relation varchar(20));");
-			//s.execute("CREATE INDEX idx3 on vocabulary_rel(id);");
+			s.execute("CREATE INDEX idx3 on vocabulary_rel(id);");
 			s.execute("CREATE TABLE vocabulary_use ( id varchar(512) , value varchar(1024));");
-			//s.execute("CREATE INDEX idx4 on vocabulary_use(id);");
+			s.execute("CREATE INDEX idx4 on vocabulary_use(id);");
 			s.close();
 		}
-	}
-	
-	private void initializeIndexes() throws Exception {
-
-		Connection con = getConnection();
-		Statement s = con.createStatement();
-
-		s.execute("CREATE INDEX idx1 on vocabulary_en(id);");
-		s.execute("CREATE INDEX idx2 on vocabulary_enrev(id);");
-		s.execute("CREATE INDEX idx3 on vocabulary_rel(id);");
-		s.execute("CREATE INDEX idx4 on vocabulary_use(id);");
-		s.close();
 	}
 	
 	/**
@@ -98,11 +87,61 @@ public class VocabularyH2 extends Vocabulary {
 	protected Connection getConnection() throws Exception {
 		return DriverManager.getConnection("jdbc:apache:commons:dbcp:hive");
 	}
+	
+	public void buildSKOS() throws Exception {
 
+		Connection con = null;
+		
+		try {
+
+			con = getConnection();
+			Statement s = con.createStatement();
+			
+			long start = System.currentTimeMillis();
+			s.execute("CREATE TABLE vocabulary_en (id varchar(512) , value varchar(1024)) AS SELECT * FROM CSVREAD('/tmp/vocabularyEN.txt');");
+			s.execute("CREATE INDEX idx1 on vocabulary_en(id);");
+			long end = System.currentTimeMillis();
+			long dur = end - start;
+			System.out.println("VocabularyEN: " + dur);
+
+			start = System.currentTimeMillis();
+			s.execute("CREATE TABLE vocabulary_enrev (id varchar(512) , value varchar(1024)) AS SELECT * FROM CSVREAD('/tmp/vocabularyENrev.txt');");
+			s.execute("CREATE INDEX idx2 on vocabulary_enrev(id);");
+			end = System.currentTimeMillis();
+			dur = end - start;
+			System.out.println("VocabularyENrev: " + dur);
+			
+			start = System.currentTimeMillis();
+			s.execute("CREATE TABLE vocabulary_rel (id varchar(512) , value varchar(1024) , relation varchar(20)) AS SELECT * FROM CSVREAD('/tmp/vocabularyREL.txt');");
+			s.execute("CREATE INDEX idx3 on vocabulary_rel(id);");
+			end = System.currentTimeMillis();
+			dur = end - start;
+			System.out.println("VocabularyREL: " + dur);			
+			
+			start = System.currentTimeMillis();
+			s.execute("CREATE TABLE vocabulary_use ( id varchar(512) , value varchar(1024)) AS SELECT * FROM CSVREAD('/tmp/vocabularyUSE.txt');");
+			s.execute("CREATE INDEX idx4 on vocabulary_use(id);");
+			end = System.currentTimeMillis();
+			dur = end - start;
+			System.out.println("VocabularyUSE: " + dur);			
+			
+			s.close();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (con != null) {
+				try {
+					con.close();
+				} catch (Exception e) { }
+			}
+		}
+	}
+	
 	/**
 	 * Builds the vocabulary indexes from SKOS file.
 	 */
-	public void buildSKOS() throws Exception {
+	public void buildSKOSFromSesame() throws Exception {
 
 		Connection con = null;
 		
@@ -186,7 +225,6 @@ public class VocabularyH2 extends Vocabulary {
 				} catch (Exception e) { }
 			}
 		}
-		initializeIndexes();
 	}
 
 	
@@ -359,7 +397,7 @@ public class VocabularyH2 extends Vocabulary {
 				while (rs2.next())
 					id = rs2.getString(1);
 				ps2.close();
-				//con.close();
+				con.close();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -388,7 +426,7 @@ public class VocabularyH2 extends Vocabulary {
 					orig = rs.getString(1);
 				ps.close();
 
-				//con.close();
+				con.close();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}			
@@ -418,7 +456,7 @@ public class VocabularyH2 extends Vocabulary {
 			while (rs.next())
 				desc = rs.getString(1);
 			ps.close();
-			//con.close();
+			con.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -445,7 +483,7 @@ public class VocabularyH2 extends Vocabulary {
 				related.add(rs.getString(1));
 			}
 			ps.close();
-			//con.close();
+			con.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -469,34 +507,38 @@ public class VocabularyH2 extends Vocabulary {
 				related.add(rs.getString(1));
 			}
 			ps.close();
-			//con.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return related;
 
 	}
+	
 
 	public static void main(String[] args) throws Exception {
 		
-		NativeStore store = new NativeStore(new File("/Users/cwillis/dev/hive/hive-data/agrovoc/agrovocStore"));
-		//NativeStore store = new NativeStore(new File("/Users/cwillis/dev/hive/hive-data/lcsh/lcshStore"));
+		//NativeStore store = new NativeStore(new File("/usr/local/hive/hive-data/agrovoc/agrovocStore"));
+		NativeStore store = new NativeStore(new File("/usr/local/hive/hive-data/lcsh/lcshStore"));
 		Repository repository = new SailRepository(store);
         repository.initialize();            
         ElmoModule module = new ElmoModule();           
         SesameManagerFactory factory = new SesameManagerFactory(module, repository);         
         // Create a new ElmoManager with default locale
         SesameManager manager = factory.createElmoManager(); 
-        String h2path = "/Users/cwillis/dev/hive/hive-data/agrovoc/agrovocH2/agrovoc";
-        //String h2path = "/Users/cwillis/dev/hive/hive-data/lcsh/lcshH2/lcsh";
+        //String h2path = "/usr/local/hive/hive-data/agrovoc/agrovocH2/agrovoc";
+        String h2path = "/usr/local/hive/hive-data/lcsh/lcshH2/lcsh";
 		VocabularyH2 voc = new VocabularyH2(h2path, "en", manager);
-		Stopwords sw = new StopwordsEnglish("/Users/cwillis/dev/hive/hive-data/agrovoc//agrovocKEA/data/stopwords/stopwords_en.txt");
+		Stopwords sw = new StopwordsEnglish("/usr/local/hive/hive-data/agrovoc//agrovocKEA/data/stopwords/stopwords_en.txt");
 		voc.setStopwords(sw);
 		voc.setStemmer(new PorterStemmer());
+		long start = System.currentTimeMillis();
 		voc.buildSKOS();
-		
+		long end = System.currentTimeMillis();
+		long dur = end - start;
+		System.out.println("Time: " + dur);		
 		
 	}
+
 
 	@Override
 	public void build() throws Exception {
