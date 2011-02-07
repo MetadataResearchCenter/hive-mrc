@@ -19,6 +19,9 @@
 			<include name="servlet*.jar" />
 		</fileset>
 		<pathelement path="${build.dir}" />
+		
+         <pathelement path="${gwt.sdk}/gwt-user.jar" />
+         <fileset dir="${gwt.sdk}" includes="gwt-dev*.jar"/>
 	</path>
 
 	<target name="usage">
@@ -28,6 +31,7 @@
 		<echo message="" />
 		<echo message="Available targets are:" />
 		<echo message="" />
+		<echo message="gwtc      --> Build the GWT components" />
 		<echo message="build     --> Build the application" />
 		<echo message="deploy    --> Deploy application as directory" />
 		<echo message="deploywar --> Deploy application as a WAR file" />
@@ -39,7 +43,19 @@
 		<echo message="" />
 	</target>
 
-	<target name="build" description="Compile main source tree java files">
+    <target name="gwtc" description="GWT compile to JavaScript (production mode)">
+      <java failonerror="true" fork="true" classname="com.google.gwt.dev.Compiler" maxmemory="256m">
+        <classpath>
+          <pathelement location="${src.dir}"/>
+          <path refid="master-classpath"/>
+        </classpath>
+        <arg line="-war"/>
+        <arg value="war"/>
+        <arg value="org.unc.hive.ConceptBrowser"/>
+      </java>
+    </target>
+    
+	<target name="build" depends="gwtc" description="Compile main source tree java files">
 	  <echo message="building..." />
 		<mkdir dir="${build.dir}" />
 		<javac destdir="${build.dir}" source="1.5" target="1.5" debug="true" deprecation="false" optimize="false" failonerror="true">
