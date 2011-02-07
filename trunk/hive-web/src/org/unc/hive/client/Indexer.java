@@ -471,13 +471,26 @@ public class Indexer implements EntryPoint {
 	    indexingCaption.add(tagDock);
 	    tagDock.add(tagcloud,DockPanel.CENTER);
 	    tagDock.add(oriVoc, DockPanel.WEST);
+	    String current = null;
+	    FlowPanel currentPanel = new FlowPanel();
+	    currentPanel.setStyleName("vocabulary-tags");
 	    for(ConceptProxy cp : result)
-	    {
+	    {	    	
 	    	String ori = cp.getOrigin();
 	    	if(!openedVocabularies.contains(ori.toLowerCase()))
 	    	{
 	    		continue;
 	    	}
+	    	
+	    	if (!ori.equals(current)) {	    		
+	    		if (current != null) {
+	    			tagcloud.add(currentPanel);
+	    			currentPanel = new FlowPanel();
+	    			currentPanel.setStyleName("vocabulary-tags");
+	    		}	    			
+	    		current = ori;
+	    	}
+	    		
 	    	String uri = cp.getURI();
 	    	String uris[] = uri.split(" ");
 	    	String namespace = uris[0];
@@ -485,6 +498,7 @@ public class Indexer implements EntryPoint {
 	    	if(!oriList.contains(ori)) oriList.add(ori);
 	    	String colorCss = ori.toLowerCase() + "-color";
 	    	String term = cp.getPreLabel();
+	    	term = term.replaceAll(" ", "&nbsp;") + " ";
 	    	double score = cp.getScore();
 	    	/*Decide the font-size based on the score*/
 	    	double rate = (score * 10000);
@@ -501,13 +515,17 @@ public class Indexer implements EntryPoint {
 	    		fontCss = "font-five";
 	    	else
 	    		fontCss = "font-six";
-          	final Anchor a = new Anchor(term);
+          	final Anchor a = new Anchor(term, true);
 	    	a.setStyleName("base-css");
 	    	a.addStyleName(colorCss);
 	    	a.addStyleName(fontCss);
+	    	a.addStyleName("tag-name");
 	    	a.addClickHandler(new ConceptHandler(namespace, lp));
-	    	tagcloud.add(a); 	
+	    	currentPanel.add(a);
 	    }
+	    
+	    tagcloud.add(currentPanel);
+	    
 	    for(String ori : oriList)
 	    {
 	    	Label square = new Label("");
