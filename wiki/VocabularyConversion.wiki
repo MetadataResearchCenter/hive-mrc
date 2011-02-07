@@ -49,7 +49,7 @@ Integrated Taxinomic Information System (ITIS) is available in a variety of form
   * Modify SKOSGenerator:
     * Specify itis.rdf output directory
     * Specify MySQL connection information 
-  * Run edu.unc.ils.mrc.hive.converter.itis.ITISConverter
+  * {{{ edu.unc.ils.mrc.hive.converter.itis.ITISConverter }}}
 
 == TGN ==
 
@@ -58,7 +58,7 @@ TGN is available in relational and XML formats. Access to source TGN vocabularie
  * Extract tgn_rel_10_utf8_zip 
  * Open TGN2SKOS
  * Edit TGNReader, update path to source directory and output path
- * Run TGNReader 
+ * {{{ edu.unc.ils.mrc.hive.converter.tgn.TGNReader }}}
 
 == MeSH ==
 
@@ -67,5 +67,5 @@ Note: The SKOS version of MeSH available from http://thesauri.cs.vu.nl/eswc06 is
 MeSH is available for download in XML format. Access to MeSH vocabularies requires submitting an agreement form. 
 
  * Download desc2011.xml from  http://www.nlm.nih.gov/mesh/filelist.html
- * edu.unc.ils.mrc.hive.converter.mesh.MeshConverter <path_to_desc2001_xml> <path_to_output_RDF>
+ * {{{ java -Xmx1024m edu.unc.ils.mrc.hive.converter.mesh.MeshConverter <path_to_desc2001_xml> <path_to_output_RDF> }}}
  * Conversion requires ~1GB Ram. Specify java options -Xmx1024m
