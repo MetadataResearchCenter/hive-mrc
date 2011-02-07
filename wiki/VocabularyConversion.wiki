@@ -68,3 +68,4 @@ MeSH is available for download in XML format. Access to MeSH vocabularies requir
 
  * Download desc2011.xml from  http://www.nlm.nih.gov/mesh/filelist.html
  * edu.unc.ils.mrc.hive.converter.mesh.MeshConverter <path_to_desc2001_xml> <path_to_output_RDF>
+ * Conversion requires ~1GB Ram. Specify java options -Xmx1024m
