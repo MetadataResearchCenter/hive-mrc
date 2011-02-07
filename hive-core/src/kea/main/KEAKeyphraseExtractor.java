@@ -696,7 +696,7 @@ public class KEAKeyphraseExtractor implements OptionHandler {
 	/**
 	 * Builds the model from the files
 	 */
-	public void extractKeyphrases(Hashtable stems) throws Exception {
+	public synchronized void extractKeyphrases(Hashtable stems) throws Exception {
 
 		Vector stats = new Vector();
 
@@ -751,6 +751,7 @@ public class KEAKeyphraseExtractor implements OptionHandler {
 				while ((c = is.read()) != -1) {
 					txtStr.append((char) c);
 				}
+				is.close();
 
 				newInst[0] = (double) data.attribute(0).addStringValue(
 						txtStr.toString());
@@ -781,6 +782,8 @@ public class KEAKeyphraseExtractor implements OptionHandler {
 				while ((c = is.read()) != -1) {
 					keyStr.append((char) c);
 				}
+				
+				is.close();
 
 				newInst[1] = (double) data.attribute(1).addStringValue(
 						keyStr.toString());
@@ -810,12 +813,7 @@ public class KEAKeyphraseExtractor implements OptionHandler {
 
 				if (index < m_numPhrases) {
 					topRankedInstances[index] = inst;
-				}				
-				System.out.println(inst.stringValue(
-						this.m_KEAFilter.getUnstemmedPhraseIndex()) + ", " + 
-						Utils.doubleToString(
-								inst.value(this.m_KEAFilter
-								.getProbabilityIndex()), 4));				
+				}							
 			}
 
 			if (m_debug) {
