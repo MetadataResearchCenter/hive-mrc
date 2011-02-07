@@ -25,12 +25,12 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package edu.unc.ils.mrc.hive.ir.tagging;
 
+import java.util.Hashtable;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 
 import edu.unc.ils.mrc.hive.api.SKOSScheme;
-import edu.unc.ils.mrc.hive.api.impl.elmo.SKOSTaggerImpl;
 import kea.main.KEAKeyphraseExtractor;
 import kea.stemmers.PorterStemmer;
 import kea.stopwords.StopwordsEnglish;
@@ -104,6 +104,12 @@ public class KEATagger implements Tagger{
 		this.ke.loadThesaurus();
 	}
 
+	/**
+	 * Extracts keyphrases from .txt files in the directory specified
+	 * in the constructor. Keyphrases are written to .key files which can be
+	 * read by the calling application.
+	 */
+	@Override
 	public void extractKeyphrases() {
 		try {
 			this.ke.extractKeyphrases(ke.collectStems());
@@ -112,14 +118,33 @@ public class KEATagger implements Tagger{
 		}
 	}
 	
-	public String getVocabulary() {
-		return this.vocabulary;
-	}
 
+	/**
+	 * Extracts keyphrases from the specified file baseName. The 
+	 * underlying class will append a ".txt" suffix to read the file
+	 * and a ".key" suffix to the generated keyphrase file name. 
+	 * The calling application can read the generated keyphrases from
+	 * the ".key" file.
+	 */
+	@Override
+	public void extractKeyphrasesFromFile(String baseName) {
+		try {
+			Hashtable<String, Double> stems = new Hashtable<String, Double>();
+			stems.put(baseName, new Double(0));		
+			this.ke.extractKeyphrases(stems);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	// Not implemented
 	@Override
 	public List<String> extractKeyphrases(String text) {
 		return null;
-		
+	}
+	
+	public String getVocabulary() {
+		return this.vocabulary;
 	}
 
 }
