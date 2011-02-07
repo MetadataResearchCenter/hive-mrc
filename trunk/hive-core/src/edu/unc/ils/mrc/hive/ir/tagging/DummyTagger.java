@@ -157,10 +157,14 @@ public class DummyTagger implements Tagger {
 		return "Dummytagger";
 	}
 
+	// Not implemented
 	@Override
 	public void extractKeyphrases() {
-		// TODO Auto-generated method stub
-		
+	}
+
+	// Not implemented
+	@Override
+	public void extractKeyphrasesFromFile(String fileName) {
 	}
 	
 }

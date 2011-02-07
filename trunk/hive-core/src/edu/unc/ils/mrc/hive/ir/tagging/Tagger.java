@@ -28,8 +28,10 @@ package edu.unc.ils.mrc.hive.ir.tagging;
 import java.util.List;
 
 public interface Tagger {
-	
+
 	public void extractKeyphrases();
+
+	public void extractKeyphrasesFromFile(String fileName);
 	
 	public List<String> extractKeyphrases(String text);
 	
