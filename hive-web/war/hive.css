@@ -1084,9 +1084,17 @@ a:hover
 {
 	color: orange;
 }
-.mesh-bg-color
+.mesh-bgcolor
 {
-	background-color: blue;
+	background-color: orange;
+}
+.tgn-color
+{
+	color: black;
+}
+.tgn-bgcolor
+{
+	background-color: black;
 }
 .font-one
 {
@@ -1172,3 +1180,9 @@ p.error
    padding-top: 50px;
    color:#000000;
 }
+
+.vocabulary-tags 
+{
+	margin-top: 10px;
+}
+	
