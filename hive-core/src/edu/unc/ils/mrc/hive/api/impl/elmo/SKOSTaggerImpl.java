@@ -40,6 +40,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.UUID;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -103,11 +104,13 @@ public class SKOSTaggerImpl implements SKOSTagger {
 		String text = tm.getPlainText(inputFilePath);
 		List<SKOSConcept> result = new ArrayList<SKOSConcept>();
 		if (this.algorithm.equals("kea")) {
-			Date date = new Date();
 			for (String voc : vocabulary) {
-				String path = this.vocabularies.get(voc).getKEAtestSetDir();
-				String fileName = path + File.separator + date.getTime();
-				File keaInputFile = new File(fileName + voc + ".txt");
+				File testDir = new File(this.vocabularies.get(voc).getKEAtestSetDir());
+				
+				String tempFileName = UUID.randomUUID().toString();
+				File keaInputFile =  new File(testDir + File.separator + tempFileName + ".txt");
+				
+				logger.debug("Creating " + keaInputFile.getAbsolutePath());
 				FileOutputStream fos;
 				try {
 					fos = new FileOutputStream(keaInputFile);
@@ -119,12 +122,17 @@ public class SKOSTaggerImpl implements SKOSTagger {
 				    logger.error(e);
 				} catch (IOException e) {
                     logger.error(e);
-
 				}
 				Tagger tagger = this.taggers.get(voc);
 				logger.info("Indexing with " + tagger.getVocabulary());
-				tagger.extractKeyphrases();
-				File keaOutputFile = new File(fileName + voc + ".key");
+				try {
+					tagger.extractKeyphrasesFromFile(tempFileName);
+				} catch (RuntimeException e) {
+					logger.error(e);
+				}
+				
+				File keaOutputFile =  new File(testDir + File.separator + tempFileName + ".key");
+				logger.debug("Reading key file " + keaOutputFile.getAbsolutePath());
 				try {
 					FileInputStream fis = new FileInputStream(keaOutputFile);
 					InputStreamReader isr = new InputStreamReader(fis);
@@ -148,9 +156,12 @@ public class SKOSTaggerImpl implements SKOSTagger {
 				} catch (IOException e) {
 				    logger.error("file processing problem", e);
 				}
+				
 				// If we do not delete these files, they are re-read during subsequent
 				// extractKeyphrases and cause performance degradation.
+				logger.debug("Deleting "+ keaInputFile.getAbsolutePath());
 				keaInputFile.delete();
+				logger.debug("Deleting "+ keaOutputFile.getAbsolutePath());
 				keaOutputFile.delete();
 			}
 		} else if (this.algorithm.equals("dummy")) {
