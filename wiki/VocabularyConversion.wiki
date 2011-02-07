@@ -49,7 +49,7 @@ Integrated Taxinomic Information System (ITIS) is available in a variety of form
   * Modify SKOSGenerator:
     * Specify itis.rdf output directory
     * Specify MySQL connection information 
-  * Run SKOSGenerator
+  * Run edu.unc.ils.mrc.hive.converter.itis.ITISConverter
 
 == TGN ==
 
