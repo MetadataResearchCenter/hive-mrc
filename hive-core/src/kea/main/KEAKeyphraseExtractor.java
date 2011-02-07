@@ -50,6 +50,7 @@ import kea.stopwords.Stopwords;
 import kea.stopwords.StopwordsEnglish;
 import kea.util.Counter;
 import kea.vocab.Vocabulary;
+import kea.vocab.VocabularyH2;
 import kea.vocab.VocabularySesame;
 
 /**
@@ -168,8 +169,16 @@ public class KEAKeyphraseExtractor implements OptionHandler {
 		this.schema = schema;
 		m_vocabularyFormat = "skos";
 	
-		this.vocabulary = new VocabularySesame(m_vocabulary, m_vocabularyFormat,
-				m_documentLanguage, schema.getManager());
+		try
+		{
+			String h2path = new File(schema.getRdfPath()).getParentFile().getAbsolutePath();
+			h2path += File.separator + schema.getName().toLowerCase() + "H2" + File.separator + schema.getName().toLowerCase();
+			this.vocabulary = new VocabularyH2(schema.getName(), h2path, m_documentLanguage, schema.getManager());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		//this.vocabulary = new VocabularySesame(m_vocabulary, m_vocabularyFormat,
+				//m_documentLanguage, schema.getManager());
 	}
 	
 	public void loadThesaurus() {
@@ -801,8 +810,12 @@ public class KEAKeyphraseExtractor implements OptionHandler {
 
 				if (index < m_numPhrases) {
 					topRankedInstances[index] = inst;
-
-				}
+				}				
+				System.out.println(inst.stringValue(
+						this.m_KEAFilter.getUnstemmedPhraseIndex()) + ", " + 
+						Utils.doubleToString(
+								inst.value(this.m_KEAFilter
+								.getProbabilityIndex()), 4));				
 			}
 
 			if (m_debug) {
