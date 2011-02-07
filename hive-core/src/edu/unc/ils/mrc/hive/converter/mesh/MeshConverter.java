@@ -201,10 +201,7 @@ public class MeshConverter extends DefaultHandler
     	Set<String> keys = meshTree.keySet();
     	for (String treeNum : keys) 
     	{	
-    		// Get the parent tree number 
-    		String parentKey = null;
-   			if (treeNum.contains("."))
-    			parentKey = treeNum.substring(0, treeNum.lastIndexOf("."));			
+		
 			
    			// Get concepts represented by the current tree number
     		List<Concept> concepts = meshTree.get(treeNum);
@@ -236,7 +233,12 @@ public class MeshConverter extends DefaultHandler
     			}
     			
     			/* 
-    			Given the parent tree number, get the sibling nodes
+    			//Given the parent tree number, get the sibling nodes
+    			
+      			// Get the parent tree number 
+    			String parentKey = null;
+   				if (treeNum.contains("."))
+    				parentKey = treeNum.substring(0, treeNum.lastIndexOf("."));	  			
     			if (parentKey != null) {
 	    			List<String> relatedConcepts = getNarrower(parentKey);
 	    			for (String relatedConcept: relatedConcepts) {
