@@ -67,6 +67,8 @@
      * Check "Use Web Toolkit"
      * Select "Configure SDKs..."
      * Web Toolkit > Add > Path to gwt 1.7.1
+   * Project > Properties > Java Build Path > Order and Export 
+     * Move GWT SDK to the top of the order
 
 = Vocabulary Quick Start = 
 
