@@ -62,6 +62,9 @@ TGN is available in relational and XML formats. Access to source TGN vocabularie
 
 == MeSH ==
 
-Note: The current SKOS version of MeSH available from http://thesauri.cs.vu.nl/eswc06/ is not compatible with HIVE. A new converter is underway based on source MeSH files.
+Note: The SKOS version of MeSH available from http://thesauri.cs.vu.nl/eswc06 is not compatible with HIVE. A new converter has been written based on the MeSH XML source files.
 
- * Download from http://www.nlm.nih.gov/mesh/filelist.html
+MeSH is available for download in XML format. Access to MeSH vocabularies requires submitting an agreement form. 
+
+ * Download desc2011.xml from  http://www.nlm.nih.gov/mesh/filelist.html
+ * edu.unc.ils.mrc.hive.converter.mesh.MeshConverter <path_to_desc2001_xml> <path_to_output_RDF>
