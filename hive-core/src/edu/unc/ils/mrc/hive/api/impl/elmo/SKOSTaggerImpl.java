@@ -27,6 +27,7 @@ package edu.unc.ils.mrc.hive.api.impl.elmo;
 
 import java.io.BufferedReader;
 
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -35,7 +36,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -44,6 +44,7 @@ import java.util.UUID;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.perf4j.StopWatch;
 
 import edu.unc.ils.mrc.hive.api.SKOSConcept;
 import edu.unc.ils.mrc.hive.api.SKOSScheme;
@@ -99,12 +100,19 @@ public class SKOSTaggerImpl implements SKOSTagger {
 	}
 
 	public List<SKOSConcept> getTags(String inputFilePath, List<String> vocabulary,
-			SKOSSearcher searcher) {
+			SKOSSearcher searcher) 
+	{
+		StopWatch stopwatch = new StopWatch();
+		
 		TextManager tm = new TextManager();
 		String text = tm.getPlainText(inputFilePath);
 		List<SKOSConcept> result = new ArrayList<SKOSConcept>();
-		if (this.algorithm.equals("kea")) {
-			for (String voc : vocabulary) {
+		stopwatch.lap("GetPlainText");
+		
+		if (this.algorithm.equals("kea")) 
+		{
+			for (String voc : vocabulary) 
+			{
 				File testDir = new File(this.vocabularies.get(voc).getKEAtestSetDir());
 				
 				String tempFileName = UUID.randomUUID().toString();
@@ -124,7 +132,8 @@ public class SKOSTaggerImpl implements SKOSTagger {
                     logger.error(e);
 				}
 				Tagger tagger = this.taggers.get(voc);
-				logger.info("Indexing with " + tagger.getVocabulary());
+				String vocabularyName = tagger.getVocabulary();
+				logger.info("Indexing with " + vocabularyName);
 				try {
 					tagger.extractKeyphrasesFromFile(tempFileName);
 				} catch (RuntimeException e) {
@@ -164,6 +173,7 @@ public class SKOSTaggerImpl implements SKOSTagger {
 				logger.debug("Deleting "+ keaOutputFile.getAbsolutePath());
 				keaOutputFile.delete();
 			}
+
 		} else if (this.algorithm.equals("dummy")) {
 			Tagger tagger = this.taggers.get("Dummytagger");
 			logger.info("Dummy indexing with " + tagger.getVocabulary());
@@ -187,6 +197,8 @@ public class SKOSTaggerImpl implements SKOSTagger {
 			}
 			logger.debug("tagging complete");
 		}
+		stopwatch.lap("GetTags");
+
 		return result;
 	}
 }
