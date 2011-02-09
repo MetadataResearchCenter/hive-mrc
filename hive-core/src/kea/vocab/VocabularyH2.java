@@ -116,6 +116,8 @@ public class VocabularyH2 extends Vocabulary
 	 */
 	@Override
 	public void buildSKOS() throws Exception {
+		StopWatch stopwatch = new StopWatch();
+		
 		logger.trace("buildSKOS");
 		
 		// Temporary files used to store KEA++ maps prior to import into H2
@@ -227,10 +229,11 @@ public class VocabularyH2 extends Vocabulary
 		}
 		
 		// Delete the temporary files
-		//fileEN.delete();
-		//fileENrev.delete();
-		//fileREL.delete();
-		//fileUSE.delete();
+		fileEN.delete();
+		fileENrev.delete();
+		fileREL.delete();
+		fileUSE.delete();
+		stopwatch.lap("BuildSKOS");
 	}
 
 	
@@ -420,11 +423,11 @@ public class VocabularyH2 extends Vocabulary
 	public static void main(String[] args) throws Exception {
 		
 		//NativeStore store = new NativeStore(new File("/usr/local/hive/hive-data/agrovoc/agrovocStore"));
-		NativeStore store = new NativeStore(new File("/usr/local/hive/hive-data/lcsh/lcshStore"));
+		NativeStore store = new NativeStore(new File("/usr/local/hive/hive-data/mesh/meshStore"));
 		//NativeStore store = new NativeStore(new File("/usr/local/hive/hive-data/nbii/nbiiStore"));
 		//NativeStore store = new NativeStore(new File("/usr/local/hive/hive-data/tgn/tgnStore"));
         //String h2path = "/usr/local/hive/hive-data/agrovoc/agrovocH2/agrovoc";
-        String h2path = "/usr/local/hive/hive-data/lcsh/lcshH2/lcsh";
+        String h2path = "/usr/local/hive/hive-data/mesh/meshH2/mesh";
 		//String h2path = "/usr/local/hive/hive-data/tgn/tgnH2/tgn";
 		//String h2path = "/usr/local/hive/hive-data/nbii/nbiiH2/nbii";
 
