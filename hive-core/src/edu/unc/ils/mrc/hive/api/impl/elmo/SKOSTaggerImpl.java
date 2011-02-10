@@ -45,6 +45,7 @@ import java.util.UUID;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.perf4j.StopWatch;
+import org.perf4j.log4j.Log4JStopWatch;
 
 import edu.unc.ils.mrc.hive.api.SKOSConcept;
 import edu.unc.ils.mrc.hive.api.SKOSScheme;
@@ -102,7 +103,7 @@ public class SKOSTaggerImpl implements SKOSTagger {
 	public List<SKOSConcept> getTags(String inputFilePath, List<String> vocabulary,
 			SKOSSearcher searcher) 
 	{
-		StopWatch stopwatch = new StopWatch();
+		StopWatch stopwatch = new Log4JStopWatch();
 		
 		TextManager tm = new TextManager();
 		String text = tm.getPlainText(inputFilePath);
@@ -199,6 +200,8 @@ public class SKOSTaggerImpl implements SKOSTagger {
 		}
 		stopwatch.lap("GetTags");
 
+		File inputFile = new File(inputFilePath);
+		inputFile.delete();
 		return result;
 	}
 }
