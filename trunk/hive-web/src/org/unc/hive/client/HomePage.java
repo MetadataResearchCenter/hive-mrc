@@ -153,11 +153,6 @@ public class HomePage implements EntryPoint {
 						// TODO Auto-generated method stub
 						Grid vocabulariesGrid = new Grid(result.size() + 1, 4);
 						vocabulariesGrid.setWidth("540px");
-						if (result.size() < 10) {
-							vocabulariesGrid.setHeight("350px");
-						} else {
-							vocabulariesGrid.setHeight("100%");
-						}
 						for (int i = 0; i < result.size() + 1; i++) {
 							if (i == 0) {
 								vocabulariesGrid.setWidget(i, 0, new Label(
@@ -196,7 +191,7 @@ public class HomePage implements EntryPoint {
 						vocabulariesGrid.getRowFormatter().setStyleName(0,"tableHead");
 						vocabularyStatistics.add(vocabulariesGrid);
 						final Label lb = new Label(
-								"Last Updated On: October 23, 2009");
+								"Last Updated On: February 9, 2011");
 						lb.addStyleName("lastupdate");
 						final VerticalPanel vp = new VerticalPanel();
 						vp.add(vocabulariesGrid);
