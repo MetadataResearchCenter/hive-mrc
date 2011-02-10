@@ -116,7 +116,7 @@ public class VocabularyH2 extends Vocabulary
 	 */
 	@Override
 	public void buildSKOS() throws Exception {
-		StopWatch stopwatch = new StopWatch();
+		StopWatch stopwatch = new Log4JStopWatch();
 		
 		logger.trace("buildSKOS");
 		
