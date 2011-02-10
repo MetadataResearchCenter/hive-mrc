@@ -30,6 +30,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.perf4j.StopWatch;
+import org.perf4j.log4j.Log4JStopWatch;
 
 import edu.unc.ils.mrc.hive.api.SKOSScheme;
 import kea.main.KEAKeyphraseExtractor;
@@ -112,13 +113,13 @@ public class KEATagger implements Tagger{
 	 */
 	@Override
 	public void extractKeyphrases() {
-		StopWatch stopwatch = new StopWatch();
+		StopWatch stopwatch = new Log4JStopWatch();
 		try {
 			this.ke.extractKeyphrases(ke.collectStems());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		stopwatch.lap("ExtractKeyPhrases");
+		stopwatch.lap("ExtractKeyPhrases - " + vocabulary);
 	}
 	
 
@@ -131,7 +132,7 @@ public class KEATagger implements Tagger{
 	 */
 	@Override
 	public void extractKeyphrasesFromFile(String baseName) {
-		StopWatch stopwatch = new StopWatch();
+		StopWatch stopwatch = new Log4JStopWatch();
 		try {
 			Hashtable<String, Double> stems = new Hashtable<String, Double>();
 			stems.put(baseName, new Double(0));		
@@ -139,7 +140,7 @@ public class KEATagger implements Tagger{
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		stopwatch.lap("ExtractKeyPhrasesFromFile");
+		stopwatch.lap("ExtractKeyPhrasesFromFile - " + vocabulary);
 	}
 	
 	// Not implemented
