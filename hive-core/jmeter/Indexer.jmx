@@ -15,9 +15,9 @@
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
           <boolProp name="LoopController.continue_forever">false</boolProp>
-          <stringProp name="LoopController.loops">2</stringProp>
+          <stringProp name="LoopController.loops">1</stringProp>
         </elementProp>
-        <stringProp name="ThreadGroup.num_threads">2</stringProp>
+        <stringProp name="ThreadGroup.num_threads">5</stringProp>
         <stringProp name="ThreadGroup.ramp_time">5</stringProp>
         <longProp name="ThreadGroup.start_time">1296739719000</longProp>
         <longProp name="ThreadGroup.end_time">1296739719000</longProp>
@@ -31,7 +31,7 @@
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
           <stringProp name="HTTPSampler.domain">http://hive.nescent.org</stringProp>
-          <stringProp name="HTTPSampler.port">9090</stringProp>
+          <stringProp name="HTTPSampler.port">8080</stringProp>
           <stringProp name="HTTPSampler.connect_timeout"></stringProp>
           <stringProp name="HTTPSampler.response_timeout"></stringProp>
           <stringProp name="HTTPSampler.protocol">http</stringProp>
@@ -39,12 +39,12 @@
           <stringProp name="HTTPSampler.path"></stringProp>
         </ConfigTestElement>
         <hashTree/>
-        <HTTPSampler2 guiclass="HttpTestSampleGui2" testclass="HTTPSampler2" testname="/FileUpload" enabled="true">
+        <HTTPSampler2 guiclass="HttpTestSampleGui2" testclass="HTTPSampler2" testname="Upload File" enabled="true">
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
           <stringProp name="HTTPSampler.domain">hive.nescent.org</stringProp>
-          <stringProp name="HTTPSampler.port">9090</stringProp>
+          <stringProp name="HTTPSampler.port">8080</stringProp>
           <stringProp name="HTTPSampler.connect_timeout"></stringProp>
           <stringProp name="HTTPSampler.response_timeout"></stringProp>
           <stringProp name="HTTPSampler.protocol">http</stringProp>
@@ -57,8 +57,8 @@
           <boolProp name="HTTPSampler.DO_MULTIPART_POST">true</boolProp>
           <elementProp name="HTTPsampler.Files" elementType="HTTPFileArgs">
             <collectionProp name="HTTPFileArgs.files">
-              <elementProp name="C:\mrc\jmeter\test.pdf" elementType="HTTPFileArg">
-                <stringProp name="File.path">C:\mrc\jmeter\test.pdf</stringProp>
+              <elementProp name="/Users/cwillis/dev/hive/test/test1.pdf" elementType="HTTPFileArg">
+                <stringProp name="File.path">/Users/cwillis/dev/hive/test/test1.pdf</stringProp>
                 <stringProp name="File.paramname">uploadFormElement</stringProp>
                 <stringProp name="File.mimetype">application/pdf</stringProp>
               </elementProp>
@@ -101,20 +101,29 @@
             </collectionProp>
           </HeaderManager>
           <hashTree/>
+          <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="Regular Expression Extractor" enabled="true">
+            <stringProp name="RegexExtractor.useHeaders">false</stringProp>
+            <stringProp name="RegexExtractor.refname">tempFileName</stringProp>
+            <stringProp name="RegexExtractor.regex">success:\|[^\|]*\|([^\?]*)\?</stringProp>
+            <stringProp name="RegexExtractor.template">$1$</stringProp>
+            <stringProp name="RegexExtractor.default">JMETER_NOT_FOUND</stringProp>
+            <stringProp name="RegexExtractor.match_number">1</stringProp>
+          </RegexExtractor>
+          <hashTree/>
         </hashTree>
-        <HTTPSampler2 guiclass="HttpTestSampleGui2" testclass="HTTPSampler2" testname="/hivewebrowser/Indexer" enabled="true">
+        <HTTPSampler2 guiclass="HttpTestSampleGui2" testclass="HTTPSampler2" testname="Get Tags" enabled="true">
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
             <collectionProp name="Arguments.arguments">
               <elementProp name="" elementType="HTTPArgument">
                 <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                <stringProp name="Argument.value">5|0|12|http://hive.nescent.org:9090/hivewebrowser/|8EC7AC301DE6DDECDC126977E349BF01|org.unc.hive.client.IndexerService|getTags|java.lang.String|java.util.List|customer_admin_guide.pdf|java.util.ArrayList/3821976829|java.lang.String/2004016611|lcsh|mesh|nbii|1|2|3|4|2|5|6|7|8|3|9|10|9|11|9|12|</stringProp>
+                <stringProp name="Argument.value">5|0|14|http://hive.nescent.org:8080/hivewebrowser/|8EC7AC301DE6DDECDC126977E349BF01|org.unc.hive.client.IndexerService|getTags|java.lang.String|java.util.List|${tempFileName}|java.util.ArrayList/3821976829|java.lang.String/2004016611|agrovoc|lcsh|mesh|nbii|tgn|1|2|3|4|2|5|6|7|8|5|9|10|9|11|9|12|9|13|9|14|</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
                 <boolProp name="HTTPArgument.use_equals">true</boolProp>
               </elementProp>
             </collectionProp>
           </elementProp>
           <stringProp name="HTTPSampler.domain">hive.nescent.org</stringProp>
-          <stringProp name="HTTPSampler.port">9090</stringProp>
+          <stringProp name="HTTPSampler.port">8080</stringProp>
           <stringProp name="HTTPSampler.connect_timeout"></stringProp>
           <stringProp name="HTTPSampler.response_timeout"></stringProp>
           <stringProp name="HTTPSampler.protocol">http</stringProp>
@@ -204,7 +213,7 @@
               <bytes>true</bytes>
             </value>
           </objProp>
-          <stringProp name="filename">c:\mrc\jmeter\indexer\tree.out</stringProp>
+          <stringProp name="filename">/tmp/hive/indexer/tree.out</stringProp>
         </ResultCollector>
         <hashTree/>
         <ResultCollector guiclass="StatGraphVisualizer" testclass="ResultCollector" testname="Aggregate Graph" enabled="true">
@@ -236,15 +245,15 @@
               <bytes>true</bytes>
             </value>
           </objProp>
-          <stringProp name="filename">c:\mrc\jmeter\indexer\aggregate.txt</stringProp>
+          <stringProp name="filename">/tmp/hive/indexer/aggregate.txt</stringProp>
         </ResultCollector>
         <hashTree/>
         <ResultSaver guiclass="ResultSaverGui" testclass="ResultSaver" testname="Save Responses to a file" enabled="true">
-          <stringProp name="FileSaver.filename">c:\mrc\jmeter\indexer\output</stringProp>
-          <boolProp name="FileSaver.errorsonly">true</boolProp>
+          <stringProp name="FileSaver.filename">/tmp/hive/indexer/output</stringProp>
+          <boolProp name="FileSaver.errorsonly">false</boolProp>
           <boolProp name="FileSaver.skipautonumber">false</boolProp>
           <boolProp name="FileSaver.skipsuffix">false</boolProp>
-          <boolProp name="FileSaver.successonly">true</boolProp>
+          <boolProp name="FileSaver.successonly">false</boolProp>
         </ResultSaver>
         <hashTree/>
       </hashTree>
