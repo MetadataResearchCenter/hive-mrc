@@ -3,6 +3,7 @@ package org.unc.hive.server;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -34,17 +35,25 @@ public class FileUpload extends HttpServlet {
 		// Create a new file upload handler
 		ServletFileUpload upload = new ServletFileUpload(factory);
 		String fileName = "";
+
+		String tempFileName = ""; 
+		
 		// Parse the request
 		try {
 			List<FileItem> items = upload.parseRequest(request);
 			for(FileItem item : items) {
 				System.out.println("File name: " + item.getName());
 				fileName = item.getName();
-				File uploadedFile = new File(path + UPLOAD_DIRECTORY + fileName);
+				
+				String extension = "";
+				if (fileName.indexOf(".") > 0)
+					extension = fileName.substring(fileName.indexOf("."), fileName.length());
+				tempFileName = UUID.randomUUID().toString() + extension;
+				File uploadedFile = new File(path + UPLOAD_DIRECTORY + tempFileName);
 			    item.write(uploadedFile);
 			}
 			response.setStatus(HttpServletResponse.SC_OK);
-			response.getOutputStream().print("success:" + "|" + fileName + "?");
+			response.getOutputStream().print("success:" + "|" + fileName + "|" + tempFileName + "?");
 		} catch (FileUploadException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -46,6 +46,7 @@ public class Indexer implements EntryPoint {
 
 	private CaptionPanel indexingCaption;
 	private String fileName;
+	private String tempFileName;
 	private List<String> openedVocabularies;  // store the name of current loaded vocabularies in client side
 	private List<String> allVocabulary; // store the name of all vocabularies that hive have
 	private FlowPanel addVocabularyPanel;
@@ -297,7 +298,12 @@ public class Indexer implements EntryPoint {
 						deleteFile.clear();
 						deleteFile.removeFromParent();
 					}
-					fileName = result.substring(result.indexOf('|')+1, result.indexOf('?'));
+					
+					String response = result.substring(result.indexOf("|")+1, result.lastIndexOf("?"));
+					String[] fileNames = response.split("\\|");
+					fileName = fileNames[0];
+					tempFileName = fileNames[1];
+										
 					isFileUploaded = true;
 					Label filename = new Label(fileName);
 			//		Window.alert(fileName);
@@ -373,7 +379,7 @@ public class Indexer implements EntryPoint {
 				}
 				else if(isFileUploaded == true && url.equals(""))
 				{
-					fileToProcess = fileName;
+					fileToProcess = tempFileName;
 					isValid = true;
 				}
 				else if(isFileUploaded == false && !url.equals(""))
