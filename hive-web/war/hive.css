@@ -53,11 +53,13 @@ a:hover
 	background-repeat:repeat-x;
 	margin:0;
 	padding:0;
+	
 }
 
 #header table td
 {
 	margin: 0 5px;
+	color: white;
 }
 
 
@@ -129,14 +131,14 @@ a:hover
     text-align:center;
 	width:695px;
 	float:left;
-	height:110px;
+	height:90px;
 	padding:0;
 }
 
 #tab ul
 {	
   position:relative;
-  bottom:-14px;
+  bottom:-28px;
   margin-top:0;
 }
 
@@ -156,8 +158,8 @@ a:hover
   text-align:center;
   margin-left: 5px;
   background:gray;
-  height:35px;
-  padding-top:15px;
+  height:25px;
+  padding-top:10px;
   background-image:url(./img/tab.jpg);
   background-repeat:no-repeat;
   color:white;
@@ -622,6 +624,10 @@ a:hover
 {
 	border-bottom:1px solid #ccc;
 	text-align:center;
+}
+
+.statTable tr {
+        height: 30px;
 }
 
 .statTable div a
