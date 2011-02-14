@@ -29,7 +29,8 @@ HIVE automatic metadata generation system is based on [http://www.nzdl.org/Kea/ 
 
 The KEA algorithm is based on a Naïve Bayes based classification system. Training data is used to build a statistical model which is used to recognize positive and negative examples. This statistical model is based on real world examples, so for automatic metadata generation we use a corpus of documents where keywords and metadata has been assigned by hand.
 
-== SKOS Server ==
+== HIVE Core API ==
+=== SKOS Server ===
 
 SKOSServer is the high level classes that we have to instantiate to get up the Vocabulary server:
 
@@ -43,7 +44,7 @@ where the method's argument makes reference to the configuration file where the 
 
 SKOSServer manages the three basic classes used to implement the HIVE basic functionalities: Concept Search(SKOSSearcher), Vocabularies management (SKOSScheme) and indexing SKOSTagger. All of theses classes are interfaces which are implemented using different libraries.
 
-== SKOS Scheme ==
+=== SKOS Scheme ===
 
 Every vocabulary in modeled in HIVE using SKOSScheme class. This class contains information about the vocabularies 
 and some methods to manage them.
@@ -71,8 +72,7 @@ Iterator<String> it = keys.iterator();
 	  }
 }}}
 
-
-== Search functionalities with SKOSSearcher ==
+== Searching HIVE ==
 
 SKOSSearcher, is the interface which defines the search features in HIVE. These features can be divided into two kinds of search:
 
@@ -193,7 +193,3 @@ for (SKOSConcept s : l) {
  * MeSH
  * NBII
  * TGN
-
-== Taggers ==
- * DummyTagger
- * KEATagger
