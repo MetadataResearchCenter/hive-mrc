@@ -1,10 +1,11 @@
- * [Introduction]
+ * Introduction
    * [AboutHiveCore About HIVE Core]
    * [AboutHiveWeb About HIVE Web]
    * [AboutHiveRestService About HIVE Rest Service]
    * [AboutKEA About KEA]
    * [HivePerformance HIVE Performance]
- * [Installation Installing HIVE]
+ * Installation  
+   * [InstallingHiveWeb Installing HIVE Web]
    * [TrainingKEA How to train HIVE]
    * [ImportingVocabularies How to import vocabularies]
    * [VocabularyConversion How to convert vocabularies]
