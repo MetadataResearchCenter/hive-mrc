@@ -1,5 +1,16 @@
 #summary Describes the MeSH to SKOS conversion process
 
+== Overview ==
+
+The National Library of Medicine (NLM) does not offer an official SKOS-formatted version of the Medical Subject Headings (MeSH). This document describes one approach to converting the MeSH vocabulary from the NLM provided XML format to SKOS for indexing in HIVE.
+
+== Earlier Efforts ==
+
+Van Assem _et al_ present a method of converting thesauri, including MeSH, to SKOS. The original paper that describes the method and Prolog application are available for download from http://thesauri.cs.vu.nl/eswc06/. The proposal outlined here builds off of this earlier work.
+
+The method described by Van Assem _et al_ maps each MeSH {{{Descriptor}}} to a SKOS {{{Concept}}}. The name of the preferred {{{Term}}} of the preferred {{{Concept}}} is mapped to SKOS {{{prefLabel}}} and each non-preferred MeSH {{{Term}}} to a SKOS {{{altLabel}}}. The authors recognize that, through this mapping, information about the MeSH concepts and terms is lost. The relations between concepts with a descriptor as well as the preferred term for a non-preferred concept are not captured. Also, the programmatic implementation fails to generate the {{{skos:narrower}}} relationship as required by HIVE.
+
+The method proposed in this paper takes an alternative approach, mapping each MeSH {{{Concept}}} to a SKOS {{{Concept}}}. Preferred and non-preferred {{{Terms}}} are mapped to {{{skos:prefLabel}}} and {{{skos:altLabel}}} respectively. The relationships between concepts is maintained. Using this approach, the distinction between a preferred and non-preferred concept is lost. This is a recognized limitation of the Core SKOS model (http://www.w3.org/TR/skos-primer/). 
 
 == About MeSH ==
 
@@ -87,12 +98,9 @@ Mapping:
         * {{{Y}}} maps to {{{skos:prefLabel}}}
         * {{{N}}} maps to {{{skos:altLabel}}}
 
- 
 
 
 == MeSH to SKOS ==
-
-
 
 For each Concept:
  * Get related concepts based on descriptor relations
@@ -101,5 +109,8 @@ For each Concept:
  * Get related concepts based on concept relations
  * Get terms for the concept
 
-== Footnotes ==
-^1^ http://www.nlm.nih.gov/pubs/factsheets/mesh.html
+== References ==
+
+Fact Sheet: Medical Subject Headings (MeSH). ^1^ http://www.nlm.nih.gov/pubs/factsheets/mesh.html
+
+Van Assem, M., Malaise, V., Miles, A., and Schreiber, G. http://thesauri.cs.vu.nl/eswc06/
