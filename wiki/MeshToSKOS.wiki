@@ -105,14 +105,21 @@ Mapping:
 
 The MeSH entry for descriptor "Cardiomegaly" contains two concepts:
 {{{
-Cardiomegaly [Descriptor]                                    D006332
-     Cardiomegaly                      [Concept, Preferred]  M0009952
-          Cardiomegaly                    [Term, Preferred]   T019185
-          Enlarged Heart                  [Term]              T366111
-          Heart Enlargement               [Term]              T019186
-     Cardiac Hypertrophy               [Concept, Narrower]   M0453089
-          Cardiac Hypertrophy             [Term, Preferred]   T019187
-          Heart Hypertrophy               [Term]              T019188
+Heart Diseases                    [Descriptor]          D006331
+  Heart Diseases                  [Concept, Preferred]  M0009951  
+    Heart Diseases                [Term, Preferred]     T366111
+    Diseases, Heart               [Term]                T366111
+    ...
+Cardiomegaly [Descriptor]                               D006332
+  Cardiomegaly                    [Concept, Preferred]  M0009952
+    Cardiomegaly                  [Term, Preferred]     T019185
+    Enlarged Heart                [Term]                T366111      
+    Heart, Enlarded               [Term]                T366111
+    Heart Enlargement             [Term]                T019186
+    Enlargement, Heart            [Term]                T019186
+  Cardiac Hypertrophy             [Concept, Narrower]   M0453089
+    Cardiac Hypertrophy           [Term, Preferred]     T019187
+    Heart Hypertrophy             [Term]                T019188
 
      C14.280.195     [TreeNumber]
      C23.300.775.250 [TreeNumber]
@@ -120,6 +127,7 @@ Cardiomegaly [Descriptor]                                    D006332
 
 The resulting SKOS concepts:
 {{{
+
 <rdf:Description rdf:about="http://www.nlm.nih.gov/mesh/M0009952">
         <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
         <skos:inScheme rdf:resource="http://www.nlm.nih.gov/mesh#conceptScheme"/>
@@ -128,21 +136,26 @@ The resulting SKOS concepts:
         <skos:altLabel>Heart, Enlarged</skos:altLabel>
         <skos:altLabel>Heart Enlargement</skos:altLabel>
         <skos:altLabel>Enlargement, Heart</skos:altLabel>
+        <skos:broader rdf:resource="http://www.nlm.nih.gov/mesh/M0009951#concept"/>
         <skos:broader rdf:resource="http://www.nlm.nih.gov/mesh/M0010875#concept"/>
+        <skos:narrower rdf:resource="http://www.nlm.nih.gov/mesh/M0003463#concept"/>
         <skos:narrower rdf:resource="http://www.nlm.nih.gov/mesh/M0026394#concept"/>
         <skos:narrower rdf:resource="http://www.nlm.nih.gov/mesh/M0026395#concept"/>
+        <skos:narrower rdf:resource="http://www.nlm.nih.gov/mesh/M0453060#concept"/>
         <skos:narrower rdf:resource="http://www.nlm.nih.gov/mesh/M0453089#concept"/>
         <skos:scopeNote>Enlargement of the HEART, usually indicated by a cardiothoracic ratio above 0.50. Heart enlargement may involve the right, the left, or both HEART VENTRICLES or HEART ATRIA. Cardiomegaly is a nonspecific symptom seen in patients with chronic systolic heart failure (HEART FAILURE) or several forms of CARDIOMYOPATHIES.</skos:scopeNote>
 </rdf:Description>
-
 <rdf:Description rdf:about="http://www.nlm.nih.gov/mesh/M0453089">
         <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
         <skos:inScheme rdf:resource="http://www.nlm.nih.gov/mesh#conceptScheme"/>
         <skos:prefLabel>Cardiac Hypertrophy</skos:prefLabel>
         <skos:altLabel>Heart Hypertrophy</skos:altLabel>
+        <skos:broader rdf:resource="http://www.nlm.nih.gov/mesh/M0009951#concept"/>
         <skos:broader rdf:resource="http://www.nlm.nih.gov/mesh/M0010875#concept"/>
+        <skos:narrower rdf:resource="http://www.nlm.nih.gov/mesh/M0003463#concept"/>
         <skos:narrower rdf:resource="http://www.nlm.nih.gov/mesh/M0026394#concept"/>
         <skos:narrower rdf:resource="http://www.nlm.nih.gov/mesh/M0026395#concept"/>
+        <skos:narrower rdf:resource="http://www.nlm.nih.gov/mesh/M0453060#concept"/>
         <skos:narrower rdf:resource="http://www.nlm.nih.gov/mesh/M0453089#concept"/>
         <skos:scopeNote>Enlargement of the HEART due to chamber HYPERTROPHY, an increase in wall thickness without an increase in the number of cells (MYOCYTES, CARDIAC). It is the result of increase in myocyte size, mitochondrial and myofibrillar mass, as well as changes in extracellular matrix.</skos:scopeNote>
 </rdf:Description>
