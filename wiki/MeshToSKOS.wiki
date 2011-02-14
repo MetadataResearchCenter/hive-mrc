@@ -103,7 +103,7 @@ Mapping:
 
 == Implementation ==
 
-The current HIVE MeSH-to-SKOS converter is implemented in the {{{edu.unc.ils.mrc.MeshConverter}} class. This is a SAX-based XML parser that reads from {{{desc2011.xml}}}.
+The current HIVE MeSH-to-SKOS converter is implemented in the {{{edu.unc.ils.mrc.MeshConverter}}} class. This is a SAX-based XML parser that reads from {{{desc2011.xml}}}.
 
 
 == References ==
