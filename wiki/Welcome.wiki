@@ -1,0 +1,11 @@
+#summary HIVE Wiki Welcome page
+
+<wiki:toc max_depth="2" />
+
+= Introduction to HIVE =
+
+== What is HIVE? ==
+
+HIVE is an automatic metadata generation approach that dynamically integrates discipline-specific controlled vocabularies encoded with the Simple Knowledge Organisation System (SKOS), a World Wide Web Consortium (W3C) standard. HIVE will assist content creators and information professionals with subject cataloging and will provide a solution to the traditional controlled vocabulary problems of cost, interoperability, and usability.
+
+HIVE tries to solve problems traditionally associated with using controlled vocabularies in digital environments. 
