@@ -103,7 +103,7 @@ Mapping:
 
 == Example ==
 
-The MeSH entry for descriptor "Cardiomegaly" contains two concepts:
+The MeSH entry for descriptor "Cardiomegaly" contains two concepts.
 {{{
 Heart Diseases                    [Descriptor]          D006331
   Heart Diseases                  [Concept, Preferred]  M0009951  
@@ -124,6 +124,9 @@ Cardiomegaly [Descriptor]                               D006332
      C14.280.195     [TreeNumber]
      C23.300.775.250 [TreeNumber]
 }}}
+
+See also the abbreviated [http://code.google.com/p/hive-mrc/downloads/detail?name=cardiomegaly.xml MeSH XML] version.
+
 
 The resulting SKOS concepts:
 {{{
