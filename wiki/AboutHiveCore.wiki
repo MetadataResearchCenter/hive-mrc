@@ -1,0 +1,194 @@
+<wiki:toc max_depth="2" />
+
+= Introduction to HIVE Core =
+
+== What is HIVE ==
+
+HIVE tries to solve problems traditionally associated with using controlled vocabularies in digital environments. Some of these problems are:
+
+ * Concept Retrieval
+ * Automatic annotation
+ * RIA technology for vocabulary server Web User Interface
+ * Linked Data for Concepts based on SPARQL end points
+
+In the following sections, we will explain how HIVE solves these problems. We offer a 
+methodology and tools which ease vocabulary use on the Web.
+
+HIVE Core is a SKOS Core based library written entirely in Java. It is suitable for nearly any application that requires management of vocabularies.
+
+== HIVE core architecture ==
+
+HIVE Core allows users to access vocabularies in different ways. The system can be queried in two different ways:
+
+ * Natural Language Interface
+ * SPARQL interface
+
+HIVE integrates different libraries to allow these access. The Natural Language interface allow us to use keyword-based queries to retrieve concepts. This interface is based on Lucene. Each query is evaluated against a Lucene index where the concepts are stored.
+
+<img src="http://hive-mrc.googlecode.com/svn/trunk/doc/HIVE-Documentation/img/hive-architecture.jpg" />
+ 
+
+== Creating training data for automatic metadata generation ==
+
+HIVE automatic metadata generation system is based on [http://www.nzdl.org/Kea/ KEA]. When a vocabulary is imported we must create a language model to use the vocabulary for automatic metadata generation. 
+
+The KEA algorithm is based on a Naïve Bayes based classification system. Training data is used to build a statistical model which is used to recognize positive and negative examples. This statistical model is based on real world examples, so for automatic metadata generation we use a corpus of documents where keywords and metadata has been assigned by hand.
+
+== SKOS Server ==
+
+SKOSServer is the high level classes that we have to instantiate to get up the Vocabulary server:
+
+{{{
+ SKOSServer server = new SKOSServerImpl("/home/hive/workspace/hive-core/conf/vocabularies");
+}}}
+ 
+where the method's argument makes reference to the configuration file where the names of the thesauri to load is written.
+
+<img src="http://hive-mrc.googlecode.com/svn/trunk/doc/HIVE-Documentation/img/skosserver.jpg" />
+
+SKOSServer manages the three basic classes used to implement the HIVE basic functionalities: Concept Search(SKOSSearcher), Vocabularies management (SKOSScheme) and indexing SKOSTagger. All of theses classes are interfaces which are implemented using different libraries.
+
+== SKOS Scheme ==
+
+Every vocabulary in modeled in HIVE using SKOSScheme class. This class contains information about the vocabularies 
+and some methods to manage them.
+
+We can get information about statistics for every vocabulary, number of terms, and relations, updates, etc. The following piece of code show you how to do that:
+
+{{{
+TreeMap<String, SKOSScheme> vocabularies = server.getSKOSSchemas();
+Set<String> keys = vocabularies.keySet();
+Iterator<String> it = keys.iterator();
+	  while (it.hasNext()) {
+		  SKOSScheme voc = vocabularies.get(it.next());
+		  System.out.println("NAME: " + voc.getName());
+		  System.out.println("\t LONG NAME: " + voc.getLongName());
+		  System.out.println("\t NUMBER OF CONCEPTS: "
+		      + voc.getNumberOfConcepts());
+		  System.out.println("\t NUMBER OF RELATIONS: "
+		      + voc.getNumberOfRelations());
+		  System.out.println("\t DATE: " + voc.getLastDate());
+		  System.out.println();
+		  System.out.println("\t SIZE: " + voc.getSubAlphaIndex("a").size());
+		  System.out.println();
+		  System.out.println("\t TOP CONCEPTS: "
+		      + voc.getTopConceptIndex().size());
+	  }
+}}}
+
+
+== Search functionalities with SKOSSearcher ==
+
+SKOSSearcher, is the interface which defines the search features in HIVE. These features can be divided into two kinds of search:
+
+ * Formal Search
+ * Keyword based search
+
+=== Formal Search based on SPARQL ===
+
+Formal search is based on SPARQL, a formal language to get information from RDF databases. SPARQL is the standard query language for 
+Semantic Web application and it is useful to implement Web Services based on SPARQL end points, and so allowing third part applications to retrieve information from a RDF database.
+
+{{{
+ searcher.SPARQLSelect(
+  "SELECT ?s ?p ?p WHERE {?s ?p ?o} LIMIT 10", 
+  "nbii");
+}}}
+
+{{{
+ searcher.SPARQLSelect(
+  "PREFIX skos: <http://www.w3.org/2004/02/skos/core#> 
+  SELECT ?s ?p ?o WHERE {  ?s ?p ?o . ?s skos:prefLabel \"Damage\" .}",
+  "nbii");
+}}}
+
+{{{
+ searcher.SPARQLSelect(
+  "PREFIX skos: <http://www.w3.org/2004/02/skos/core#> 
+  SELECT ?uri ?label WHERE { <http://thesaurus.nbii.gov/nbii#Mud> 
+  skos:broader ?uri . ?uri skos:prefLabel ?label}",
+  "nbii");
+}}}
+
+=== Keyword based search ===
+
+Keyword based search is based on natural language search, so the user of the system can write queries without constraints. HIVE keyword search is described in detail in José R. Pérez-Agüera, Javier Arroyo, Jane Greenberg, Joaquin Perez-Iglesias and Victor Fresno. Using BM25F for Semantic Search. Semantic Search Workshop at the 19th Int. World Wide Web Conference WWW2010 April 26, 2010 (Workshop Day), Raleigh, NC, USA
+
+{{{
+System.out.println("Search by keyword:");
+List<SKOSConcept> ranking = searcher.searchConceptByKeyword("accidents");
+System.out.println("Results in SKOSServer: " + ranking.size());
+String uri = "";
+String lp = "";
+  for (SKOSConcept c : ranking) {
+    uri = c.getQName().getNamespaceURI();
+    lp = c.getQName().getLocalPart();
+    QName qname = new QName(uri, lp);
+    String origin = server.getOrigin(qname);
+    if (origin.toLowerCase().equals("nbii")) {
+      System.out.println("PrefLabel: " + c.getPrefLabel());
+      System.out.println("\t URI: " + uri + " Local part: " + lp);
+      System.out.println("\t Origin: " + server.getOrigin(qname));
+    }
+  }
+}}}
+
+=== URI based search ===
+
+Concepts can be retrieved using their URI:
+
+{{{
+System.out.println("Search by URI:");
+SKOSConcept c2 = searcher.searchConceptByURI(
+  "http://thesaurus.nbii.gov/nbii#", "Enzymatic-activity");
+Concept c2 = searcher.searchConceptByURI(uri, lp);
+List<String> alt = c2.getAltLabels();
+System.out.println("PrefLabel: " + c2.getPrefLabel());
+for (String a : alt) {
+  System.out.println("\t altLabel: " + a);
+}
+System.out.println("\t Origin: " + server.getOrigin(c2));
+System.out.println("\t SKOS Format: \n" + c2.getSKOSFormat());
+\end{verbatim}
+
+}}}
+
+If you need get the children of a term given a URI you can use the following example.
+
+{{{
+SKOSConcept con = searcher.searchConceptByURI(
+    "http://id.loc.gov/authorities/sh2001009743#", "concept");
+TreeMap<String,QName> children = searcher.searchChildrenByURI(
+  "http://id.loc.gov/authorities/sh2001009743#", "concept");
+for (String c : children.keySet()) {
+  System.out.println("prefLabel: " + c);
+}
+}}}
+
+
+== Tagging documents with SKOS Tagger ==
+
+One of the most important features of HIVE is the module for automatic metadata extraction. This is performed using the SKOSTagger class. This class is accesed via the SKOSServer method getSKOSTagger().
+
+Once we have an SKOSTagger we can use the method getTags() to get the keywords for a given document. The arguments required for this method are the source of the text, usually a document, the list of vocabularies to normalize the keywords and a SKOSSearcher object. An example:
+
+{{{
+SKOSTagger tagger = server.getSKOSTagger();
+
+String source = "/home/hive/Desktop/ag086e00.pdf";
+source = "http://en.wikipedia.org/wiki/Biology";
+
+List<String> vocabs = new ArrayList<String>();
+vocabs.add("nbii");
+vocabs.add("lcsh");
+vocabs.add("agrovoc");
+
+List<SKOSConcept> l = tagger.getTags(source, vocabs,
+  server.getSKOSSearcher());
+System.out.println();
+System.out.println("Tagging Results for ALL");
+for (SKOSConcept s : l) {
+  System.out.println(s.getPrefLabel());
+  System.out.println(s.getQName().getNamespaceURI());
+}
+}}}
