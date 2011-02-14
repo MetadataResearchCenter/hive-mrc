@@ -5,7 +5,6 @@
    * [AboutHiveWeb About HIVE Web]
    * [AboutHiveRestService About HIVE Rest Service]
    * [AboutKEA About KEA]
-
  * Installation  
    * [InstallingHiveWeb Installing HIVE Web]
    * [ImportingVocabularies How to import vocabularies]
