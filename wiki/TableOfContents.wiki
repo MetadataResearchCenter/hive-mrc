@@ -1,6 +1,6 @@
 #summary Table of Contents/Sidebar
 
- * [Introduction Introduction]
+ * [Welcome Introduction]
    * [AboutHiveCore About HIVE Core]
    * [AboutHiveWeb About HIVE Web]
    * [AboutHiveRestService About HIVE Rest Service]
