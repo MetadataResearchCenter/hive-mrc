@@ -10,7 +10,6 @@
  * Using HIVE
    * [Installation How to install HIVE]
    * [TrainingKEA How to train HIVE]
-   * [VocabularyConversion How to 
  * Developing HIVE
    * [DevelopingHIVE Developing]
  * MeshToSKOS
