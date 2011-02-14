@@ -6,12 +6,10 @@
    * [HivePerformance HIVE Performance]
  * Installation  
    * [InstallingHiveWeb Installing HIVE Web]
-   * [TrainingKEA How to train HIVE]
    * [ImportingVocabularies How to import vocabularies]
-   * [VocabularyConversion How to convert vocabularies]
  * Using HIVE
-   * [Installation How to install HIVE]
    * [TrainingKEA How to train HIVE]
+   * [VocabularyConversion How to convert vocabularies]
+   * [MeshToSKOS Converting MeSH to SKOS]
  * Developing HIVE
    * [DevelopingHIVE Developing]
- * MeshToSKOS
