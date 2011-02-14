@@ -5,7 +5,7 @@
    * [AboutHiveWeb About HIVE Web]
    * [AboutHiveRestService About HIVE Rest Service]
    * [AboutKEA About KEA]
-   * [HivePerformance HIVE Performance]
+
  * Installation  
    * [InstallingHiveWeb Installing HIVE Web]
    * [ImportingVocabularies How to import vocabularies]
@@ -15,3 +15,4 @@
    * [MeshToSKOS Converting MeSH to SKOS]
  * Developing HIVE
    * [DevelopingHIVE Developing]
+   * [HivePerformance HIVE Performance]
