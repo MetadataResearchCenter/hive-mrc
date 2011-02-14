@@ -1,34 +1,27 @@
 #summary Overview of HIVE Core
 
-<wiki:toc max_depth="2" />
+== What is HIVE Core? ==
 
-= Introduction to HIVE Core =
+HIVE Core is a SKOS-based library written in Java. HIVE solves problems traditionally associated with the use of controlled vocabularies in digital environments, including concept retrieval and automatic annotation.
 
-== What is HIVE ==
+The HIVE Core API supports the following:
+ * Creation and administration of HIVE indexes
+ * Keyword and SPARQL-based queries
+ * Automatic concept tagging (KEA++)
+ * Vocabulary conversion
 
-HIVE tries to solve problems traditionally associated with using controlled vocabularies in digital environments. Some of these problems are:
+== HIVE Core Architecture ==
 
- * Concept Retrieval
- * Automatic annotation
- * RIA technology for vocabulary server Web User Interface
- * Linked Data for Concepts based on SPARQL end points
-
-In the following sections, we will explain how HIVE solves these problems. We offer a 
-methodology and tools which ease vocabulary use on the Web.
-
-HIVE Core is a SKOS Core based library written entirely in Java. It is suitable for nearly any application that requires management of vocabularies.
-
-== HIVE core architecture ==
-
-HIVE Core allows users to access vocabularies in different ways. The system can be queried in two different ways:
-
- * Natural Language Interface
- * SPARQL interface
-
-HIVE integrates different libraries to allow these access. The Natural Language interface allow us to use keyword-based queries to retrieve concepts. This interface is based on Lucene. Each query is evaluated against a Lucene index where the concepts are stored.
+HIVE Core allows users to access SKOS-based vocabularies via natural language and SPARQL interfaces. The Natural Language interface supports keyword-based queries to retrieve concepts using Lucene. 
 
 <img src="http://hive-mrc.googlecode.com/svn/trunk/doc/HIVE-Documentation/img/hive-architecture.jpg" />
- 
+
+== Index Administration ==
+
+The HIVE Core API supports the creation and administration of HIVE indexes used for searching and document tagging.
+ * Lucene0based index for keyword searching
+ * OpenRDF-based index for SPARQL-based queries
+ * In-memory or embedded H2-based index for automatic controlled keyphrase assignment (tagging);
 
 == Creating training data for automatic metadata generation ==
 
@@ -194,3 +187,13 @@ for (SKOSConcept s : l) {
   System.out.println(s.getQName().getNamespaceURI());
 }
 }}}
+
+== Vocabulary Conversion == 
+ * ITIS
+ * MeSH
+ * NBII
+ * TGN
+
+== Taggers ==
+ * DummyTagger
+ * KEATagger
