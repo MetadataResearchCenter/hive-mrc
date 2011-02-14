@@ -6,17 +6,21 @@ The National Library of Medicine (NLM) does not offer an official SKOS-formatted
 
 == Earlier Efforts ==
 
-Van Assem _et al_ present a method of converting thesauri, including MeSH, to SKOS. The original paper that describes the method and Prolog application are available for download from http://thesauri.cs.vu.nl/eswc06/. The proposal outlined here builds off of this earlier work.
+Van Assem _et al_ propose a method of converting thesauri to SKOS, including MeSH. The original paper and Prolog application are available for download from http://thesauri.cs.vu.nl/eswc06/. The proposal outlined in this document builds off of their earlier work. Earlier versions of HIVE included this SKOS implementation.
 
-The method described by Van Assem _et al_ maps each MeSH {{{Descriptor}}} to a SKOS {{{Concept}}}. The name of the preferred {{{Term}}} of the preferred {{{Concept}}} is mapped to SKOS {{{prefLabel}}} and each non-preferred MeSH {{{Term}}} to a SKOS {{{altLabel}}}. The authors recognize that, through this mapping, information about the MeSH concepts and terms is lost. The relations between concepts with a descriptor as well as the preferred term for a non-preferred concept are not captured. Also, the programmatic implementation fails to generate the {{{skos:narrower}}} relationship as required by HIVE.
+The method described by Van Assem _et al_ maps each MeSH descriptor to a SKOS concept. The name of the preferred term of the preferred concept is mapped to SKOS prefLabel and each non-preferred MeSH term to SKOS altLabel. The authors recognize that, through mapping descriptors to SKOS concepts, information about MeSH concepts and terms is lost. The relations between concepts within a descriptor as well as the preferred term for a non-preferred concept are not capture. The programmatic implementation does not generate the narrower relationship as required by HIVE for indexing.
 
-The method proposed in this paper takes an alternative approach, mapping each MeSH {{{Concept}}} to a SKOS {{{Concept}}}. Preferred and non-preferred {{{Terms}}} are mapped to {{{skos:prefLabel}}} and {{{skos:altLabel}}} respectively. The relationships between concepts is maintained. Using this approach, the distinction between a preferred and non-preferred concept is lost. This is a recognized limitation of the Core SKOS model (http://www.w3.org/TR/skos-primer/). 
+The method proposed in this paper takes an alternative approach, mapping each MeSH concept a SKOS concept and using the MeSH descriptor for additional relationship information. Preferred and non-preferred MeSH terms are mapped to prefLabel and altLabel for each concept. Relationships between concepts within descriptors are maintained. Additional relationships between concepts are inferred from relationships between descriptors. 
+
+A recognized limitation of the Core SKOS model, the distinction between preferred and non-preferred MeSH concepts are not captured. Qualifiers and Supplementary Concept Records are not supported in this mapping.
+
 
 == About MeSH ==
 
 The Medical Subject Headings (MeSH) thesaurus is a controlled vocabulary maintained by the National Library of Medicine intended for the indexing and cataloging of biomedical information resources. MeSH is used for indexing of journals in the MEDLINE/PUBMED databases as well as books, articles, and other materials acquired by the library^1^. The MeSH thesaurus contains over 26,000 descriptors representing 177,000 terms.
 
 == MeSH Structure ==
+
 
 The following files can be downloaded from the NLM website (http://www.nlm.nih.gov/mesh/filelist.html). Only the descriptor records are used for this conversion.
  * desc2011.xml
@@ -66,9 +70,7 @@ Related concepts are determined by:
  * Descriptor relations: e.g., {{{SeeRelatedList}}}
  * Concept relations (REL)
 
-== Mesh-to-SKOS ==
-
-The current HIVE MeSH-to-SKOS converter is implemented in the {{{edu.unc.ils.mrc.MeshConverter}} class. This is a SAX-based XML parser that reads the {{{desc2011.xml}}} file and SKOS concepts from the MeSH each {{{DescriptorRecord}}}. 
+== Converting MeSH to SKOS ==
 
 The MeSH {{{Concept}}} is mapped to a SKOS Concept. The MeSH {{{DescriptorRecord}}} is used to determine the position in the hierarchy ({{{TreeNumber}}}) and relationships between descriptors ({{{SeeRelatedDescriptors}}}). Concepts within related Descriptors are related.
 
@@ -99,18 +101,15 @@ Mapping:
         * {{{N}}} maps to {{{skos:altLabel}}}
 
 
+== Implementation ==
 
-== MeSH to SKOS ==
+The current HIVE MeSH-to-SKOS converter is implemented in the {{{edu.unc.ils.mrc.MeshConverter}} class. This is a SAX-based XML parser that reads from {{{desc2011.xml}}}.
 
-For each Concept:
- * Get related concepts based on descriptor relations
- * Get broader concepts based on concept relations
- * Get narrower concepts based on concept relations
- * Get related concepts based on concept relations
- * Get terms for the concept
 
 == References ==
 
-Fact Sheet: Medical Subject Headings (MeSH). ^1^ http://www.nlm.nih.gov/pubs/factsheets/mesh.html
+ANSI/NISO. (2005). Guidelines for the Construction, Format, and Management of Monolingual Thesauri. ANSI/NISO Z39.19-2005.
 
-Van Assem, M., Malaise, V., Miles, A., and Schreiber, G. http://thesauri.cs.vu.nl/eswc06/
+NLM. Fact Sheet: Medical Subject Headings (MeSH). http://www.nlm.nih.gov/pubs/factsheets/mesh.html
+
+Van Assem, M., Malaise, V., Miles, A., and Schreiber, G. A Method to Convert Thesauri to SKOS. http://thesauri.cs.vu.nl/eswc06/
