@@ -1,3 +1,5 @@
+<wiki:toc max_depth="2" />
+
 = Introduction to KEA =
 
 The algorithm that we are using in HIVE is KEA++, KEA++ has been
