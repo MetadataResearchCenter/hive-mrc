@@ -1,3 +1,5 @@
+#summary Table of Contents/Sidebar
+
  * [Introduction Introduction]
    * [AboutHiveCore About HIVE Core]
    * [AboutHiveWeb About HIVE Web]
