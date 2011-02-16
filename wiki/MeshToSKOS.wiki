@@ -33,7 +33,7 @@ Descriptors are used to index documents. Most descriptors are used to identify t
 
  * Each Descriptor contains one or more related Concepts
    * Descriptors are topical or non-topical
-   * Descriptors are assigned on or more Tree Numbers
+   * Descriptors are assigned one or more Tree Numbers
    * One Concept within the Descriptor is the preferred Concept
    * All Concepts within a Descriptor share common Tree Numbers
    * Each Concept contains one or more synonymous Terms
