@@ -1,31 +1,32 @@
-#summary Describes the MeSH to SKOS conversion process
-
-== Overview ==
-
-The National Library of Medicine (NLM) does not offer an official SKOS-formatted version of the Medical Subject Headings (MeSH). This document describes one approach to converting the MeSH vocabulary from the NLM provided XML format to SKOS for indexing in HIVE.
-
-== Earlier Efforts ==
-
-Van Assem _et al_ propose a method of converting thesauri to SKOS, including MeSH. The original paper and Prolog application are available for download from http://thesauri.cs.vu.nl/eswc06/. 
-
-The method described by Van Assem _et al_ maps each MeSH descriptor to a SKOS concept. The name of the preferred term of the preferred concept is mapped to SKOS prefLabel and each non-preferred MeSH term to SKOS altLabel. The authors recognize that, through mapping descriptors to SKOS concepts, information about MeSH concepts and terms is lost. The relations between concepts within a descriptor as well as the preferred term for a non-preferred concept are not captured. The programmatic implementation does not generate the narrower relationship as required by HIVE for indexing.
-
-The proposal outlined in this document builds off of their earlier work, but takes an alternative approach.  Each MeSH concept is mapped to a SKOS concept and the MeSH descriptor is used for additional relationship information. Preferred and non-preferred MeSH terms are mapped to prefLabel and altLabel for each concept. Relationships between concepts within descriptors are maintained. Additional relationships between concepts are inferred from relationships between descriptors. 
-
-A recognized limitation of the Core SKOS model, the distinction between preferred and non-preferred MeSH concepts are not captured. Qualifiers and Supplementary Concept Records are not supported in this mapping.
+#summary Describes the MeSH to SKOS conversion process for HIVE
 
 
 == About MeSH ==
 
 The Medical Subject Headings (MeSH) thesaurus is a controlled vocabulary maintained by the National Library of Medicine intended for the indexing and cataloging of biomedical information resources. MeSH is used for indexing of journals in the MEDLINE/PUBMED databases as well as books, articles, and other materials acquired by the library^1^. The MeSH thesaurus contains over 26,000 descriptors representing 177,000 terms.
 
+== About this Document ==
+
+This document describes one approach to the conversion of the MeSH vocabulary from the NLM provided XML format to SKOS RDF/XML for indexing in HIVE. At this time, the NLM does not offer an official SKOS version of the MeSH vocabulary.
+
+== Access to MeSH ==
+
+The following files can be downloaded from the NLM website (http://www.nlm.nih.gov/mesh/filelist.html). Registration is required.
+
+ * {{{desc2011.xml}}}: Descriptors
+ * {{{qual2011.xml}}}: Qualifiers
+ * {{{supp2011.xml}}}: Supplementary Concept Records
+ * {{{mtrees2011.bin}}}: MeSH tree
+
+Only the descriptor records (desc2011.xml) are used for this conversion.
+
 == MeSH Structure ==
 
+The following sections provide a brief summary of the MeSH structure. The NLM MeSH documentation provides more in-depth information:
 
-The following files can be downloaded from the NLM website (http://www.nlm.nih.gov/mesh/filelist.html). Only the descriptor records are used for this conversion.
- * desc2011.xml
- * qual2011.xml
- * supp2011.xml
+ * "Concepts, synonyms, and Descriptor structure" in http://www.nlm.nih.gov/mesh/xmlmesh.html 
+ * "Concept Structure in XML MeSH" http://www.nlm.nih.gov/mesh/concept_structure.html
+ * "Relationships in Medical Subject Headings (MeSH)" http://www.nlm.nih.gov/mesh/meshrels.html
 
 === Descriptors, Concepts, and Terms ===
 
@@ -44,18 +45,15 @@ Descriptors are used to index documents. Most descriptors are used to identify t
      * Through specific elements ({{{DescriptorReferredTo}}}) including {{{SeeRelatedDescriptor}}}, {{{PharmacologicalAction}}}, {{{ECIN}}}, {{{ECOUT}}}.
 
 
-See also:
- * "Concepts, synonyms, and Descriptor structure" in http://www.nlm.nih.gov/mesh/xmlmesh.html 
- * "Concept Structure in XML MeSH" http://www.nlm.nih.gov/mesh/concept_structure.html
- * "Relationships in Medical Subject Headings (MeSH)" http://www.nlm.nih.gov/mesh/meshrels.html
-
-
 === Qualifiers ===
+
+_This section is informational only. MeSH qualifiers are not supported in the proposed MeSH to SKOS conversion._
 
 The MeSH vocabulary contains 83 topical qualifiers for use with descriptors. Not all qualifiers can be used with every descriptor. Each descriptor record contains a list of allowable modifiers.
 
 
 === Supplementary Concept Records ===
+_This section is informational only. Supplementary concept records are not supported in the proposed MeSH to SKOS conversion._
 
 Supplementary Concept Records (SCR) are used to index specific chemicals and drugs. SCRs do not have tree numbers, but are related to Descriptors through the {{{HeadingMappedTo}}} element.
 
@@ -70,7 +68,20 @@ Related concepts are determined by:
  * Descriptor relations: e.g., {{{SeeRelatedList}}}
  * Concept relations (REL)
 
-== Converting MeSH to SKOS ==
+== Earlier Efforts ==
+
+Van Assem _et al_ propose a different method of converting thesauri to SKOS, including MeSH. The original paper and Prolog application are available for download from http://thesauri.cs.vu.nl/eswc06.
+
+The method described by Van Assem _et al_ maps each MeSH "descriptor" to a {{{skos:concept}}}. The name of the preferred term of the preferred concept in MeSH is mapped to {{{skos:prefLable}}} and each non-preferred term to {{{skos:altLabel}}}. The authors recognize that, through mapping MeSH descriptors to SKOS concepts, information about MeSH concepts and terms is lost. Specifically, the relationships between concepts within a descriptor and the preferred term for non-preferred MeSH concepts. Also, the programmatic implementation does not generate the narrower concept relationship, which is required by HIVE.
+
+The proposal outlined in this document builds off of this earlier work, but takes an alternative approach. Each MeSH concept is mapped to a <code>skos:concept</code>. The MeSH descriptor is used for additional relationship information (tree number, relationships between descriptors). Preferred and non-preferred MeSH terms are mapped to {{{skos:prefLable}}} and {{{skos:altLabel}}} for each concept. Relationships between concepts within a descriptor are maintained. Additional relationships between concepts are inferred from descriptor relationships.
+
+The MeSH vocabulary captures preferred/non-preferred terms as well as preferred/non-preferred concepts. A recognized limitation of the Core SKOS model, the distinction between preferred and non-preferred MeSH concepts are not represented. MeSH qualifiers and supplementary concept records are not supported in this mapping.
+
+
+== Proposed Method For Converting MeSH to SKOS ==
+
+This section describes the proposed process for converting MeSH to SKOS for use with HIVE.
 
 The MeSH {{{Concept}}} is mapped to a SKOS Concept. The MeSH {{{DescriptorRecord}}} is used to determine the position in the hierarchy ({{{TreeNumber}}}) and relationships between descriptors ({{{SeeRelatedDescriptors}}}). Concepts within related Descriptors are related.
 
@@ -80,37 +91,35 @@ Notes:
 
 Mapping:
  * For each descriptor
-  * Is it a topical descriptor ({{{DescriptorClass}}} = 1)
-  * Get tree numbers ({{{TreeNumberList}}})
-    * Parent node maps to {{{skos:broader}}}
-    * Child node maps to {{{skos:narrower}}}
-  * Get descriptor relations ({{{SeeRelatedList}}})
-  * Get concepts ({{{ConceptList}}})
-  * For each concept (maps to {{{skos:concept}}})
-    * Is it the preferred concept?
-    * Get the scope note ({{{ScopeNote}}})
-      * Maps to {{{skos:scopeNote}}}
-    * Get concept relations ({{{ConceptRelationList}}})
-      * {{{NRW}}} maps to {{{skos:narrower}}}
-      * {{{BRD}}} maps to {{{skos:broader}}}
-      * {{{REL}}} maps to {{{skos:related}}}
-    * Get the term list ({{{TermList}}})
-    * For each term
-      * Is it the preferred term?
-        * {{{Y}}} maps to {{{skos:prefLabel}}}
-        * {{{N}}} maps to {{{skos:altLabel}}}
+  * If it is a topical descriptor ({{{DescriptorClass}}} = 1)
+    * Get tree numbers ({{{TreeNumberList}}})
+      * Map parent node(s) to {{{skos:broader}}}
+      * Map child node(s) to {{{skos:narrower}}}
+    * Get descriptor relations ({{{SeeRelatedList}}})
+      * Map concepts using {{{skos:related}}}
+    * Get concepts ({{{ConceptList}}})
+    * For each concept 
+      * Map to {{{skos:concept}}}
+      * Map {{{ScopeNote}}} to {{{skos:scopeNote}}}
+      * Get concept relations ({{{ConceptRelationList}}})
+        * Map {{{NRW}}} to {{{skos:narrower}}}
+        * Map {{{BRD}}} to {{{skos:broader}}}
+        * Map {{{REL}}} to {{{skos:related}}}
+      * Get the term list ({{{TermList}}})
+      * For each term
+        * Is it the preferred term?
+          * {{{Y}}} maps to {{{skos:prefLabel}}}
+          * {{{N}}} maps to {{{skos:altLabel}}}
 
 
 == Example ==
 
-The MeSH entry for descriptor "Cardiomegaly" contains two concepts.
+The MeSH entry for descriptor "Cardiomegaly" contains two concepts: "Cardiomegaly" (preferred) and "Cardiac Hypertrophy" (non-preferred, narrower). As indicated by the tree number, the descriptor "Cardiomegaly" (C14.280.195) is narrower than "Heart Diseases" (C14.280.195).
+
 {{{
-Heart Diseases                    [Descriptor]          D006331
-  Heart Diseases                  [Concept, Preferred]  M0009951  
-    Heart Diseases                [Term, Preferred]     T366111
-    Diseases, Heart               [Term]                T366111
-    ...
-Cardiomegaly [Descriptor]                               D006332
+Cardiomegaly                      [Descriptor]          D006332
+  Tree Number C14.280.195
+  Tree Number C23.300.775.250
   Cardiomegaly                    [Concept, Preferred]  M0009952
     Cardiomegaly                  [Term, Preferred]     T019185
     Enlarged Heart                [Term]                T366111      
@@ -121,12 +130,15 @@ Cardiomegaly [Descriptor]                               D006332
     Cardiac Hypertrophy           [Term, Preferred]     T019187
     Heart Hypertrophy             [Term]                T019188
 
-     C14.280.195     [TreeNumber]
-     C23.300.775.250 [TreeNumber]
+Heart Diseases                    [Descriptor]          D006331
+  Tree Number C14.280
+  Heart Diseases                  [Concept, Preferred]  M0009951  
+    Heart Diseases                [Term, Preferred]     T366111
+    Diseases, Heart               [Term]                T366111
+    ...
 }}}
 
 See also the abbreviated [http://code.google.com/p/hive-mrc/downloads/detail?name=cardiomegaly.xml MeSH XML] version.
-
 
 The resulting SKOS concepts:
 {{{
@@ -169,6 +181,18 @@ HYPERTROPHY, an increase in wall thickness without an increase in the
 number of cells (MYOCYTES, CARDIAC). It is the result of increase in 
 myocyte size, mitochondrial and myofibrillar mass, as well as changes 
 in extracellular matrix.</skos:scopeNote>
+</rdf:Description>
+<rdf:Description rdf:about="http://www.nlm.nih.gov/mesh/M0009951">
+        <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+        <skos:inScheme rdf:resource="http://www.nlm.nih.gov/mesh#conceptScheme"/>
+        <skos:prefLabel>Heart Diseases</skos:prefLabel>
+        <skos:altLabel>Diseases, Heart</skos:altLabel>
+        ...
+        <skos:broader rdf:resource="http://www.nlm.nih.gov/mesh/M0003473#concept"/>
+        <skos:narrower rdf:resource="http://www.nlm.nih.gov/mesh/M0009952#concept"/>
+        <skos:narrower rdf:resource="http://www.nlm.nih.gov/mesh/M0453089#concept"/>
+        ...
+        <skos:scopeNote>Pathological conditions involving the HEART including its structural and functional abnormalities.</skos:scopeNote>
 </rdf:Description>
 
 }}}
