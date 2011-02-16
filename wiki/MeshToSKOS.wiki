@@ -192,7 +192,8 @@ in extracellular matrix.</skos:scopeNote>
         <skos:narrower rdf:resource="http://www.nlm.nih.gov/mesh/M0009952#concept"/>
         <skos:narrower rdf:resource="http://www.nlm.nih.gov/mesh/M0453089#concept"/>
         ...
-        <skos:scopeNote>Pathological conditions involving the HEART including its structural and functional abnormalities.</skos:scopeNote>
+        <skos:scopeNote>Pathological conditions involving the HEART 
+including its structural and functional abnormalities.</skos:scopeNote>
 </rdf:Description>
 
 }}}
