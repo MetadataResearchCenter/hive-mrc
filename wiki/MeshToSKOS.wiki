@@ -3,7 +3,7 @@
 
 == About MeSH ==
 
-The Medical Subject Headings (MeSH) thesaurus is a controlled vocabulary maintained by the National Library of Medicine intended for the indexing and cataloging of biomedical information resources. MeSH is used for indexing of journals in the MEDLINE/PUBMED databases as well as books, articles, and other materials acquired by the library^1^. The MeSH thesaurus contains over 26,000 descriptors representing 177,000 terms.
+The Medical Subject Headings (MeSH) thesaurus is a controlled vocabulary maintained by the National Library of Medicine intended for the indexing and cataloging of biomedical information resources. MeSH is used for indexing of journals in the MEDLINE/PUBMED databases as well as books, articles, and other materials acquired by the library. The MeSH thesaurus contains over 26,000 descriptors representing 177,000 terms.
 
 == About this Document ==
 
