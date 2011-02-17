@@ -149,7 +149,7 @@ public class KEAModelGenerator {
 		try {
 			StopWatch stopWatch = new Log4JStopWatch();
 			logger.info("Create KEA model");
-			km.buildModel(km.collectStems(),this.vocabulary,stopwordsPath,this.scheme.getManager());
+			km.buildModel(km.collectStems(),this.scheme,stopwordsPath,this.scheme.getManager());
 			km.saveModel();
 			logger.info("KEA model created");
 			stopWatch.lap(vocabulary + " KEA model create");

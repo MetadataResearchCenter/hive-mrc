@@ -65,6 +65,8 @@ public class VocabularyH2 extends Vocabulary
 	FileWriter vocabularyENrev;
 	FileWriter vocabularyUSE;
 	FileWriter vocabularyREL;
+	
+	File h2;
 
 	/**
 	 * Constructs a VocabularyH2 instance 
@@ -80,6 +82,7 @@ public class VocabularyH2 extends Vocabulary
 		super(documentLanguage);
 		this.manager = manager;
 		this.name = name;
+		this.h2 = new File(h2path + ".h2.db");
 		
 		logger.info("H2 store path: " + h2path);
 		// Initialize an H2 connection pool
@@ -107,7 +110,17 @@ public class VocabularyH2 extends Vocabulary
 	@Override
 	public void initialize() 
 	{
-		// TODO?
+		try
+		{
+			if (!h2.exists()) {
+				buildSKOS();
+			} else {
+				logger.info("H2 directory exists, skipping H2 initialization");
+			}
+			
+		} catch (Exception e) {
+			logger.error(e);
+		}
 	}
 
 	/**
@@ -186,6 +199,7 @@ public class VocabularyH2 extends Vocabulary
 
 		} catch (Exception e) {
 			logger.error(e);
+			e.printStackTrace();
 		}
 		 
 		// Close the writers
