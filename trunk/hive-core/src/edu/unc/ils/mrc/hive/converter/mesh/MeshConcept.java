@@ -6,23 +6,24 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 public class MeshConcept {
 
 	String conceptId = "";
-	List<String> narrower = new ArrayList<String>();
-	List<String> broader = new ArrayList<String>();
+	Map<String, String> narrower = new TreeMap<String, String>();
+	Map<String, String> broader = new TreeMap<String, String>();
 	Map<String, String> related = new HashMap<String, String>();
 	String preferrerTerm = "";
 	List<String> altTerms = new ArrayList<String>();
 	String scopeNote = "";
 	
 	public void addNarrower(String conceptId) {
-		narrower.add(conceptId);
+		narrower.put(conceptId, conceptId);
 	}
 	
 	public void addBroader(String conceptId) {
-		broader.add(conceptId);
+		broader.put(conceptId, conceptId);
 	}
 	
 	public void addRelated(String conceptId) {
@@ -39,20 +40,15 @@ public class MeshConcept {
 	public void setConceptId(String conceptId) {
 		this.conceptId = conceptId;
 	}
-	public List<String> getNarrower() {
-		Collections.sort(narrower);
-		return narrower;
+	public Set<String> getNarrower() {
+		//Collections.sort(narrower);
+		return narrower.keySet();
 	}
-	public void setNarrower(List<String> narrower) {
-		this.narrower = narrower;
+
+	public Set<String> getBroader() {
+		return broader.keySet();
 	}
-	public List<String> getBroader() {
-		return broader;
-	}
-	public void setBroader(List<String> broader) {
-		Collections.sort(broader);
-		this.broader = broader;
-	}
+	
 	public Set<String> getRelated() {
 		return related.keySet();
 	}

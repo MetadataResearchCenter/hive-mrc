@@ -87,11 +87,14 @@ public class MeshConverter extends DefaultHandler
 	// Output RDF/XML file
 	String skosFile = null;
 	
-	// Map of MeSH tree numbers to associated concepts
-	Map<String, List<Concept>> meshTree = new TreeMap<String, List<Concept>>();
+	// Map of MeSH concepts
+	Map<String, Concept> meshConcepts = new TreeMap<String, Concept>();
 	
-	// Map of parent MeSH tree numbers to associated sibling concepts.
-	Map<String, List<Concept>> parentTree = new TreeMap<String, List<Concept>>();
+	// Map of MeSH tree numbers to associated concept IDs
+	Map<String, List<String>> meshTree = new TreeMap<String, List<String>>();
+	
+	// Map of parent MeSH tree numbers to associated sibling concept IDs.
+	Map<String, List<String>> parentTree = new TreeMap<String, List<String>>();
 	
 	// Each descriptor represents one or more concepts. This is a map of
 	// MeSH descriptor IDs to a list of one or more MeSH concept IDs.
@@ -117,9 +120,14 @@ public class MeshConverter extends DefaultHandler
     {
     	if (qName.equals("DescriptorRecord"))
     	{
-    		DescriptorHandler handler = new DescriptorHandler(parser, this);
-    		currentHandler = handler;
-    		parser.setContentHandler(handler);
+    		// Only support topical descriptors (DescriptorClass = 1)
+    		String descriptorClass = attributes.getValue("DescriptorClass");
+    		if (descriptorClass.equals("1")) 
+    		{
+	    		DescriptorHandler handler = new DescriptorHandler(parser, this);
+	    		currentHandler = handler;
+	    		parser.setContentHandler(handler);
+    		}
     	}
     }
     
@@ -139,52 +147,55 @@ public class MeshConverter extends DefaultHandler
     		// Get the list of related descriptors for this Descriptor
     		List<String> relatedDescriptors = ((DescriptorHandler)currentHandler).getRelatedDescriptors();
     		
-    		
-    		for (String treeNum : treeNumbers) 
-    		{	
-    			// If the tree number contains a period ("."), this is a child descriptor.
-    			// Get the parent key number and concept
-    			List<Concept> parentCons = null;
-    			String parentKey = null;
-    			if (treeNum.contains(".")) {
-        			parentKey = treeNum.substring(0, treeNum.lastIndexOf("."));
-        			parentCons = parentTree.get(parentKey);    				
-    			} else {
-    				parentKey = "TOP";
-    			}
+    		for (Concept c: concepts) {
+    			// Set the related descriptors
+				c.setRelatedDescriptors(relatedDescriptors);
 
-    			// Get the list of concepts associated with this tree number
-    			List<Concept> treeCons = meshTree.get(treeNum);
-    			
-    			// For each concept represented by this descriptor
-				for (Concept c: concepts) {
+				// Get the list of concepts for this descriptor ID, if any
+				List<String> descriptorCons = descriptorMap.get(c.getDescriptorId());
+				if (descriptorCons == null) 
+					descriptorCons = new ArrayList<String>();
+				
+				// Add the current concept to the list of concepts for this descriptor
+				descriptorCons.add(c.getConceptId());
+				descriptorMap.put(c.getDescriptorId(), descriptorCons);
+
+				
+        		for (String treeNum : treeNumbers) 
+        		{	
+        			// If the tree number contains a period ("."), this is a child descriptor.
+        			// Get the parent key number and concept
+        			List<String> parentCons = null;
+        			String parentKey = null;
+        			if (treeNum.contains(".")) {
+            			parentKey = treeNum.substring(0, treeNum.lastIndexOf("."));
+            			parentCons = parentTree.get(parentKey);    				
+        			} else {
+        				parentKey = "TOP";
+        			}
+
+        			// Get the list of concepts associated with this tree number
+        			List<String> treeCons = meshTree.get(treeNum);
+        			
+    				// Create a new concept list, if none exists
+    				if (treeCons == null) 
+    					treeCons = new ArrayList<String>();        			
 					
-					// Set the related descriptors
-					c.setRelatedDescriptors(relatedDescriptors);
-					
-					// Create a new concept list, if none exists
-					if (treeCons == null) 
-						treeCons = new ArrayList<Concept>();
-					
-					// Add this concept to the list associated with the current tree number
-					treeCons.add(c);
+    				// Add this concept to the list associated with the current tree number
+					treeCons.add(c.getConceptId());
 					meshTree.put(treeNum, treeCons);
-					
-					// Get the list of concepts for this descriptor ID, if any
-					List<String> descriptorCons = descriptorMap.get(c.getDescriptorId());
-					if (descriptorCons == null) 
-						descriptorCons = new ArrayList<String>();
-					
-					// Add the current concept to the list of concepts for this descriptor
-					descriptorCons.add(c.getConceptId());
-					descriptorMap.put(c.getDescriptorId(), descriptorCons);
 					
 					// Add this concept to the list of siblings
 					if (parentCons == null) 
-						parentCons = new ArrayList<Concept>();
-					parentCons.add(c);	
+						parentCons = new ArrayList<String>();
+					parentCons.add(c.getConceptId());	
 					parentTree.put(parentKey, parentCons);
-				}
+					
+					c.addTreeNumber(treeNum);
+        		}
+    					
+				// Add this concept to the list of concepts
+				meshConcepts.put(c.getConceptId(), c);    					
     		}
     	}
     }
@@ -195,26 +206,37 @@ public class MeshConverter extends DefaultHandler
     public void endDocument()
     {
     	// List of MeshConcepts 
-    	Map<String, MeshConcept> meshConcepts = new HashMap<String, MeshConcept>();
+    	Map<String, MeshConcept> skosConcepts = new HashMap<String, MeshConcept>();
     	
-    	// Enumerate keys in the MeSH hierarchy
-    	Set<String> keys = meshTree.keySet();
-    	for (String treeNum : keys) 
+    	// Enumerate all concepts
+    	Set<String> keys = meshConcepts.keySet();
+    	for (String conceptId : keys) 
     	{	
-		
-			
-   			// Get concepts represented by the current tree number
-    		List<Concept> concepts = meshTree.get(treeNum);
-    		for (Concept c: concepts) {
+    		// Get the current concept
+    		Concept c = meshConcepts.get(conceptId);
 
-    			MeshConcept meshConcept = new MeshConcept();
-    			meshConcept.setConceptId(c.getConceptId());
-    			meshConcept.setScopeNote(c.getScopeNote());
-    			
+			MeshConcept meshConcept = new MeshConcept();
+			meshConcept.setConceptId(c.getConceptId());
+			meshConcept.setScopeNote(c.getScopeNote());
+
+			// Get terms for the current concept
+			List<Term> terms = c.getTerms();
+			for (Term term : terms) {
+				if (term.isPreferred())
+					meshConcept.setPreferrerTerm(term.getTermValue());
+				else 
+					meshConcept.addAltTerm(term.getTermValue());
+			}
+			
+			List<String> treeNums = c.getTreeNumbers();
+			for (String treeNum: treeNums) 
+			{
     			// Given the tree number, get the broader terms (parent nodes)
-    			List<Concept> broaders = getBroader(treeNum);
-    			for (Concept b: broaders) {
-    				meshConcept.addBroader(b.getConceptId());
+    			List<String> broaderConcepts = getBroader(treeNum);
+    			if (broaderConcepts != null) {
+	    			for (String broaderConcept: broaderConcepts) {
+	    				meshConcept.addBroader(broaderConcept);
+	    			}
     			}
     			
     			// Given the tree number, get the narrower terms (child nodes)
@@ -223,15 +245,7 @@ public class MeshConverter extends DefaultHandler
     				meshConcept.addNarrower(narrowerConcept);
     			}
     			
-    			// Get terms for the current concept
-    			List<Term> terms = c.getTerms();
-    			for (Term term : terms) {
-    				if (term.isPreferred())
-    					meshConcept.setPreferrerTerm(term.getTermValue());
-    				else 
-    					meshConcept.addAltTerm(term.getTermValue());
-    			}
-    			
+
     			/* 
     			//Given the parent tree number, get the sibling nodes
     			
@@ -272,13 +286,13 @@ public class MeshConverter extends DefaultHandler
     				else if (conceptRelation.getRelation().equals("REL"))
     					meshConcept.addRelated(conceptRelation.getConcept2());
     			}
-    			meshConcepts.put(meshConcept.getConceptId(), meshConcept);
     		}
+			skosConcepts.put(meshConcept.getConceptId(), meshConcept);
     	}
     	
     	
     	try {
-			writeSKOS(skosFile, meshConcepts);
+			writeSKOS(skosFile, skosConcepts);
 		} catch (FileNotFoundException e) {
 			logger.error(e);
 		} catch (UnsupportedEncodingException e) {
@@ -286,8 +300,8 @@ public class MeshConverter extends DefaultHandler
 		}
     }
 
-    public List<Concept> getBroader(String key) {
-    	List<Concept> broaders = new Vector<Concept>();
+    public List<String> getBroader(String key) {
+    	List<String> broaders = new ArrayList<String>();
     	if (key.contains(".")) {
     		String parentKey = key.substring(0, key.lastIndexOf("."));
     		broaders = meshTree.get(parentKey);
@@ -307,10 +321,10 @@ public class MeshConverter extends DefaultHandler
     	
     	// Get all concepts for which this is the parent key
     	List<String> narrowers = new ArrayList<String>();
-    	List<Concept> concepts = parentTree.get(treeNum);
+    	List<String> concepts = parentTree.get(treeNum);
     	if (concepts != null) {
-	    	for (Concept c: concepts) {
-	    		narrowers.add(c.getConceptId());
+	    	for (String conceptId: concepts) {
+	    		narrowers.add(conceptId);
 	    	}
     	}
     	return narrowers;
@@ -333,9 +347,8 @@ public class MeshConverter extends DefaultHandler
 		pr.println("<rdf:RDF");
 		pr.println("xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"");
 		pr.println("xmlns:skos=\"http://www.w3.org/2004/02/skos/core#\" >");
-		int n = 0;
 		for (MeshConcept concept : meshConcepts.values()) {
-			pr.println("<rdf:Description rdf:about=\"http://www.nlm.nih.gov/mesh/" + concept.getConceptId() + "\">");
+			pr.println("<rdf:Description rdf:about=\"http://www.nlm.nih.gov/mesh/" + concept.getConceptId() + "#concept\">");
 			pr.println("\t<rdf:type rdf:resource=\"http://www.w3.org/2004/02/skos/core#Concept\"/>");
 			pr.println("\t<skos:inScheme rdf:resource=\"http://www.nlm.nih.gov/mesh#conceptScheme\"/>");
 			pr.println("\t<skos:prefLabel>" + htmlEncode(concept.getPreferrerTerm()) + "</skos:prefLabel>");
@@ -345,11 +358,11 @@ public class MeshConverter extends DefaultHandler
 				pr.println("\t<skos:altLabel>" + htmlEncode(alt) + "</skos:altLabel>");
 			}
 
-			List<String> broaders = concept.getBroader();
+			Set<String> broaders = concept.getBroader();
 			for(String bro : broaders)
 				pr.println("\t<skos:broader rdf:resource=\"http://www.nlm.nih.gov/mesh/" + htmlEncode(bro) + "#concept\"/>");
 			
-			List<String> narrowers = concept.getNarrower();
+			Set<String> narrowers = concept.getNarrower();
 				for(String narrow : narrowers)
 				pr.println("\t<skos:narrower rdf:resource=\"http://www.nlm.nih.gov/mesh/" + htmlEncode(narrow) + "#concept\"/>");
 
@@ -366,7 +379,7 @@ public class MeshConverter extends DefaultHandler
 		pr.println("</rdf:RDF>");
 		pr.close();
 		
-		logger.info(n + " concepts printed");
+		logger.info(meshConcepts.size() + " concepts printed");
 	}    
 	
 	
