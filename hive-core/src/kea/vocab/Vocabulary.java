@@ -168,14 +168,15 @@ public abstract class Vocabulary implements Serializable
 		// Stem string
 		words = str.split(" ");
 		str_nostop = "";
-	
+		
 		for (int i = 0; i < words.length; i++) {
 			String word = words[i];
 			if (!m_Stopwords.isStopword(word)) {
 				
 				if (word.matches(".+?\\'.+?")) {
-					String[] elements = word.split("\\'");		
-					word = elements[1];			
+					String[] elements = word.split("\\'");
+					if (elements.length > 1)
+						word = elements[1];
 				}	
 
 				

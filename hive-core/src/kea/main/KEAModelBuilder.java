@@ -3,6 +3,7 @@ package kea.main;
 
 import java.io.BufferedOutputStream;
 
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -36,7 +37,8 @@ import weka.core.Utils;
 import kea.filters.KEAFilter;
 import kea.stemmers.*;
 import kea.stopwords.*;
-import kea.vocab.VocabularySesame;
+import kea.vocab.Vocabulary;
+import kea.vocab.VocabularyH2;
 
 /**
  * Builds a keyphrase extraction model from the documents in a given
@@ -154,7 +156,7 @@ public class KEAModelBuilder implements OptionHandler {
 	/** Determines whether check for proper nouns is performed */
 	private boolean m_CheckForProperNouns = true;
 	
-	private VocabularySesame vocabulary;
+	private Vocabulary vocabulary;
 	
 	public KEAModelBuilder(SKOSScheme scheme) {
 		m_vocabularyFormat = "skos";
@@ -744,9 +746,12 @@ public class KEAModelBuilder implements OptionHandler {
 	/**
 	 * Builds the model from the files
 	 */
-	public void buildModel(Hashtable stems, String vocabularyPath, String stopwordsPath, SesameManager manager) throws Exception {
-		this.vocabulary = new VocabularySesame(m_vocabulary, m_vocabularyFormat,
-				m_documentLanguage, manager);
+	public void buildModel(Hashtable stems, SKOSScheme schema, String stopwordsPath, SesameManager manager) throws Exception {
+		
+		String h2path = new File(schema.getRdfPath()).getParentFile().getAbsolutePath();
+		h2path += File.separator + schema.getName().toLowerCase() + "H2" + File.separator + schema.getName().toLowerCase();
+		this.vocabulary = new VocabularyH2(schema.getName(), h2path, m_documentLanguage, schema.getManager());
+		
 		// Check whether there is actually any data
 		if (stems.size() == 0) {
 			throw new Exception("Couldn't find any data!");
@@ -893,7 +898,7 @@ public class KEAModelBuilder implements OptionHandler {
 					System.err.print(optionSettings[i] + " ");
 				}
 				System.err.println();
-				kmb.buildModel(kmb.collectStems(),vocabularyPath,stopwordsPath,null);
+				kmb.buildModel(kmb.collectStems(),schema,stopwordsPath,null);
 				kmb.saveModel();
 			} catch (Exception e) {
 				e.printStackTrace();
