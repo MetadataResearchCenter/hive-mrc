@@ -18,6 +18,7 @@ public class Concept {
 	List<Term> terms = new ArrayList<Term>();
 	List<ConceptRelation> relations = new ArrayList<ConceptRelation>();
 	List<String> relatedDescriptors = new ArrayList<String>();
+	List<String> treeNumbers = new ArrayList<String>();
 	
 	public Concept() 
 	{
@@ -92,5 +93,13 @@ public class Concept {
 
 	public void setDescriptorId(String descriptorId) {
 		this.descriptorId = descriptorId;
+	}
+	
+	public void addTreeNumber(String treeNumber) {
+		treeNumbers.add(treeNumber);
+	}
+	
+	public List<String> getTreeNumbers() {
+		return treeNumbers;
 	}
 }

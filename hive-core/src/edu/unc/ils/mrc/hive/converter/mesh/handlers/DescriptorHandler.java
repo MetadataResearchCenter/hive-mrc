@@ -24,6 +24,7 @@ public class DescriptorHandler extends MeshHandler
 	List<Concept> concepts = new ArrayList<Concept>();
 	List<String> treeNumbers = new ArrayList<String>();
 	List<String> relatedDescriptors = new ArrayList<String>();
+	List<ConceptRelation> relations = new ArrayList<ConceptRelation>();
 	
 	public DescriptorHandler(XMLReader parser, DefaultHandler parent) {
 		super(parser, parent);
@@ -48,8 +49,9 @@ public class DescriptorHandler extends MeshHandler
     	else if (qName.equals("ScopeNote")) {	
     		currentValue = "";
     	}    	
-    	else if (qName.equals("ConceptRelationList")) {
-    		ConceptRelationListHandler handler = new ConceptRelationListHandler(parser, this);
+    	else if (qName.equals("ConceptRelation")) {
+        	String relation = attributes.getValue("RelationName");
+    		ConceptRelationHandler handler = new ConceptRelationHandler(parser, this, relation);
     		childHandler = handler;
     		parser.setContentHandler(handler);
     	}
@@ -88,9 +90,13 @@ public class DescriptorHandler extends MeshHandler
     		currentConcept.setScopeNote(currentValue);
     		currentValue = "";
     	}    	
+    	else if (qName.equals("ConceptRelation")) {
+    		ConceptRelation relation = ((ConceptRelationHandler)childHandler).getRelation();
+    		relations.add(relation);
+    	}
     	else if (qName.equals("ConceptRelationList")) {
-    		List<ConceptRelation> relations = ((ConceptRelationListHandler)childHandler).getRelations();
     		currentConcept.setRelations(relations);
+    		relations = new ArrayList<ConceptRelation>();
     	}
     	else if (qName.equals("Concept")) {
     		List<Term> terms = ((TermListHandler)childHandler).getTerms();
