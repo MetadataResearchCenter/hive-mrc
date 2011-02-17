@@ -138,7 +138,7 @@ Heart Diseases                    [Descriptor]          D006331
     ...
 }}}
 
-See also the abbreviated [http://code.google.com/p/hive-mrc/downloads/detail?name=cardiomegaly.xml MeSH XML] version.
+See also the [http://code.google.com/p/hive-mrc/downloads/detail?name=cardiomegaly.xml abbreviated] and [http://code.google.com/p/hive-mrc/downloads/detail?name=cardiomegaly-full.xml full] MeSH XML version.
 
 The resulting SKOS concepts:
 {{{
