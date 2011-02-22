@@ -7,7 +7,6 @@
 This page describes how to install and initialize the HIVE services, including:
 
  * HIVE Web Service
- * HIVE Rest Service
  * Importing vocabularies into HIVE
 
 == System Requirements ==
@@ -86,4 +85,3 @@ The import process is detailed in the ImportingVocabularies section. A brief sum
   # A HIVE vocabulary configuration file ((e.g., {{{<vocabulary>.properties}}}
   # A hive.properties file
   # If "kea" indexing is enabled, a set of training documents
-
