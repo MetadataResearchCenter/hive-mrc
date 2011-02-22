@@ -1,6 +1,5 @@
 #summary Installing the HIVE Rest Service
 
-<wiki:toc max_depth="2" />
 
 = Installing the HIVE Rest Service =
 
