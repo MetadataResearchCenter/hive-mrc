@@ -87,13 +87,3 @@ The import process is detailed in the ImportingVocabularies section. A brief sum
   # A hive.properties file
   # If "kea" indexing is enabled, a set of training documents
 
-
-== Installing the HIVE Rest Service ==
-
-  # Download and install Tomcat
-  # Run tomcat and confirm you can see the default screen
-  # Note the catalina.out file will contain much of the HIVE output
-  # Download the [http://hive-mrc.googlecode.com HIVE code]
-  # Compile the hive-rs package with [http://ant.apache.org/ Ant]
-  # Copy the resultant WebRoot to the Tomcat webapps directory (it is best to rename it)
-  # Start Tomcat and test
