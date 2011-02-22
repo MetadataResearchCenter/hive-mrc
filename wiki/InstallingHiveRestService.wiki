@@ -1,13 +1,13 @@
-#summary One-sentence summary of this page.
+#summary Installing the HIVE Rest Service
 
-= Introduction =
+<wiki:toc max_depth="2" />
 
-Add your content here.
+= Installing the HIVE Rest Service =
 
-
-= Details =
-
-Add your content here.  Format your content with:
-  * Text in *bold* or _italic_
-  * Headings, paragraphs, and lists
-  * Automatic links to other wiki pages
+  # Download and install Tomcat
+  # Run tomcat and confirm you can see the default screen
+  # Note the catalina.out file will contain much of the HIVE output
+  # Download the [http://hive-mrc.googlecode.com HIVE code]
+  # Compile the hive-rs package with [http://ant.apache.org/ Ant]
+  # Copy the resultant WebRoot to the Tomcat webapps directory (it is best to rename it)
+  # Start Tomcat and test
