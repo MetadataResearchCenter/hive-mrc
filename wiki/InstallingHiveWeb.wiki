@@ -19,11 +19,13 @@ This page describes how to install and initialize the HIVE services, including:
 
 When using the KEA++ indexer with the H2-based vocabulary and all vocabularies loaded, HIVE requires ~512MB of memory. 
 
-To increase the maximum JVM heap size, use the -Xmx option. To limit the proportion of VM spent in garbage collection before an OutOfMemoryError? is thrown, use -XX:UseGCOverheadLimit. In Tomcat, this can be set using the CATALINA_OPTS variable, as in catalina.sh:
+To increase the maximum JVM heap size, use the -Xmx option. To limit the proportion of VM spent in garbage collection before an {{{OutOfMemoryError}}} is thrown, use {{{-XX:UseGCOverheadLimit}}}. In Tomcat, this can be set using the {{{CATALINA_OPTS}}} variable, as in {{{catalina.sh}}}:
 
+{{{
 CATALINA_OPTS="-Xmx512m -XX:-UseGCOverheadLimit"
+}}}
 
-For KEA++ memory requirements using the in-memory indexer, see the[HIVEMemoryUsage HIVE memory usage] page.
+For KEA++ memory requirements using the in-memory indexer, see the [HIVEMemoryUsage HIVE memory usage] page.
 
 == Installing Tomcat ==
 
