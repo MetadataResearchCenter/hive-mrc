@@ -26,8 +26,10 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package edu.unc.ils.mrc.hive.util;
 
 import java.io.File;
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -40,6 +42,7 @@ import org.apache.tika.parser.Parser;
 import org.apache.tika.sax.BodyContentHandler;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
+
 
 public class TextManager {
 
@@ -99,9 +102,34 @@ public class TextManager {
 		return this.handler.toString();
 	}
 
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-
+	/**
+	 * Simple command line to convert a directory of files to text.
+	 * @param args
+	 * @throws IOException
+	 */
+	public static void main(String[] args) throws IOException 
+	{
+		if (args.length != 1) {
+			System.err.println("Usage: java " + TextManager.class.getName() + "[path to directory of files]");
+		}
+		
+		String dir = args[0];
+		File inputDir = new File(dir);
+		if (inputDir.isDirectory())
+		{
+			TextManager tm = new TextManager();
+			File[] files = inputDir.listFiles();
+			for (File file: files)
+			{
+				String pdfPath = file.getAbsolutePath();
+				String txtPath = pdfPath.substring(0, pdfPath.lastIndexOf('.')) + ".txt";
+				String text = tm.getPlainText(pdfPath);
+				FileWriter txtWriter = new FileWriter(txtPath);
+				txtWriter.write(text);
+				txtWriter.close();
+			}
+		}
+		else 
+			System.err.println("Error: A directory must be specified");
 	}
-
 }
