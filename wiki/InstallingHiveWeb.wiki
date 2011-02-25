@@ -37,9 +37,9 @@ The HIVE services can be installed using any Java servlet container or applicati
 
 Simple install steps:
  * Download Tomcat zip or .tar.gz file
- * Extract archive
- * cd <tomcat_install>/bin
- * startup.sh
+ * Extract archive ({{{unzip *.zip}}} or {{{tar xfz *.tar.gz}}})
+ * {{{cd <tomcat_install>/bin}}} 
+ * {{{bin/startup.sh}}}
  * Goto http://localhost:8080/, confirm Tomcat startup page displays
 
 
