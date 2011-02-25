@@ -12,27 +12,18 @@ This page describes how to install and initialize the HIVE services, including:
 == System Requirements ==
 
  * Java 1.6
- * Java servlet container/application server (Tomcat 6.0 recommended)
+ * Java servlet container/application server (Tomcat 6.x recommended)
  * See memory requirements below
 
-== HIVE Memory Usage ==
+== Memory Requirements ==
 
-When using the KEA++ indexer, depending on the size of the vocabularies used with HIVE, the service may require a significant amount of system memory. 
+When using the KEA++ indexer with the H2-based vocabulary and all vocabularies loaded, HIVE requires ~512MB of memory. 
 
-To increase the maximum JVM heap size, use the -Xmx option. To limit the proportion of VM spent in garbage collection before an OutOfMemoryError is thrown, use -XX:UseGCOverheadLimit. In Tomcat, this can be set using the CATALINA_OPTS variable, as in {{{catalina.sh}}}:
+To increase the maximum JVM heap size, use the -Xmx option. To limit the proportion of VM spent in garbage collection before an OutOfMemoryError? is thrown, use -XX:UseGCOverheadLimit. In Tomcat, this can be set using the CATALINA_OPTS variable, as in catalina.sh:
 
-{{{
-CATALINA_OPTS="-Xmx1512m -XX:-UseGCOverheadLimit"
-}}}
+CATALINA_OPTS="-Xmx512m -XX:-UseGCOverheadLimit"
 
-Below are per-vocabulary memory requirements (this is in addition to basic Tomcat overhead). Memory requirements are slightly higher during the vocabulary import process.
-||Agrovoc||115MB||
-||LCSH||800MB||
-||MeSH||100MB||
-||NBII||45MB||
-||TGN||1.5GB||
-
-To operate HIVE with all vocabularies using the KEA++ indexer requires ~3.5GB of heap.
+For KEA++ memory requirements using the in-memory indexer, see the[HIVEMemoryUsage HIVE memory usage] page.
 
 == Installing Tomcat ==
 
@@ -41,6 +32,13 @@ The HIVE services can be installed using any Java servlet container or applicati
  * Download the latest [http://tomcat.apache.org/download-60.cgi Tomcat 6.x release]
  * Follow the Tomcat [http://tomcat.apache.org/tomcat-6.0-doc/setup.html install instructions]
  * Optional: Modify the {{{catalina.sh}}} to set {{{CATALINA_OPTS}}} for increased heap allocation (see memory requirements above).
+
+Simple install steps:
+ * Download Tomcat zip or .tar.gz file
+ * Extract archive
+ * cd <tomcat_install>/bin
+ * startup.sh
+ * Goto http://localhost:8080/, confirm Tomcat startup page displays
 
 
 == Installing the HIVE Web Service ==
@@ -68,7 +66,7 @@ The HIVE services can be installed using any Java servlet container or applicati
 
 == HIVE Sample Data ==
 
-To get started quickly, you can also download the AGROVOC [http://code.google.com/p/hive-mrc/downloads/list sample data] from. This sample data includes pre-initialized indexes and KEA++ model.
+To get started quickly, you can also download the AGROVOC [http://code.google.com/p/hive-mrc/downloads/list sample data]. This sample data includes pre-initialized indexes and KEA++ model.
 
   # Download and extract {{{hive-agrovoc-sample.zip}}} from the Downloads page
   # Move the {{{hive-data}}} directory to the desired location (default is {{{/usr/local/hive/hive-data}}})
