@@ -1,3 +1,5 @@
+#summary Overview of HIVE Web interface
+
 <wiki:toc max_depth="2" />
 
 = HIVE Web interface =
