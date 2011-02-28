@@ -3,9 +3,9 @@
 The HIVE REST service was developed by Duane Costa of the Long-Term Ecological Research Network (LTERNet). The HIVE REST interface provides JAX-RS based RESTful access to the HIVE Core API. 
 
 The HIVE REST service exposes the following interfaces:
- * SchemesResource: Scheme information 
- * ConceptsResources: Access to concepts within a scheme
- * SearcherResources: Keyword searching
+ * Schemes Resource: Scheme information 
+ * Concepts Resources: Access to concepts within a scheme
+ * Searcher Resources: Keyword searching
 
 == Schemes Resource: Sample URLs ==
 
