@@ -14,7 +14,7 @@ The HIVE Core API supports the following:
 
 HIVE Core allows users to access SKOS-based vocabularies via natural language and SPARQL interfaces. The Natural Language interface supports keyword-based queries to retrieve concepts using Lucene. 
 
-<img src="http://hive-mrc.googlecode.com/svn/trunk/doc/HIVE-Documentation/img/hive-architecture.jpg" />
+<img src="http://hive-mrc.googlecode.com/svn/trunk/doc/HIVE-Documentation/img/hive-architecture-new.jpg"/>
 
 == Index Administration ==
 
