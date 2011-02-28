@@ -16,10 +16,7 @@ For more information, see:
 The KEA algorithm is based on a Naïve Bayes classification system. Training data is used to build a statistical model which is used to recognize positive and negative examples. This statistical model is based on real world examples -- a corpus of documents with controlled terms assigned by hand, generally professional indexers.
 
 Machine learning has two separate phases:
- * Training phase: Examples of solutions are used to explain to
-the system how the problem can be resolved. In general, these are documents indexed by human indexers using controlled
-vocabularies. From now this set of documents will be called training
-set. KEA is trained based on features of related phrases in the thesaurus.
+ * Training phase: Examples of solutions are used to explain to the system how the problem can be resolved. In general, these are documents indexed by human indexers using controlled vocabularies. From now this set of documents will be called trainingset. KEA is trained based on features of related phrases in the thesaurus.
  * Test phase: The system tries to solve new problems which are similar to the solved problems used to train the system. In HIVE, the new problems are documents that we want to index with vocabularies in HIVE.
 
 
