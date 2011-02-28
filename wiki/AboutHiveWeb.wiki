@@ -14,7 +14,7 @@ The HIVE Web user interface includes three main components:
 === Home ===
 The home page for the HIVE Web service introduces the HIVE project and displays statistics about each of the supported vocabularies. It is intended to help the user understand what HIVE is and what it can help them to accomplish.
 
-=== Concept Browser
+=== Concept Browser ===
 The Concept Browser, displayed in figure \ref{browser}, is a central component of the HIVE Web interface. The goal of the Concept Browser is to allow users to browse and search concepts from heterogeneous vocabularies. It also demonstrates how multiple vocabularies can be integrated using a common format and user interface.
 
 The Concept Browser also supports the visualization of the context of a selected concept by showing the relations.
