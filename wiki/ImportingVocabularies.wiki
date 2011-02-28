@@ -20,41 +20,42 @@ longName = CSA/NBII Biocomplexity Thesaurus
 uri = http://thesaurus.nbii.gov 
 
 #Sesame Store
-store = /home/hive-data/nbii/store
+store = /usr/local/hive/hive-data/nbii/store
 
 #Lucene Inverted Index 
-index = /home/hive-data/nbii/index
+index = /usr/local/hive/hive-data/nbii/index
 
 #Alphabetical Index
-alpha_file = /home/hive-data/nbii/alphaIndex
+alpha_file = /usr/local/hive/hive-data/nbii/alphaIndex
 
 #Top Concept Index       
-top_concept_file = /home/hive-data/nbii/topConceptIndex
+top_concept_file = /usr/local/hive/hive-data/nbii/topConceptIndex
 
 #KEA data files          
-stopwords = /home/hive-data/nbii/KEA/data/stopwords/stopwords_en.txt
-kea_training_set = /home/hive-data/nbii/KEA/train
-kea_test_set = /home/hive-data/nbii/KEA/test
-rdf_file = /home/hive-data/nbii/nbii3.rdf
-kea_model = /home/hive-data/nbii/KEA/nbii
+stopwords = /usr/local/hive/hive-data/nbii/KEA/data/stopwords/stopwords_en.txt
+kea_training_set = /usr/local/hive/hive-data/nbii/KEA/train
+kea_test_set = /usr/local/hive/hive-data/nbii/KEA/test
+rdf_file = /usr/local/hive/hive-data/nbii/nbii3.rdf
+kea_model = /usr/local/hive/hive-data/nbii/KEA/nbii
 }}}
                                                                                    
-Place the configuration file in the same directory as the file "vocabularies". The vocabularies file is used by SKOSServer identify which vocabularies will be opened.
+Place the configuration file in the same directory as the "hive.properties" file. The "hive.properties" file is used by SKOSServer identify which vocabularies will be opened.
 
 The HIVE configuration directory may look like:
 
 {{{
-conf/
-  vocabularies
-  nbii.properties
+conf/ 
+  agrovoc.properties 
+  hive.properties
   lcsh.properties
   mesh.properties
-  agrovoc.properties                                                                   
+  nbii.properties
+  tgn.properties
 }}}
        
 == AdminVocabularies ==
 
-Before running AdminVocabularies, make sure Tomcat is not running.
+Before running AdminVocabularies, make sure Tomcat is not running. A single process can access the HIVE index files at a time.
 
 AdminVocabularies takes these parameters:
     # Path to configuration directory
@@ -64,7 +65,7 @@ AdminVocabularies takes these parameters:
 
 For example (with training): 
 {{{
-java  -Djava.ext.dirs=/home/hive-rs/WebRoot/WEB-INF/lib  edu.unc.ils.mrc.hive.admin.AdminVocabularies /home/hive-rs/WebRoot/WEB-INF/conf/ lter train
+java  -Djava.ext.dirs=/path/to/tomcat6/webapps/ROOT/WEB-INF/lib  edu.unc.ils.mrc.hive.admin.AdminVocabularies /path/to/tomcat6/webapps/WEB-INF/conf/ lter train
 }}}
 
 To load the vocabulary without training, omit the parameter "train".
