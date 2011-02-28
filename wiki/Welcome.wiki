@@ -8,7 +8,10 @@ HIVE functions:
  * Conversion of vocabularies to SKOS
  * Rich internet application (RIA) for browsing and searching multiple SKOS vocabularies
  * Java API and REST application interfaces for programmatic access to multiple SKOS vocabularies
- * Automatic keyphrase indexing using multiple SKOS vocabularies
+ * Automatic keyphrase indexing using multiple SKOS vocabularies. HIVE supports two indexers:
+   * KEA++ indexer
+   * Basic Lucene indexer
+
 
 Learn more:
  * [AboutHiveCore About HIVE Core]
