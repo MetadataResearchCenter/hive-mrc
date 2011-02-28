@@ -14,7 +14,7 @@ The HIVE Core API supports the following:
 
 The HIVE Core API allows developers to access multiple SKOS-based vocabularies in Java, including natural language and SPARQL query interfaces. The natural language interface supports keyword queries to retrieve concepts using Lucene.
 
-The HIVE Core API is used by both the HIVE [AboutHiveWebService Web] and [AboutHiveRestService REST] services.
+The HIVE Core API is used by both the HIVE [AboutHiveWeb Web] and [AboutHiveRestService REST] services.
 
 <img src="http://hive-mrc.googlecode.com/svn/trunk/doc/HIVE-Documentation/diagrams/hive-architecture-new.jpg"/>
 
