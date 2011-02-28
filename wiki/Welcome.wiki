@@ -4,6 +4,12 @@
 
 HIVE is an automatic metadata generation approach that dynamically integrates discipline-specific controlled vocabularies encoded with the Simple Knowledge Organisation System (SKOS), a World Wide Web Consortium (W3C) standard. HIVE will assist content creators and information professionals with subject cataloging and will provide a solution to the traditional controlled vocabulary problems of cost, interoperability, and usability.
 
+HIVE functions:
+ * Conversion of vocabularies to SKOS
+ * Rich internet application (RIA) for browsing and searching multiple SKOS vocabularies
+ * REST application for programmatic access to multiple SKOS vocabularies
+ * Automatic keyphrase indexing using multiple SKOS vocabularies
+
 Learn more:
  * [AboutHiveCore About HIVE Core]
  * [AboutHiveWeb About HIVE Web]
