@@ -2,26 +2,31 @@
 
 = Introduction to KEA =
 
-The algorithm that we are using in HIVE is KEA++, KEA++ has been
-developed for Ian Witten's group from University of Waikakato. Last
-version of KEA has been part of the Olena Medelyan phd. The other
-interesting result of her thesis has been Maui http://code.google.com/p/maui-indexer/, that is based on KEA.
+Problem: _How can we automatically identify the main topics of documents_?
 
-== How it works? ==
+The HIVE indexing service uses the [http://www.nzdl.org/Kea/description.html KEA++] algorithm and open-source library for extracting keyphrases from documents using SKOS vocabularies.
 
-KEA use a Machine Learning approach for automatic keyphrase extraction:
+KEA++ was developed by [http://www.medelyan.com/ Alyona Medelyan], based on earlier work by Ian Whitten (KEA) at the Digital Libraries and Machine Learning Lab at the University of Waikoto, New Zealand.
+ 
+== How KEA++ works ==
 
-Machine Learning approaches use to have two different phases:
+The KEA algorithm is based on a Naïve Bayes classification system. Training data is used to build a statistical model which is used to recognize positive and negative examples. This statistical model is based on real world examples -- a corpus of documents with controlled terms assigned by hand, generally professional indexers.
 
- * Training phase, where examples of solutions are used to explain to
-the system how the problem can be resolved. In our case these
-solutions are documents indexed by human indexers using controlled
+Machine learning has two separate phases:
+ * Training phase: Examples of solutions are used to explain to
+the system how the problem can be resolved. In general, these are documents indexed by human indexers using controlled
 vocabularies. From now this set of documents will be called training
-set.
- * Test phase, where the system try to solve new problems which are
-similar to the solved problems used to train the system. In our case,
-these problems to solve will be the documents that we want to index
-using the vocabularies that we have in HIVE.
+set. KEA is trained based on features of related phrases in the thesaurus.
+ * Test phase: The system tries to solve new problems which are similar to the solved problems used to train the system. In HIVE, the new problems are documents that we want to index with vocabularies in HIVE.
+
+
+== KEA++ Process ==
+
+After training, keyphrase extraction in KEA++ has two separate phases:
+ * Candidate identification: Identify all of the possibly keyphrases in the document.
+ * Keyphrase selection: Identify the most significant terms
+
+
 
 KEA use a Machine Learning scheme that can be divided in the following parts:
 
@@ -37,8 +42,17 @@ KEA use a Machine Learning scheme that can be divided in the following parts:
 
 == Candidate identification ==
 
-Candidate identification is the process where the most representative
-keyphrases are identified for each document in the training set.
+Candidate identification is the process of extracting the most representative keyphrases identified for each document.
+
+Basic steps: 
+ * Parse the text into tokens based on whitespace and punctuation
+ * Create word n-grams based on the longest term in the CV
+ * Count the number of occurrences
+ * Remove all stopwords from the n-gram
+ * Stem to grammatical root (Porter) (aka "pseudophrase")
+ * Stem vocabulary terms to root (Porter) 
+ * Replace non-descriptors with descriptors using synonym links
+ * Match stemmed n-grams to stemmed vocabulary terms.
 
 === Candidate extraction ===
 
@@ -76,11 +90,10 @@ identify a subset containing the most important of these candidates.
 === Features identification ===
 The features which KEA use are the followings:
 
- * TF*IDF
- * First occurrence position of the keyphrase in the document
-normalized by document length
- * Length of the keyphrases (in words, which boots multiterms)
- * Node degree reflects how richly the term is connected in the
+ * TF*IDF: Number of documents containing the phrase in the global corpus (training set only)
+ * Position of first occurence: Distance from the beginning of the document. Candidates with higher/lower values have higher relevance.
+ * Length of the keyphrases (in words)
+ * Node degree: Reflects how richly the term is connected in the
 thesaurus graph structure. The “degree” of a thesaurus term is the
 number of semantic links that connect it to other terms—for example, a
 term with one broader term and four related terms has degree 5. KEA
