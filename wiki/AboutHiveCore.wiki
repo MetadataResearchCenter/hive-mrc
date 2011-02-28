@@ -7,50 +7,57 @@ HIVE Core is a SKOS-based library written in Java. HIVE solves problems traditio
 The HIVE Core API supports the following:
  * Creation and administration of HIVE indexes
  * Keyword and SPARQL-based queries
- * Automatic concept tagging (KEA++)
+ * Automatic concept tagging/keyphrase indexing
  * Vocabulary conversion
 
 == HIVE Core Architecture ==
 
-HIVE Core allows users to access SKOS-based vocabularies via natural language and SPARQL interfaces. The Natural Language interface supports keyword-based queries to retrieve concepts using Lucene. 
+The HIVE Core API allows developers to access multiple SKOS-based vocabularies in Java, including natural language and SPARQL query interfaces. The natural language interface supports keyword queries to retrieve concepts using Lucene.
+
+The HIVE Core API is used by both the HIVE [AboutHiveWebService Web] and [AboutHiveRestService REST] services.
 
 <img src="http://hive-mrc.googlecode.com/svn/trunk/doc/HIVE-Documentation/diagrams/hive-architecture-new.jpg"/>
+
 
 == Index Administration ==
 
 The HIVE Core API supports the creation and administration of HIVE indexes used for searching and document tagging.
- * Lucene0based index for keyword searching
- * OpenRDF-based index for SPARQL-based queries
- * In-memory or embedded H2-based index for automatic controlled keyphrase assignment (tagging);
+ * Lucene-based index for keyword searching
+ * Sesame/OpenRDF-based index for SPARQL queries
+ * In-memory or embedded H2-based index for automatic controlled keyphrase assignment (tagging)
+ * Seralized maps containing the alphabetical and top-concept indexes
 
-== Creating training data for automatic metadata generation ==
+== Creating Training Data for Automatic Metadata Generation ==
+The HIVE automatic keyphrase indexing is based on the [http://www.nzdl.org/Kea KEA++] algorithm and library. 
 
-HIVE automatic metadata generation system is based on [http://www.nzdl.org/Kea/ KEA]. When a vocabulary is imported we must create a language model to use the vocabulary for automatic metadata generation. 
+When a vocabulary is imported into HIVE, a language model is built for keyphrase extraction. For more information, see the section [http://code.google.com/p/hive-mrc/wiki/TrainingKEA training KEA].
 
-The KEA algorithm is based on a Naïve Bayes based classification system. Training data is used to build a statistical model which is used to recognize positive and negative examples. This statistical model is based on real world examples, so for automatic metadata generation we use a corpus of documents where keywords and metadata has been assigned by hand.
 
 == HIVE Core API ==
+The HIVE Core API includes the following top-level interfaces:
+ * {{{SKOSServer}}}: Provides access to one or more vocabularies
+ * {{{SKOSScheme}}}: Represents an individual vocabulary
+ * {{{SKOSSearcher}}}: Supports searching across multiple vocabularies
+ * {{{SKOSTagger}}}: Supports tagging/keyphrase extraction across multiple vocabularies
+
 === SKOS Server ===
 
-SKOSServer is the high level classes that we have to instantiate to get up the Vocabulary server:
+{{{SKOSServer}}} is the top-level class used to initialize the vocabulary server. This class reads the {{{hive.properties}}} file and initializes the {{{SKOSScheme}}} (vocabulary management), {{{SKOSSearcher}}} (concept searching),  {{{SKOSTagger}}} (indexing) instances based on the vocabulary configurations.
 
 {{{
- SKOSServer server = new SKOSServerImpl("/home/hive/workspace/hive-core/conf/vocabularies");
+ SKOSServer server = new SKOSServerImpl("/home/hive/workspace/hive-core/conf/hive.properties");
 }}}
  
-where the method's argument makes reference to the configuration file where the names of the thesauri to load is written.
+The "hive.properties" file contains a list of vocabularies to be initialized. Each vocabulary has a separate properties file containing paths to the various data model elements.
 
 <img src="http://hive-mrc.googlecode.com/svn/trunk/doc/HIVE-Documentation/img/skosserver.jpg" />
 
-SKOSServer manages the three basic classes used to implement the HIVE basic functionalities: Concept Search(SKOSSearcher), Vocabularies management (SKOSScheme) and indexing SKOSTagger. All of theses classes are interfaces which are implemented using different libraries.
 
-=== SKOS Scheme ===
+=== SKOSScheme ===
 
-Every vocabulary in modeled in HIVE using SKOSScheme class. This class contains information about the vocabularies 
-and some methods to manage them.
+Each HIVE vocabulary is modeled using the {{{SKOSScheme}}} class. This class contains information about the vocabularies and methods to manage them, including statistics about each vocabulary (number of terms, and relations, updates, etc.).
 
-We can get information about statistics for every vocabulary, number of terms, and relations, updates, etc. The following piece of code show you how to do that:
-
+The following example demonstrates how to retrieve the statistics for each configured vocabulary/scheme:
 {{{
 TreeMap<String, SKOSScheme> vocabularies = server.getSKOSSchemas();
 Set<String> keys = vocabularies.keySet();
@@ -74,15 +81,15 @@ Iterator<String> it = keys.iterator();
 
 == Searching HIVE ==
 
-SKOSSearcher, is the interface which defines the search features in HIVE. These features can be divided into two kinds of search:
+The {{{SKOSSearcher}}} interface supports searching across one or more configured vocabularies. HIVE supports two types of searching:
 
- * Formal Search
- * Keyword based search
+ * Formal Search (SPARQL)
+ * Keyword based search (natural language)
 
 === Formal Search based on SPARQL ===
 
 Formal search is based on SPARQL, a formal language to get information from RDF databases. SPARQL is the standard query language for 
-Semantic Web application and it is useful to implement Web Services based on SPARQL end points, and so allowing third part applications to retrieve information from a RDF database.
+Semantic Web applications and it is useful to implement Web Services based on SPARQL endpoints, and so allowing third part applications to retrieve information from a RDF database.
 
 {{{
  searcher.SPARQLSelect(
@@ -187,9 +194,3 @@ for (SKOSConcept s : l) {
   System.out.println(s.getQName().getNamespaceURI());
 }
 }}}
-
-== Vocabulary Conversion == 
- * ITIS
- * MeSH
- * NBII
- * TGN
