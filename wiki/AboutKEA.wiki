@@ -9,7 +9,7 @@ The HIVE indexing service uses the [http://www.nzdl.org/Kea/description.html KEA
 KEA++ was developed by [http://www.medelyan.com/ Alyona Medelyan], based on earlier work by Ian Whitten (KEA) at the Digital Libraries and Machine Learning Lab at the University of Waikoto, New Zealand.
 
 For more information, see:
-* Medelyan, O. and Whitten, I.H. (2008). Domain-independent automatic keyphrase indexing with small training sets. _Journal of the American Society for Information Science and Technology_ 59(7). DOI: 10.1002/asi.v59:7
+ * Medelyan, O. and Whitten, I.H. (2008). Domain-independent automatic keyphrase indexing with small training sets. _Journal of the American Society for Information Science and Technology_ 59(7). DOI: 10.1002/asi.v59:7
  
 = How KEA++ works =
 
