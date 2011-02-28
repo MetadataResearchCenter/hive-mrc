@@ -78,7 +78,7 @@ To get started quickly, you can also download the AGROVOC [http://code.google.co
 
 == Importing Vocabularies into HIVE ==
 
-The HIVE services require the initialization of several indexes from one orm ore vocabularies in SKOS RDF/XML format. You will not be able to start the HIVE Web or Rest services until this initialization process is complete. This process creates a [[http://www.openrdf.org/ Sesame]] store, [[http://lucene.apache.org/ Lucene]] index, alphabetic and top-concept indexes from the source RDF. If [[http://www.nzdl.org/Kea/ KEA++]] indexing is enabled, the import process also creates and trains the KEA++ mode.
+The HIVE services require the initialization of several indexes from one orm ore vocabularies in SKOS RDF/XML format. You will not be able to start the HIVE Web or Rest services until this initialization process is complete. This process creates a [http://www.openrdf.org/ Sesame] store, [http://lucene.apache.org/ Lucene] index, alphabetic and top-concept indexes from the source RDF. If [http://www.nzdl.org/Kea/ KEA++] indexing is enabled, the import process also creates and trains the KEA++ mode.
 
 The import process is detailed in the ImportingVocabularies section. A brief summary of the requirements include:
   # A vocabulary in SKOS RDF/XML format
