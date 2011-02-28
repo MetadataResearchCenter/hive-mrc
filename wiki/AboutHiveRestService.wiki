@@ -12,7 +12,7 @@ The HIVE REST service exposes the following interfaces:
 The RESTful approach to web services was developed in response to other web services paradigms, such as Simple Object Access Protocol (SOAP). REST relies on the HTTP protocol, universal resource indicators (URI), and standard data formats (e.g., XML) to implement interfaces to web services. 
 
 See Also:
- * [ http://www.networkworld.com/ee/2003/eerest.html A RESTful Approach to Web Services]
+ * [http://www.networkworld.com/ee/2003/eerest.html A RESTful Approach to Web Services]
  * [http://www.oracle.com/technetwork/articles/javase/index-137171.html RESTful Web Services] at Oracle
  * [http://en.wikipedia.org/wiki/Representational_State_Transfer Representational State Transfer] at Wikipedia
 
