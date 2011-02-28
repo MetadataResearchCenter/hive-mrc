@@ -1,6 +1,45 @@
-#summary Overview of HIVE's REST service
+#summary Overview of the HIVE REST service
 
-The HIVE REST service was developed by Duane Costa. A demonstration instance is deployed at the Long-Term Ecological Research network office.
+The HIVE REST service was developed by Duane Costa of the Long-Term Ecological Research Network (LTERNet). The HIVE REST interface provides JAX-RS based RESTful access to the HIVE Core API. 
+
+The HIVE REST service exposes the following interfaces:
+ * SchemesResource: Scheme information 
+ * ConceptsResources: Access to concepts within a scheme
+ * SearcherResources: Keyword searching
+
+== Schemes Resource: Sample URLs ==
+
+ * http://hive.nescent.org/hive-rs/schemes/schemeNames
+ * http://hive.nescent.org/hive-rs/schemes/nbii/lastDate
+ * http://hive.nescent.org/hive-rs/schemes/nbii/longName
+ * http://hive.nescent.org/hive-rs/schemes/nbii/numberOfConcepts
+ * http://hive.nescent.org/hive-rs/schemes/nbii/numberOfRelations
+ * http://hive.nescent.org/hive-rs/schemes/nbii/schemaURI
+ * http://hive.nescent.org/hive-rs/schemes/nbii/alphaIndex
+ * http://hive.nescent.org/hive-rs/schemes/nbii/subAlphaIndex/a
+ * http://hive.nescent.org/hive-rs/schemes/nbii/topConceptIndex
+ * http://hive.nescent.org/hive-rs/schemes/nbii/subTopConceptIndex/a
+
+== Concept Resources: Sample URLs ==
+
+ * http://hive.nescent.org/hive-rs/schemes/nbii/concepts/prefLabels
+ * http://hive.nescent.org/hive-rs/schemes/nbii/concepts/prefLabels/a
+ * http://hive.nescent.org/hive-rs/schemes/nbii/concepts/285/altLabels
+ * http://hive.nescent.org/hive-rs/schemes/nbii/concepts/285/broaders
+ * http://hive.nescent.org/hive-rs/schemes/nbii/concepts/285/narrowers
+ * http://hive.nescent.org/hive-rs/schemes/nbii/concepts/285/prefLabel
+ * http://hive.nescent.org/hive-rs/schemes/nbii/concepts/285/QName
+ * http://hive.nescent.org/hive-rs/schemes/nbii/concepts/285/relateds
+ * http://hive.nescent.org/hive-rs/schemes/nbii/concepts/285/SKOSFormat
+ * http://hive.nescent.org/hive-rs/schemes/nbii/concepts/285/children
+
+== Searcher Resources: Sample URLs ==
+
+ * http://hive.nescent.org/hive-rs/schemes/nbii/concepts/SKOSFormat?keyword=activity
+ * http://hive.nescent.org/hive-rs/schemes/nbii/concepts/concept/SKOSFormat?prefLabel=Eruptions
+
+
+== See Also ==
 
 [http://hive-mrc.googlecode.com/svn/trunk/doc/sample-lter-hive-urls.txt Sample LTER hive-rs URLs]
 
