@@ -138,6 +138,7 @@ public class VocabularyH2 extends Vocabulary
 		File fileENrev = File.createTempFile("vocabularyENrev", null);
 		File fileUSE = File.createTempFile("vocabularyUSE", null);
 		File fileREL = File.createTempFile("vocabularyREL", null);
+		boolean hasRelated = false;
 		
 		try {
 			
@@ -145,7 +146,7 @@ public class VocabularyH2 extends Vocabulary
 			vocabularyENrev = new FileWriter(fileENrev);
 			vocabularyUSE = new FileWriter(fileUSE);
 			vocabularyREL = new FileWriter(fileREL);
-
+			
 			int count = 1;
 
 			// Iterate through all concepts in the vocabulary and write
@@ -195,6 +196,9 @@ public class VocabularyH2 extends Vocabulary
 							+ r.getQName().getLocalPart();
 					addRelated(uri, uriRelated);
 				}
+				
+				if (related.size() > 0)
+					hasRelated = true;
 			}
 
 		} catch (Exception e) {
@@ -223,7 +227,11 @@ public class VocabularyH2 extends Vocabulary
 			s.execute("CREATE TABLE vocabulary_enrev (id varchar(512) , value varchar(1024)) AS SELECT * FROM CSVREAD('" + fileENrev.getAbsolutePath() + "',null, 'UTF-8', '|');");
 			s.execute("CREATE INDEX idx2 on vocabulary_enrev(id);");
 			
-			s.execute("CREATE TABLE vocabulary_rel (id varchar(512), value varchar(1024), relation varchar(20)) AS SELECT * FROM CSVREAD('" + fileREL.getAbsolutePath() + "',null, 'UTF-8', '|');");
+			if (hasRelated)
+				s.execute("CREATE TABLE vocabulary_rel (id varchar(512), value varchar(1024), relation varchar(20)) AS SELECT * FROM CSVREAD('" + fileREL.getAbsolutePath() + "',null, 'UTF-8', '|');");
+			else
+				s.execute("CREATE TABLE vocabulary_rel (id varchar(512), value varchar(1024), relation varchar(20));");
+
 			s.execute("CREATE INDEX idx3 on vocabulary_rel(id);");
 					
 			s.execute("CREATE TABLE vocabulary_use ( id varchar(512) , value varchar(1024)) AS SELECT * FROM CSVREAD('" + fileUSE.getAbsolutePath() + "',null, 'UTF-8', '|');");
