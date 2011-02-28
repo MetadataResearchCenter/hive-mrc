@@ -30,11 +30,11 @@ After training, keyphrase extraction in KEA++ has two separate phases:
 
 KEA use a Machine Learning scheme that can be divided in the following parts:
  * Candidate identification using a set of features
- ** Candidate extraction
- ** Features identification
+  * Candidate extraction
+  * Features identification
  * Filtering
- ** Training the model using the training set
- ** Extracting keyphrases from new documents that are not present in the training set
+  * Training the model using the training set
+  * Extracting keyphrases from new documents that are not present in the training set
 
 == Candidate identification ==
 
