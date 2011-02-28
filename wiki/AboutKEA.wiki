@@ -11,7 +11,7 @@ KEA++ was developed by [http://www.medelyan.com/ Alyona Medelyan], based on earl
 For more information, see:
 * Medelyan, O. and Whitten, I.H. (2008). Domain-independent automatic keyphrase indexing with small training sets. _Journal of the American Society for Information Science and Technology_ 59(7). DOI: 10.1002/asi.v59:7
  
-== How KEA++ works ==
+= How KEA++ works =
 
 The KEA algorithm is based on a Naïve Bayes classification system. Training data is used to build a statistical model which is used to recognize positive and negative examples. This statistical model is based on real world examples -- a corpus of documents with controlled terms assigned by hand, generally professional indexers.
 
@@ -23,7 +23,7 @@ set. KEA is trained based on features of related phrases in the thesaurus.
  * Test phase: The system tries to solve new problems which are similar to the solved problems used to train the system. In HIVE, the new problems are documents that we want to index with vocabularies in HIVE.
 
 
-== KEA++ Process ==
+= KEA++ Process =
 
 After training, keyphrase extraction in KEA++ has two separate phases:
  * Candidate identification: Identify all of the possibly keyphrases in the document.
@@ -86,7 +86,7 @@ descriptors are all grammatical terms that relate to the document’s
 content, and each has an occurrence count. The next step is to
 identify a subset containing the most important of these candidates.
 
-=== Features identification ===
+== Features identification ==
 The features which KEA use are the followings:
 
  * TF*IDF: Number of documents containing the phrase in the global corpus (training set only)
