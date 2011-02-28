@@ -24,14 +24,14 @@ The HIVE REST service exposes the following interfaces:
 
  * http://hive.nescent.org/hive-rs/schemes/nbii/concepts/prefLabels
  * http://hive.nescent.org/hive-rs/schemes/nbii/concepts/prefLabels/a
- * http://hive.nescent.org/hive-rs/schemes/nbii/concepts/285/altLabels
- * http://hive.nescent.org/hive-rs/schemes/nbii/concepts/285/broaders
- * http://hive.nescent.org/hive-rs/schemes/nbii/concepts/285/narrowers
- * http://hive.nescent.org/hive-rs/schemes/nbii/concepts/285/prefLabel
- * http://hive.nescent.org/hive-rs/schemes/nbii/concepts/285/QName
- * http://hive.nescent.org/hive-rs/schemes/nbii/concepts/285/relateds
- * http://hive.nescent.org/hive-rs/schemes/nbii/concepts/285/SKOSFormat
- * http://hive.nescent.org/hive-rs/schemes/nbii/concepts/285/children
+ * http://hive.nescent.org/hive-rs/schemes/nbii/concepts/Companies/altLabels
+ * http://hive.nescent.org/hive-rs/schemes/nbii/concepts/Companies/broaders
+ * http://hive.nescent.org/hive-rs/schemes/nbii/concepts/Companies/narrowers
+ * http://hive.nescent.org/hive-rs/schemes/nbii/concepts/Companies/prefLabel
+ * http://hive.nescent.org/hive-rs/schemes/nbii/concepts/Companies/QName
+ * http://hive.nescent.org/hive-rs/schemes/nbii/concepts/Companies/relateds
+ * http://hive.nescent.org/hive-rs/schemes/nbii/concepts/Companies/SKOSFormat
+ * http://hive.nescent.org/hive-rs/schemes/nbii/concepts/Companies/children
 
 == Searcher Resources: Sample URLs ==
 
