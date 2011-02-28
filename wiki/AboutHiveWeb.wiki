@@ -4,31 +4,6 @@
 
 The HIVE Web interface is a GWT-based application intended to demonstrate the capabilities of the HIVE system and core API.
 
-
-== Rich Internet Application ==
-
-The HIVE Web user interface is a rich internet application (RIA) based on the Google Web Toolkit (GWT). 
-
-In a traditional web application, the user interface is used to display information and send requests to the server. Data storage and application logic are maintained server-side. The traditional web application model has several drawbacks, including: 
- * Each request to the server requires a full page load, reducing the responsiveness of the system.
- * The user interface is static, intended to present information, rather than interactive. 
- * The computing power of the user's system is underutilized.
-
-The RIA model distributes part of the processing to the client side, so that the user can perform more complex interactions with the system without requesting data from the server. If the user's interaction requires data from the server, the client can selectively retrieve only the information that has changed.
-
-Technologies for implementing RIA have rapidly emerged during recent years. AJAX, Silverlight, and Flex are all popular technologies. RIA applications based on Flash require the user to install Adobe Flash. RIA applications based on AJAX (Asynchronous Javascript and XML) has two major drawbacks: 
- * Programming large amounts of JavaScript is error-prone and difficult to maintain and reuse
- * JavaScript suffers from numerous browser incompatibilities.
-
-Many AJAX frameworks have been developed to address these issues.
-
-Future work on HIVE Web UI will focus on the usability testing to gain a constructive understanding of impact of RIA technologies on the usability of interactive web application.
-
-== Google Web Toolkit and HIVE ==
-
-The HIVE project is based on the Google Web Toolkit (GWT). Flash was not selected, because HIVE should be accessible from a standard web browser without installing additional software. GWT was selected because it allows developers to build and maintain large, high-performance JavaScript interfaces in the Java programming language, while also addressing common browser incompatibilities.
-
-
 == The HIVE Web UI ==
 
 The HIVE Web user interface includes three main components:
@@ -65,6 +40,29 @@ The HIVE indexing interface, displayed in \ref{indexing}, demonstrates the appli
 === Linked data for concepts ===
 
 HIVE is a multiple-vocabulary system that allows access to concepts and vocabularies using a simple URL. HIVE can support the storage of millions of concepts from different vocabularies and make them available on the Web through simple HTTP calls. Vocabularies can be imported into HIVE using the SKOS RDF/XML format. 
+
+== Rich Internet Application ==
+
+The HIVE Web user interface is a rich internet application (RIA) based on the Google Web Toolkit (GWT). 
+
+In a traditional web application, the user interface is used to display information and send requests to the server. Data storage and application logic are maintained server-side. The traditional web application model has several drawbacks, including: 
+ * Each request to the server requires a full page load, reducing the responsiveness of the system.
+ * The user interface is static, intended to present information, rather than interactive. 
+ * The computing power of the user's system is underutilized.
+
+The RIA model distributes part of the processing to the client side, so that the user can perform more complex interactions with the system without requesting data from the server. If the user's interaction requires data from the server, the client can selectively retrieve only the information that has changed.
+
+Technologies for implementing RIA have rapidly emerged during recent years. AJAX, Silverlight, and Flex are all popular technologies. RIA applications based on Flash require the user to install Adobe Flash. RIA applications based on AJAX (Asynchronous Javascript and XML) has two major drawbacks: 
+ * Programming large amounts of JavaScript is error-prone and difficult to maintain and reuse
+ * JavaScript suffers from numerous browser incompatibilities.
+
+Many AJAX frameworks have been developed to address these issues.
+
+Future work on HIVE Web UI will focus on the usability testing to gain a constructive understanding of impact of RIA technologies on the usability of interactive web application.
+
+== Google Web Toolkit ==
+
+The HIVE project is based on the Google Web Toolkit (GWT). Flash was not selected, because HIVE should be accessible from a standard web browser without installing additional software. GWT was selected because it allows developers to build and maintain large, high-performance JavaScript interfaces in the Java programming language, while also addressing common browser incompatibilities.
 
 
 == See Also ==
