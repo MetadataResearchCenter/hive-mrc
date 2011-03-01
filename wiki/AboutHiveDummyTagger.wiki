@@ -8,6 +8,7 @@ The {{{DummyTagger}}} implementation uses a [http://alias-i.com/lingpipe/demos/t
  * cd C:\mrc\nlp\lingpipe-4.0.1\demos\tutorial\posTags
  * ant -Ddata.pos.medpost=c:\mrc\nlp\medtag\medpost train-medpost
  * dir ..\..\models
+
 {{{
 01/03/2011  09:59 AM         4,974,338 pos-enbio-medpost.HiddenMarkovModel
 }}}
