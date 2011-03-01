@@ -1,6 +1,5 @@
 #summary Using Luke to View HIVE Lucene Indexes
 
-= Introduction =
 
  * Download the Luke [http://code.google.com/p/luke/ binary distribution]
  * Launch Luke: {{{luke -jar lukeall-1.0.1.jar}}}
