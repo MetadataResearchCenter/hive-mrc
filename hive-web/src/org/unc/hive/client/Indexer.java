@@ -193,7 +193,7 @@ public class Indexer implements EntryPoint {
 				}
 				if(addVocabularyPanel.getWidgetCount() == 0)
 				{
-					Label msg = new Label("You have selected all the vocabularies that HIVE have.");
+					Label msg = new Label("All vocabularies have been selected.");
 					addVocabularyPanel.add(msg);
 				}
 				pop.add(addVocabularyPanel);
@@ -274,7 +274,7 @@ public class Indexer implements EntryPoint {
 				
 			//	Window.alert(path);
 				if (upload.getFilename().length() == 0) {
-					Window.alert("Please choose the file you want to upload.");
+					Window.alert("Please choose a file to upload.");
 					event.cancel();
 				}
 				else
@@ -565,7 +565,7 @@ public class Indexer implements EntryPoint {
 		    vp.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
 		    vp.setSpacing(10);
 		    vp.setSize("100%", "100%");
-			HTML msg = new HTML("Are you sure to close <span style = 'color: #3399FF'>" + associateVoc + "</span>?", true);
+			HTML msg = new HTML("Do you really want to close <span style = 'color: #3399FF'>" + associateVoc + "</span>?", true);
 			vp.add(msg);
 			yesBtn.addClickHandler(new ClickHandler()
 			{

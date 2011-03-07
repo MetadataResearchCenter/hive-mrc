@@ -167,7 +167,7 @@ public class ConceptBrowser implements EntryPoint, ValueChangeHandler<String> {
 
 									if (result.size() == 0) {
 										HTML reminder = new HTML(
-												"<span style = 'color:red'> No result returns regarding your search.</span>");
+												"<span style = 'color:red'> No results.</span>");
 										resultList.clear();
 										filteringPanel.clear();
 										resultList.add(reminder);
@@ -314,7 +314,7 @@ public class ConceptBrowser implements EntryPoint, ValueChangeHandler<String> {
 				   final PopupPanel choosePanel = new PopupPanel();
 				   choosePanel.addStyleName("choose-panel");
 				   DockPanel dock = new DockPanel();
-				   Label lb = new Label("Please choose which vocabularies to open");
+				   Label lb = new Label("Please choose vocabularies to open");
 				   lb.addStyleName("heading");
 				   dock.add(lb, DockPanel.NORTH);
 				   CaptionPanel caption = new CaptionPanel("List of Vocabularies at HIVE");
@@ -420,7 +420,7 @@ public class ConceptBrowser implements EntryPoint, ValueChangeHandler<String> {
 					}
 					   
 				   });
-				   Label tip = new Label("By click on CANCEL or not choose any vocabularies, HIVE will open a default vocabulary for you.");
+				   Label tip = new Label("On CANCEL, the default vocabulary will be opened.");
 				   tip.setWidth("250px");
 				   tip.addStyleName("tip");
 				   hp.add(okButton);
@@ -685,7 +685,7 @@ public class ConceptBrowser implements EntryPoint, ValueChangeHandler<String> {
 					}
 				}
 				if (addVocabularyPanel.getWidgetCount() == 0) {
-					Label msg = new Label("You have opened all the vocabularies that HIVE have.");
+					Label msg = new Label("All vocabularies are open.");
 					addVocabularyPanel.add(msg);
 				}
 				pop.add(addVocabularyPanel);
@@ -961,7 +961,7 @@ public class ConceptBrowser implements EntryPoint, ValueChangeHandler<String> {
 
 						if (result.size() == 0) {
 							HTML reminder = new HTML(
-									"<span style = 'color:red'> No result returns regarding your search.</span>");
+									"<span style = 'color:red'> No results.</span>");
 							resultList.clear();
 							filteringPanel.clear();
 							resultList.add(reminder);
@@ -1109,7 +1109,7 @@ public class ConceptBrowser implements EntryPoint, ValueChangeHandler<String> {
 					}
 					else
 					{
-						conceptList.add(new Label("Currently none vocabularies are opened."));
+						conceptList.add(new Label("No vocabularies are open."));
 					}
 				}
 			});
