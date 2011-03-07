@@ -55,24 +55,31 @@ public class AdminVocabularies {
 	/**
 	 * This method is a main to run HIVE importers
 	 */	
-	public static void main(String[] args) {
+	public static void main(String[] args) 
+	{
 
 		String configpath = args[0];
 		String vocabularyName = args[1].toLowerCase();
-
+		boolean doImport = (args.length==2) || (args.length==3 && !args[2].equals("train-only"));
+		boolean doTrain = (args.length==3 && (args[2].equals("train") || args[2].equals("train-only")));
+		
 		logger.info("Starting import of vocabulary " + vocabularyName);
 		ImporterFactory.selectImporter(ImporterFactory.SKOSIMPORTER);
 		try
 		{
 			SKOSScheme schema = new SKOSSchemeImpl(configpath, vocabularyName, true);
 			
-			Importer importer = ImporterFactory.getImporter(schema);
-			importer.importThesaurustoDB();
-			importer.importThesaurustoInvertedIndex();
-			importer.close();
-			logger.info("Vocabulary import complete");
+			if (doImport)
+			{
+				Importer importer = ImporterFactory.getImporter(schema);
+				importer.importThesaurustoDB();
+				importer.importThesaurustoInvertedIndex();
+				importer.close();
+				logger.info("Vocabulary import complete");
+			}
 		
-			if (args[2].equals("train")) {
+			if (doTrain) 
+			{
 				logger.info("Training KEA");
 				TaggerTrainer trainer = new TaggerTrainer(schema);
 				trainer.trainAutomaticIndexingModule();
