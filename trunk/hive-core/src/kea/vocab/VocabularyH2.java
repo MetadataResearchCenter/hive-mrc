@@ -173,32 +173,48 @@ public class VocabularyH2 extends Vocabulary
 				}
 
 
-				String uriBroader;
+				String uriBroader = "";
 				Set<Concept> broaders = concept.getSkosBroaders();
-				for (Concept b : broaders) {
-					uriBroader = b.getQName().getNamespaceURI()
-							+ b.getQName().getLocalPart();
-					addBroader(uri, uriBroader);
+				try
+				{
+					for (Concept b : broaders) {
+						uriBroader = b.getQName().getNamespaceURI()
+								+ b.getQName().getLocalPart();
+						addBroader(uri, uriBroader);
+					}
+				} catch (Exception e) {					
+					logger.error("Failed to get broader:" +uriBroader, e);
 				}
 
-				String uriNarrower;
+				String uriNarrower = "";
 				Set<Concept> narrowers = concept.getSkosNarrowers();
-				for (Concept n : narrowers) {
-					uriNarrower = n.getQName().getNamespaceURI()
-							+ n.getQName().getLocalPart();
-					addNarrower(uri, uriNarrower);
+				try
+				{
+					for (Concept n : narrowers) {
+						uriNarrower = n.getQName().getNamespaceURI()
+								+ n.getQName().getLocalPart();
+						addNarrower(uri, uriNarrower);
+					}
+				} catch (Exception e) {					
+					logger.error("Failed to get narrower:" + uriNarrower, e);
 				}
 
-				String uriRelated;
+				String uriRelated = "";
 				Set<Concept> related = concept.getSkosRelated();
-				for (Concept r : related) {
-					uriRelated = r.getQName().getNamespaceURI()
+				try
+				{
+					for (Concept r: related) {
+						uriRelated = r.getQName().getNamespaceURI()
 							+ r.getQName().getLocalPart();
-					addRelated(uri, uriRelated);
+						addRelated(uri, uriRelated);
+					}
+				} catch (Exception e) {					
+					logger.error("Failed to get related:" + uriRelated + "," + uri, e);
 				}
 				
 				if (related.size() > 0)
 					hasRelated = true;
+				
 			}
 
 		} catch (Exception e) {
