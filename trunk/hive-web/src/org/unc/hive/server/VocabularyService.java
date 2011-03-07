@@ -16,10 +16,13 @@ import edu.unc.ils.mrc.hive.api.SKOSConcept;
 import edu.unc.ils.mrc.hive.api.impl.elmo.SKOSServerImpl;
 
 import javax.xml.namespace.QName;
+
+import org.mortbay.log.Log;
 import org.unc.hive.client.*;
 
 public class VocabularyService {
 
+	private static int MAX_RESULTS = 300;
 	private static VocabularyService instance = null;
 	private SKOSServer skosServer;
 
@@ -126,6 +129,9 @@ public class VocabularyService {
 			ConceptProxy father = new ConceptProxy(vocabulary, preLabel, URI,
 					isleaf);
 			fatherList.add(father);
+			
+			if (fatherList.size() >= MAX_RESULTS)
+				break;
 		}
 		return fatherList;
 	}
@@ -181,19 +187,22 @@ public class VocabularyService {
 		if (result.size() != 0) {
 			for (SKOSConcept c : result) {
 				String origin = skosServer.getOrigin(c.getQName());
-				System.out.println("POR AQUI PASO");
-				System.out.println("ORIGEN: " + origin);
-				System.out.println("SIZE: " + openedVocabularies.size());
+				//System.out.println("POR AQUI PASO");
+				//System.out.println("ORIGEN: " + origin);
+				//System.out.println("SIZE: " + openedVocabularies.size());
 				if (openedVocabularies.contains(origin.toLowerCase())) {
 					String preLabel = c.getPrefLabel();
 					QName qname = c.getQName();
 					String namespace = qname.getNamespaceURI();
 					String localPart = qname.getLocalPart();
 					String uri = namespace + " " + localPart;
-					System.out.println("ESTO ES MI DEBUGGING: " + uri);
+					//System.out.println("ESTO ES MI DEBUGGING: " + uri);
 					ConceptProxy cp = new ConceptProxy(origin, preLabel, uri);
-					System.out.println("CONCEPT PROXI: " + cp.getOrigin());
+					//System.out.println("CONCEPT PROXI: " + cp.getOrigin());
 					rankedlist.add(cp);
+					
+					if (rankedlist.size() >= MAX_RESULTS)
+						break;
 				}
 			}
 
