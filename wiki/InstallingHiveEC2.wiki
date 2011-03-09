@@ -1,5 +1,8 @@
 #summary Instructions for installing HIVE-web on EC2
 
+=== Workshop EC2 Instance ===
+[http://ec2-50-16-28-148.compute-1.amazonaws.com:8080/home.html HIVE EC2 Instance]
+
 === Install Tomcat 6 ===
 Use {{{yum}}} to install the standard Tomcat distribution:
 
