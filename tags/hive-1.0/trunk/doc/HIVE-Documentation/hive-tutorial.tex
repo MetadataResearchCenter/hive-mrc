@@ -1,0 +1,29 @@
+\documentclass[a4paper,10pt]{report}
+\usepackage[utf8x]{inputenc}
+\usepackage{default}
+ \usepackage{graphicx}
+
+% Title Page
+\title{HIVE Core Technical Report}
+\author{Jose R. Perez-Aguera, Lina Huang, Hollie White, \\ Jane Greenberg and Ryan Scherle}
+
+
+\begin{document}
+\maketitle
+
+\chapter{HIVE Core}
+\input{hive-core/hivecore}
+
+\chapter{HIVE Web}
+\input{hive-web/hiveweb}
+
+\chapter{Automatic Metadata Generation with KEA}
+\input{kea/kea}\label{kea}
+
+%\chapter{Importing SKOS vocabularies into HIVE}
+%\input{importation/import}
+
+%\chapter{SKOSifying vocabularies}
+%\input{data-skos/skosifing}
+
+\end{document}
