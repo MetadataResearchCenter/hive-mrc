@@ -1,0 +1,32 @@
+
+Berner D, Roesti M, Hendry AP, Salzburger W (2010) Constraints on
+speciation suggested by comparing lake-stream stickleback divergence
+across two continents. Molecular Ecology, online in advance of
+print. doi:10.1111/j.1365-294X.2010.04858.x
+
+Adaptation to ecologically distinct environments can coincide with the
+emergence of reproductive barriers. The outcome of this process is
+highly variable and can range along a continuum from weak population
+differentiation all the way to complete, genome-wide divergence. The
+factors determining how far diverging taxa will move along this
+continuum remain poorly understood but are most profitably
+investigated in taxa under replicate divergence. Here we explore
+determinants of progress toward speciation by comparing phenotypic and
+molecular divergence within young (< 150 years) lake-stream
+stickleback pairs from Central Europe to divergence in older
+(thousands of years) archetypal lake-stream pairs from Vancouver
+Island, Canada. We generally find relatively weak divergence in most
+aspects of foraging morphology (gill raker number, body shape) in the
+European pairs, although substantial adaptive divergence is seen in
+gill raker length. Combined with striking overall phenotypic
+differences between the continents, this argues for genetic and time
+constraints on adaptive divergence in the European pairs. The European
+lake-stream pairs also do not display the strong habitat-related
+differentiation in neutral (microsatellite) markers seen in the
+Canadian watersheds. This either indicates the lack of strong
+reproductive barriers owing to weak adaptive divergence, or
+alternatively, that neutral markers are poorly suited for detecting
+reproductive barriers if these emerge rapidly. Overall, our
+comparative approach suggests constraints on speciation due to genetic
+architecture and limited time for divergence. The relative importance
+of these factors remains to be quantified by future investigation.
