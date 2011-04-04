@@ -27,6 +27,7 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.RootPanel;
@@ -355,6 +356,21 @@ public class Indexer implements EntryPoint {
 		docURL.addStyleName("docURL");
 		indexingTable.setCellSpacing(0);
 		indexingTable.setWidget(2, 1, docURL);
+		
+		final ListBox maxHops = new ListBox();
+		maxHops.addItem("0");
+		maxHops.addItem("1");
+		maxHops.addItem("2");
+		maxHops.addItem("3");
+		maxHops.addItem("4");
+		maxHops.addItem("5");
+		Label lbl3 = new Label();
+		lbl3.setText("Hops");
+		HorizontalPanel hp3 = new HorizontalPanel();
+		hp3.add(maxHops);
+		hp3.add(lbl3);
+		indexingTable.setWidget(3, 1, hp3);
+
 		Button startProcessing = new Button("Start Processing");
 		startProcessing.setStyleName("start-processing");
 		final HTML step3 = new HTML("<img src = './img/step3.png'/>");
@@ -373,6 +389,7 @@ public class Indexer implements EntryPoint {
 				// TODO Auto-generated method stub
 				boolean isValid = false;
 				String url = docURL.getValue();
+				int hops = Integer.parseInt(maxHops.getValue(maxHops.getSelectedIndex()));
 				if(openedVocabularies.isEmpty())
 				{
 					Window.alert("Please select at least one vocabulary.");
@@ -405,7 +422,7 @@ public class Indexer implements EntryPoint {
 					processingPopup.add(processing);
 					processingPopup.center();
 					processingPopup.show();
-					indexerService.getTags(fileToProcess, openedVocabularies,
+					indexerService.getTags(fileToProcess, openedVocabularies, hops,
 							new AsyncCallback<List<ConceptProxy>>() {
 								@Override
 								public void onFailure(Throwable caught) {

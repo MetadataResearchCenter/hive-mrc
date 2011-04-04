@@ -1,6 +1,9 @@
 package org.unc.hive.server;
 
+import java.io.File;
 import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.TreeMap;
@@ -49,12 +52,30 @@ public class IndexerServiceImpl extends RemoteServiceServlet implements
      *  
      *   */
    
-	public List<ConceptProxy> getTags(String input, List<String> openedVocabularies) {
-		if(input.contains("http://"))
-			return this.service.getTags(input, openedVocabularies);
-		else
-			//return this.service.getTags("/home/hive/tomcat/webapps/ROOT/WEB-INF/tmp/" + input, openedVocabularies);
-			return this.service.getTags(this.path + "/WEB-INF/tmp/" + input, openedVocabularies);
+	public List<ConceptProxy> getTags(String input, List<String> openedVocabularies, int maxHops) {
+		if(input.contains("http://")) {
+			try
+			{
+				URL url = new URL (input);
+				return this.service.getTags(url, openedVocabularies, maxHops);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return null;
+		}
+		else 
+		{
+			String filePath = this.path + "/WEB-INF/tmp/" + input;
+			
+			List<ConceptProxy> concepts = new ArrayList<ConceptProxy>();
+			concepts = this.service.getTags(filePath, openedVocabularies);
+			
+			// Delete the temporary file
+			File file = new File(filePath);
+			file.delete();
+			
+			return concepts;
+		}
 	}
 
 }
