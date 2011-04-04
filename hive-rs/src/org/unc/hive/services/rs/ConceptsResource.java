@@ -182,16 +182,10 @@ public class ConceptsResource {
    */
   static String modifySchemaURI(String schemaURI, String schemeName) {
     StringBuffer modifiedSchemaURI = new StringBuffer(schemaURI);
-    
-    if (schemeName.equalsIgnoreCase("lter") &&
-        schemaURI != null &&
-        !schemaURI.endsWith("#")) {
-        modifiedSchemaURI.append("#");
-      } else if (schemeName.equalsIgnoreCase("nbii") &&
-        schemaURI != null &&
-        !schemaURI.endsWith("/Concept/")) {
-        modifiedSchemaURI.append("/Concept/");
-      }
+       
+    if (schemaURI != null && !schemaURI.endsWith("#")) {
+          modifiedSchemaURI.append("#");
+    }
     
     return modifiedSchemaURI.toString();
   }
