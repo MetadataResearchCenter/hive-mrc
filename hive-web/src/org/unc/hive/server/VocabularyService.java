@@ -1,5 +1,6 @@
 package org.unc.hive.server;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -281,6 +282,26 @@ public class VocabularyService {
 	{
 		SKOSTagger tagger = this.skosServer.getSKOSTagger();
 		List<SKOSConcept> candidates = tagger.getTags(input, openedVocabularies,this.getSKOSSearcher());
+		List<ConceptProxy> result = new ArrayList<ConceptProxy>(); 
+		for(SKOSConcept concept : candidates)
+		{
+		  String preLabel = concept.getPrefLabel();
+		  QName qname = concept.getQName();
+		  String namespace = qname.getNamespaceURI();
+		  String lp = qname.getLocalPart();
+		  String uri = namespace + " " + lp;
+		  double score = concept.getScore();
+		  String origin = skosServer.getOrigin(qname);
+		  ConceptProxy cp = new ConceptProxy(origin, preLabel, uri, score);
+		  result.add(cp);
+		}
+		return result;
+	}
+	
+	public List<ConceptProxy> getTags(URL url, List<String> openedVocabularies, int maxHops)
+	{
+		SKOSTagger tagger = this.skosServer.getSKOSTagger();
+		List<SKOSConcept> candidates = tagger.getTags(url, openedVocabularies,this.getSKOSSearcher(), maxHops);
 		List<ConceptProxy> result = new ArrayList<ConceptProxy>(); 
 		for(SKOSConcept concept : candidates)
 		{

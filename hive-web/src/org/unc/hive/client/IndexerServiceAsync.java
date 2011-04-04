@@ -6,6 +6,6 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public interface IndexerServiceAsync {
 	
-	public void getTags(String input, List<String> openedVocabularies,AsyncCallback<List<ConceptProxy>> callback);
+	public void getTags(String input, List<String> openedVocabularies, int maxHops, AsyncCallback<List<ConceptProxy>> callback);
 
 }

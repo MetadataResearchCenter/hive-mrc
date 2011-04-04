@@ -6,6 +6,6 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 @RemoteServiceRelativePath("Indexer")
 public interface IndexerService extends RemoteService {
 
-	public List<ConceptProxy> getTags(String input, List<String> openedVocabularies);
+	public List<ConceptProxy> getTags(String input, List<String> openedVocabularies, int maxHops);
 	
 }
