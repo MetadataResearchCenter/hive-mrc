@@ -10,35 +10,35 @@ import java.util.TreeMap;
 
 public class MeshConcept {
 
-	String conceptId = "";
+	String descriptorId = "";
 	Map<String, String> narrower = new TreeMap<String, String>();
 	Map<String, String> broader = new TreeMap<String, String>();
 	Map<String, String> related = new HashMap<String, String>();
-	String preferrerTerm = "";
+	String preferredTerm = "";
 	List<String> altTerms = new ArrayList<String>();
 	String scopeNote = "";
 	
-	public void addNarrower(String conceptId) {
-		narrower.put(conceptId, conceptId);
+	public void addNarrower(String descriptorId) {
+		narrower.put(descriptorId, descriptorId);
 	}
 	
-	public void addBroader(String conceptId) {
-		broader.put(conceptId, conceptId);
+	public void addBroader(String descriptorId) {
+		broader.put(descriptorId, descriptorId);
 	}
 	
-	public void addRelated(String conceptId) {
-		related.put(conceptId, "1");
+	public void addRelated(String descriptorId) {
+		related.put(descriptorId, "1");
 	}
 	
 	public void addAltTerm(String term) {
 		altTerms.add(term);
 	}
 	
-	public String getConceptId() {
-		return conceptId;
+	public String getDescriptorId() {
+		return descriptorId;
 	}
-	public void setConceptId(String conceptId) {
-		this.conceptId = conceptId;
+	public void setDescriptorId(String descriptorId) {
+		this.descriptorId = descriptorId;
 	}
 	public Set<String> getNarrower() {
 		//Collections.sort(narrower);
@@ -53,11 +53,11 @@ public class MeshConcept {
 		return related.keySet();
 	}
 
-	public String getPreferrerTerm() {
-		return preferrerTerm;
+	public String getPreferredTerm() {
+		return preferredTerm;
 	}
-	public void setPreferrerTerm(String preferrerTerm) {
-		this.preferrerTerm = preferrerTerm;
+	public void setPreferredTerm(String preferredTerm) {
+		this.preferredTerm = preferredTerm;
 	}
 	public List<String> getAltTerms() {
 		return altTerms;

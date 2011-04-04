@@ -25,6 +25,9 @@ public class DescriptorHandler extends MeshHandler
 	List<String> treeNumbers = new ArrayList<String>();
 	List<String> relatedDescriptors = new ArrayList<String>();
 	List<ConceptRelation> relations = new ArrayList<ConceptRelation>();
+	String descriptorId = "";
+	
+	boolean firstTime = true;
 	
 	public DescriptorHandler(XMLReader parser, DefaultHandler parent) {
 		super(parser, parent);
@@ -117,6 +120,10 @@ public class DescriptorHandler extends MeshHandler
     	else if (qName.equals("DescriptorUI")) {
     		currentDescriptor = currentValue;
     		currentValue = "";
+    		if (firstTime) {
+    			descriptorId = currentDescriptor;
+    			firstTime = false;
+    		}
     	}    	
     }    
     
@@ -143,5 +150,9 @@ public class DescriptorHandler extends MeshHandler
      */
     public List<String> getRelatedDescriptors() {
     	return relatedDescriptors;
+    }
+    
+    public String getDescriptorId() {
+    	return descriptorId;
     }
 }
