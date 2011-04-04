@@ -25,10 +25,35 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package edu.unc.ils.mrc.hive.api;
 
+import java.net.URL;
 import java.util.List;
 
 public interface SKOSTagger {
 	
-	public List<SKOSConcept> getTags(String text, List<String> vocabularie,SKOSSearcher searcher);
+	/**
+	 * Returns a list of SKOSConcept objects for the specified file
+	 * using the specified vocabularies and SKOSSearcher implementation.
+	 * 
+	 * @param path			Path to the file
+	 * @param vocabularies	List of vocabularies
+	 * @param searcher		Searcher implementation
+	 * @return
+	 */
+	public List<SKOSConcept> getTags(String path, List<String> vocabularies, 
+			SKOSSearcher searcher);
 
+	/**
+	 * Returns a list of SKOSConcept objects for the specified URL
+	 * using the specified vocabularies and SKOSSearcher implementation. 
+	 * The maximum number of hops indicates the number of levels of links
+	 * to be crawled/traversed when indexing the site.
+	 * 
+	 * @param url			URL of desired web site
+	 * @param vocabularies  List of vocabularies
+	 * @param searcher		Searcher implementation
+	 * @param maxHops		Maximum number of links to be traversed (hops)
+	 * @return
+	 */
+	public List<SKOSConcept> getTags(URL url, List<String> vocabularies, 
+			SKOSSearcher searcher, int maxHops);
 }

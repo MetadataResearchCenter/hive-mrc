@@ -27,6 +27,8 @@ package edu.unc.ils.mrc.hive.util;
 
 import java.io.File;
 
+
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
@@ -44,24 +46,37 @@ import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 
 
-public class TextManager {
-
-	private Parser parser;
-	private ContentHandler handler;
-	private Metadata metadata;
-
-	public TextManager() {
-		this.parser = new AutoDetectParser();
-		this.handler = new BodyContentHandler();
-		this.metadata = new Metadata();
+public class TextManager 
+{
+	
+	/**
+	 * Returns a plain-text document representation of a website. 
+	 * @param url		URL to crawl
+	 * @param maxHops	Maximum number of hops
+	 * @return			Text representation of website
+	 * @throws IOException
+	 */
+	public String getPlainText(URL url, int maxHops) throws IOException
+	{
+		SimpleTextCrawler sc = new SimpleTextCrawler();
+		String text = sc.getText(url, maxHops);
+		return text;
 	}
-
+	
+	/**
+	 * Returns plain-text given a local file path or URL.
+	 * @param inputPath	Local path or URL
+	 * @return
+	 */
 	public String getPlainText(String inputPath) {
 		InputStream is = null;
+		
+		String text = "";
 		try {
+			Metadata metadata = new Metadata();
 			File file = new File(inputPath);
 			if (file.isFile()) {
-				this.metadata.set(Metadata.RESOURCE_NAME_KEY, file.getName());
+				metadata.set(Metadata.RESOURCE_NAME_KEY, file.getName());
 				is = new FileInputStream(file);
 			} else {
 				URL url = new URL(inputPath);
@@ -69,12 +84,11 @@ public class TextManager {
 				int slash = path.lastIndexOf('/');
 				String name = path.substring(slash + 1);
 				if (name.length() > 0) {
-					this.metadata.set(Metadata.RESOURCE_NAME_KEY, name);
+					metadata.set(Metadata.RESOURCE_NAME_KEY, name);
 				}
 				is = url.openStream();
 			}
-			this.parser.parse(is, this.handler, this.metadata);
-			return this.handler.toString();
+			text = parse(is, metadata);
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -99,9 +113,42 @@ public class TextManager {
 			}
 		}
 
-		return this.handler.toString();
+		return text;
+	}
+	
+	
+	/**
+	 * Returns plain-text representation of a file given an inputstream.
+	 * @param is
+	 * @return
+	 * @throws IOException
+	 * @throws SAXException
+	 * @throws TikaException
+	 */
+	public String getPlainText(InputStream is) throws IOException, SAXException, TikaException {
+		Metadata metadata = new Metadata();
+		return parse(is, metadata);
 	}
 
+	
+	/**
+	 * Parses contents of an input stream using Tikka content extractor.
+	 * @param is
+	 * @param metadata
+	 * @return
+	 * @throws IOException
+	 * @throws SAXException
+	 * @throws TikaException
+	 */
+	protected String parse(InputStream is, Metadata metadata) throws IOException, SAXException, TikaException 
+	{
+		Parser parser = new AutoDetectParser();
+		ContentHandler handler = new BodyContentHandler();
+		parser.parse(is, handler, metadata);
+		return handler.toString();
+	}
+	
+	
 	/**
 	 * Simple command line to convert a directory of files to text.
 	 * @param args
@@ -117,10 +164,10 @@ public class TextManager {
 		File inputDir = new File(dir);
 		if (inputDir.isDirectory())
 		{
-			TextManager tm = new TextManager();
 			File[] files = inputDir.listFiles();
 			for (File file: files)
 			{
+				TextManager tm = new TextManager();
 				String pdfPath = file.getAbsolutePath();
 				String txtPath = pdfPath.substring(0, pdfPath.lastIndexOf('.')) + ".txt";
 				String text = tm.getPlainText(pdfPath);
