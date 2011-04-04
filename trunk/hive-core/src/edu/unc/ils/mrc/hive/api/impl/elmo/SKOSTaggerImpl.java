@@ -35,6 +35,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -55,10 +56,11 @@ import edu.unc.ils.mrc.hive.ir.tagging.Tagger;
 import edu.unc.ils.mrc.hive.ir.tagging.TaggerFactory;
 import edu.unc.ils.mrc.hive.util.TextManager;
 
-/*
- * This class just normalize terms using the thesaurus
+/**
+ * This class implements the SKOSTagger interface, supporting 
+ * automatic subject term extraction from one or more 
+ * thesauri.
  */
-
 public class SKOSTaggerImpl implements SKOSTagger {
     private static final Log logger = LogFactory.getLog(SKOSTaggerImpl.class);
 	
@@ -68,8 +70,16 @@ public class SKOSTaggerImpl implements SKOSTagger {
 	private TreeMap<String, SKOSScheme> vocabularies;
 	public String algorithm;
 
+	/**
+	 * Constructs a tagger based on the specified vocabularies
+	 * and algorithm.
+	 * 
+	 * @param vocabularies	Vocabularies to be used for term extraction
+	 * @param algorithm		Algorithm to be used for term extraction
+	 */
 	public SKOSTaggerImpl(TreeMap<String, SKOSScheme> vocabularies,
-			String algorithm) {
+			String algorithm) 
+	{
 		this.algorithm = algorithm;
 		this.vocabularies = vocabularies;
 		this.taggers = new TreeMap<String, Tagger>();
@@ -100,23 +110,77 @@ public class SKOSTaggerImpl implements SKOSTagger {
 		}
 	}
 
-	public List<SKOSConcept> getTags(String inputFilePath, List<String> vocabulary,
+	/**
+	 * Returns a list of SKOSConcept objects for the specified URL
+	 * using the specified vocabularies and SKOSSearcher implementation. 
+	 * The maximum number of hops indicates the number of levels of links
+	 * to be crawled/traversed when indexing the site.
+	 * 
+	 * This method uses the TextManager utility to extract text from the 
+	 * URL.
+	 * 
+	 * @param url			URL of desired web site
+	 * @param vocabularies  List of vocabularies
+	 * @param searcher		Searcher implementation
+	 * @param maxHops		Maximum number of links to be traversed (hops)
+	 * @return
+	 */
+	public List<SKOSConcept> getTags(URL url, List<String> vocabulary, 
+			SKOSSearcher searcher, int maxHops)
+	{
+		try
+		{
+			TextManager tm = new TextManager();
+			String text = tm.getPlainText(url, maxHops);
+			return getTagsInternal(text, vocabulary, searcher);
+		} catch (Exception e) {
+			logger.error(e);
+		}
+		return null; 			
+	}
+	
+	/**
+	 * Returns a list of SKOSConcept objects for the specified file
+	 * using the specified vocabularies and SKOSSearcher implementation.
+	 * 
+	 * @param path			Path to the file
+	 * @param vocabularies	List of vocabularies
+	 * @param searcher		Searcher implementation
+	 * @return
+	 */
+	public List<SKOSConcept> getTags(String filePath, List<String> vocabularies, 
 			SKOSSearcher searcher) 
 	{
-		StopWatch stopwatch = new Log4JStopWatch();
-		
 		TextManager tm = new TextManager();
-		String text = tm.getPlainText(inputFilePath);
+		String text = tm.getPlainText(filePath);
+		return getTagsInternal(text, vocabularies, searcher);          
+	}
+	
+	/**
+	 * Returns a list of SKOSConcept objects for the specified text
+	 * using the specified vocabularies and SKOSSearcher implementation.
+	 * 
+	 * @param text			Full-text of document
+	 * @param vocabularies	List of vocabularies
+	 * @param searcher		Searcher implementation
+	 * @return
+	 */
+	private List<SKOSConcept> getTagsInternal(String text, List<String> vocabularies, SKOSSearcher searcher)
+	{
+		StopWatch stopwatch = new Log4JStopWatch();
+
 		List<SKOSConcept> result = new ArrayList<SKOSConcept>();
 		stopwatch.lap("GetPlainText");
 		
 		if (this.algorithm.equals("kea")) 
 		{
-			for (String voc : vocabulary) 
+			for (String voc : vocabularies) 
 			{
 				File testDir = new File(this.vocabularies.get(voc).getKEAtestSetDir());
 				
-				String tempFileName = UUID.randomUUID().toString();
+				String fileId = UUID.randomUUID().toString();
+				
+				String tempFileName = fileId;
 				File keaInputFile =  new File(testDir + File.separator + tempFileName + ".txt");
 				
 				logger.debug("Creating " + keaInputFile.getAbsolutePath());
@@ -200,8 +264,7 @@ public class SKOSTaggerImpl implements SKOSTagger {
 		}
 		stopwatch.lap("GetTags");
 
-		File inputFile = new File(inputFilePath);
-		inputFile.delete();
+
 		return result;
 	}
 }
