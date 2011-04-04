@@ -163,19 +163,24 @@ public class SKOSImporter implements Importer
         int count = 0;
         for (Concept concept : this.manager.findAll(Concept.class)) {
             
-            // Add concept to Lucene index
-            this.indexer.indexConcept(concept);
-            
-            // Add concept to alphabetical index TreeMap
-            this.alphaIndex.put(concept.getSkosPrefLabel(), concept.getQName());
-            
-            // If this is a top-level concept, add it to the top concept serialized TreeMap
-            if (concept.getSkosBroaders().size() == 0
-                    && concept.getSkosNarrowers().size() > 0) {
-                this.topConceptIndex.put(concept.getSkosPrefLabel(), concept
-                        .getQName());
-            }
-            count++;            
+        	if (concept.getSkosPrefLabel() != null)
+        	{
+	            // Add concept to Lucene index
+	            this.indexer.indexConcept(concept);
+	            
+	            // Add concept to alphabetical index TreeMap
+	            this.alphaIndex.put(concept.getSkosPrefLabel(), concept.getQName());
+	            
+	            // If this is a top-level concept, add it to the top concept serialized TreeMap
+	            if (concept.getSkosBroaders().size() == 0
+	                    && concept.getSkosNarrowers().size() > 0) {
+	                this.topConceptIndex.put(concept.getSkosPrefLabel(), concept
+	                        .getQName());
+	            }
+	            count++;         
+        	} else {
+        		logger.warn("Concept " + concept.getQName() + " missing prefLabel. Skipping.");
+        	}
         }
         logger.info(count + " concepts added to Lucene index");
         logger.info(alphaIndex.size() + " concepts added to alphabetic index");
