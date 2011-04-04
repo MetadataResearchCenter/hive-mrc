@@ -78,44 +78,64 @@ public class ConceptIndexer implements Indexer
 		logger.trace("indexConcept " + concept.getQName());
 		
 		Document docLucene = new Document();
-		
-		// URI
+
 		String uri = concept.getQName().getNamespaceURI();
 		Field uriL = new Field("uri", uri , Field.Store.YES,
 				Field.Index.NOT_ANALYZED);
 		docLucene.add(uriL);
 		
-		// Local Part
-		String lp = concept.getQName().getLocalPart();
-		Field lpL = new Field("localPart", lp , Field.Store.YES,
-				Field.Index.NOT_ANALYZED);
-		docLucene.add(lpL);
+		try
+		{
+			// Local Part
+			String lp = concept.getQName().getLocalPart();
+			Field lpL = new Field("localPart", lp , Field.Store.YES,
+					Field.Index.NOT_ANALYZED);
+			docLucene.add(lpL);
+		} catch (Exception e) {
+			logger.warn("Concept " + concept.getQName() + " missing localPart. Skipping.");
+		}
 		
-		// PrefLabel
-		Field prefLabelL = new Field("prefLabel",
+		try
+		{
+			// PrefLabel
+			Field prefLabelL = new Field("prefLabel",
 				concept.getSkosPrefLabel(), Field.Store.YES,
 				Field.Index.ANALYZED);
-		docLucene.add(prefLabelL);
-
-		// altLabels
-		String a = "";
-		for (String s : concept.getSkosAltLabels()) {
-			a = a + " " + s;
+			docLucene.add(prefLabelL);
+		} catch (Exception e) {
+			logger.warn("Concept " + concept.getQName() + " missing prefLabel. Skipping.");
 		}
-		Field altLabelL = new Field("altLabel", a.trim(), Field.Store.YES,
-				Field.Index.ANALYZED);
-		docLucene.add(altLabelL);
 
-		// Scope Notes
-		String sc = "";
-		for (Object s : concept.getSkosScopeNotes()) {
-			a = a + " " + s;
+		try
+		{
+			// altLabels
+			String a = "";
+			for (String s : concept.getSkosAltLabels()) {
+				a = a + " " + s;
+			}
+			Field altLabelL = new Field("altLabel", a.trim(), Field.Store.YES,
+					Field.Index.ANALYZED);
+			docLucene.add(altLabelL);
+		} catch (Exception e) {
+			logger.warn("Error retrieving altLabel, may not exist in store. Skipping.");
 		}
-		Field scopeNoteL = new Field("scopeNote",
-				sc, Field.Store.YES,
-				Field.Index.ANALYZED);
-		docLucene.add(scopeNoteL);
-
+		
+		try
+		{
+			// Scope Notes
+			String a = "";
+			String sc = "";
+			for (Object s : concept.getSkosScopeNotes()) {
+				a = a + " " + s;
+			}
+			Field scopeNoteL = new Field("scopeNote",
+					sc, Field.Store.YES,
+					Field.Index.ANALYZED);
+			docLucene.add(scopeNoteL);
+		} catch (Exception e) {
+			logger.warn("Error retrieving scope note, may not exist in store. Skipping.");
+		}
+		
 		try
 		{
 			// Broader Terms
