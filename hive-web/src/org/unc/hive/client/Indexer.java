@@ -394,6 +394,7 @@ public class Indexer implements EntryPoint {
             }
         });
 		
+		// Create the max hops listbox and panel
 		final ListBox maxHops = new ListBox();
 		maxHops.addItem("0");
 		maxHops.addItem("1");
@@ -402,18 +403,34 @@ public class Indexer implements EntryPoint {
 		maxHops.addItem("4");
 		maxHops.addItem("5");
 		maxHops.setStyleName("max-hops");
+		Label maxHopsLbl = new Label();
+		maxHopsLbl.setText("  Number of hops");
+		maxHopsLbl.addStyleName("label");
+		HorizontalPanel maxHopsPanel = new HorizontalPanel();
+		maxHopsPanel.setStyleName("advanced-subpanel");
+		maxHopsPanel.add(maxHops);
+		maxHopsPanel.add(maxHopsLbl);
+	
+		// Create max terms listbox and panel
+		final ListBox maxTerms = new ListBox();
+		maxTerms.addItem("5");
+		maxTerms.addItem("10");
+		maxTerms.addItem("15");
+		maxTerms.addItem("20");
+		maxTerms.setItemSelected(1, true);
+		maxTerms.setStyleName("max-hops");
+		Label maxTermsLbl = new Label();
+		maxTermsLbl.setText("  Maximum number of terms");
+		maxTermsLbl.addStyleName("label");
+		HorizontalPanel maxTermsPanel = new HorizontalPanel();
+		maxTermsPanel.setStyleName("advanced-subpanel");
+		maxTermsPanel.add(maxTerms);
+		maxTermsPanel.add(maxTermsLbl);
 		
-		Label lbl3 = new Label();
-		lbl3.setText("  Number of hops");
-		//lbl3.addStyleName("or-label");
-		lbl3.addStyleName("label");
-		
-		HorizontalPanel hp3 = new HorizontalPanel();
-		hp3.setStyleName("advanced-subpanel");
-		hp3.add(maxHops);
-		hp3.add(lbl3);
-		
-		advancedPanel.add(hp3);
+		VerticalPanel vp = new VerticalPanel();
+		vp.add(maxHopsPanel);
+		vp.add(maxTermsPanel);
+		advancedPanel.add(vp);
 		advancedPanel.setStyleName("advanced-panel");
 		advancedPanel.setWidth("300px");
 		indexingTable.setWidget(3, 1, advancedPanel);
@@ -440,6 +457,7 @@ public class Indexer implements EntryPoint {
 				boolean isValid = false;
 				String url = docURL.getValue();
 				int hops = Integer.parseInt(maxHops.getValue(maxHops.getSelectedIndex()));
+				int terms = Integer.parseInt(maxTerms.getValue(maxTerms.getSelectedIndex()));
 				if(openedVocabularies.isEmpty())
 				{
 					Window.alert("Please select at least one vocabulary.");
@@ -475,7 +493,7 @@ public class Indexer implements EntryPoint {
 					processingPopup.add(processing);
 					processingPopup.center();
 					processingPopup.show();
-					indexerService.getTags(fileToProcess, openedVocabularies, hops,
+					indexerService.getTags(fileToProcess, openedVocabularies, hops, terms,
 							new AsyncCallback<List<ConceptProxy>>() {
 								@Override
 								public void onFailure(Throwable caught) {
