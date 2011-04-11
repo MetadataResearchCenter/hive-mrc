@@ -1,14 +1,20 @@
 package org.unc.hive.client;
 
 import java.util.ArrayList;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
+
 import com.claudiushauptmann.gwt.multipage.client.MultipageEntryPoint;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.logical.shared.CloseEvent;
+import com.google.gwt.event.logical.shared.CloseHandler;
+import com.google.gwt.event.logical.shared.OpenEvent;
+import com.google.gwt.event.logical.shared.OpenHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
@@ -16,6 +22,9 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CaptionPanel;
 import com.google.gwt.user.client.ui.DecoratedPopupPanel;
 import com.google.gwt.user.client.ui.DialogBox;
+import com.google.gwt.user.client.ui.DisclosureHandler;
+import com.google.gwt.user.client.ui.DisclosurePanel;
+import com.google.gwt.user.client.ui.DisclosurePanelImages;
 import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.FileUpload;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -357,6 +366,34 @@ public class Indexer implements EntryPoint {
 		indexingTable.setCellSpacing(0);
 		indexingTable.setWidget(2, 1, docURL);
 		
+		final DisclosurePanelImages images =
+			(DisclosurePanelImages) GWT.create(DisclosurePanelImages.class);
+		class DisclosurePanelHeader extends HorizontalPanel
+		{
+		    public DisclosurePanelHeader(boolean isOpen, String html)
+		    {
+		        add(isOpen ? images.disclosurePanelOpen().createImage()
+		              : images.disclosurePanelClosed().createImage());
+		        add(new HTML(html));
+		    }
+		}
+		
+		final DisclosurePanel advancedPanel = new DisclosurePanel("Show advanced settings");
+
+		advancedPanel.addCloseHandler(new CloseHandler<DisclosurePanel>() {
+            @Override
+            public void onClose(CloseEvent<DisclosurePanel> event) {
+            	advancedPanel.setHeader(new DisclosurePanelHeader(false, "Show advanced settings"));
+            }
+        });
+		
+		advancedPanel.addOpenHandler(new OpenHandler<DisclosurePanel>() {
+            @Override
+            public void onOpen(OpenEvent<DisclosurePanel> event) {
+            	advancedPanel.setHeader(new DisclosurePanelHeader(true, "Hide advanced settings"));
+            }
+        });
+		
 		final ListBox maxHops = new ListBox();
 		maxHops.addItem("0");
 		maxHops.addItem("1");
@@ -364,12 +401,25 @@ public class Indexer implements EntryPoint {
 		maxHops.addItem("3");
 		maxHops.addItem("4");
 		maxHops.addItem("5");
+		maxHops.setStyleName("max-hops");
+		
 		Label lbl3 = new Label();
-		lbl3.setText("Hops");
+		lbl3.setText("  Number of hops");
+		//lbl3.addStyleName("or-label");
+		lbl3.addStyleName("label");
+		
 		HorizontalPanel hp3 = new HorizontalPanel();
+		hp3.setStyleName("advanced-subpanel");
 		hp3.add(maxHops);
 		hp3.add(lbl3);
-		indexingTable.setWidget(3, 1, hp3);
+		
+		advancedPanel.add(hp3);
+		advancedPanel.setStyleName("advanced-panel");
+		advancedPanel.setWidth("300px");
+		indexingTable.setWidget(3, 1, advancedPanel);
+
+
+
 
 		Button startProcessing = new Button("Start Processing");
 		startProcessing.setStyleName("start-processing");
@@ -401,7 +451,10 @@ public class Indexer implements EntryPoint {
 				}
 				else if(isFileUploaded == false && !url.equals(""))
 				{
-					fileToProcess = docURL.getValue();
+					if (!url.startsWith("http://") && !url.startsWith("https://"))
+						url = "http://" + url;
+					
+					fileToProcess = url;
 					isValid = true;
 				}
 				else if(isFileUploaded == true && !url.equals(""))
@@ -426,7 +479,7 @@ public class Indexer implements EntryPoint {
 							new AsyncCallback<List<ConceptProxy>>() {
 								@Override
 								public void onFailure(Throwable caught) {
-									Window.alert("Terms can not be extracted. Check!");
+									Window.alert("An error has occurred. Please try again.");
 									caught.printStackTrace();
 									processingPopup.hide();
 									glass.removeFromParent();
