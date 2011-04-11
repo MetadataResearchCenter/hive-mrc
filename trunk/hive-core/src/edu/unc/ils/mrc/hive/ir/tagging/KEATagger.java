@@ -42,6 +42,7 @@ public class KEATagger implements Tagger{
 	private static Logger log = Logger.getLogger(KEATagger.class);
 	private KEAKeyphraseExtractor ke;
 	private String vocabulary;
+	private static final int DEFAULT_NUM_PHRASES = 10;
 
 	public KEATagger(String dirName, String modelName, String stopwordsPath,
 			SKOSScheme schema) {
@@ -88,8 +89,9 @@ public class KEATagger implements Tagger{
 		// 8. Stopwords
 		this.ke.setStopwords(new StopwordsEnglish(stopwordsPath));
 		
+		// cwillis - Number of keyphrases now set via extractKeyphrases methods
 		// 9. Number of Keyphrases to extract
-		this.ke.setNumPhrases(10);
+		//this.ke.setNumPhrases(10);
 
 		// 10. Set to true, if you want to compute global dictionaries from the
 		// test collection
@@ -112,9 +114,10 @@ public class KEATagger implements Tagger{
 	 * read by the calling application.
 	 */
 	@Override
-	public void extractKeyphrases() {
+	public void extractKeyphrases(int numTerms) {
 		StopWatch stopwatch = new Log4JStopWatch();
 		try {
+			this.ke.setNumPhrases(numTerms);
 			this.ke.extractKeyphrases(ke.collectStems());
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -122,6 +125,10 @@ public class KEATagger implements Tagger{
 		stopwatch.lap("ExtractKeyPhrases - " + vocabulary);
 	}
 	
+	@Override
+	public void extractKeyphrases() {
+		extractKeyphrases(DEFAULT_NUM_PHRASES);
+	}
 
 	/**
 	 * Extracts keyphrases from the specified file baseName. The 
@@ -131,16 +138,21 @@ public class KEATagger implements Tagger{
 	 * the ".key" file.
 	 */
 	@Override
-	public void extractKeyphrasesFromFile(String baseName) {
+	public void extractKeyphrasesFromFile(String baseName, int numTerms) {
 		StopWatch stopwatch = new Log4JStopWatch();
 		try {
 			Hashtable<String, Double> stems = new Hashtable<String, Double>();
-			stems.put(baseName, new Double(0));		
+			stems.put(baseName, new Double(0));
+			this.ke.setNumPhrases(numTerms);
 			this.ke.extractKeyphrases(stems);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		stopwatch.lap("ExtractKeyPhrasesFromFile - " + vocabulary);
+	}
+	
+	public void extractKeyphrasesFromFile(String baseName) {
+		extractKeyphrasesFromFile(baseName, DEFAULT_NUM_PHRASES);
 	}
 	
 	// Not implemented

@@ -164,7 +164,16 @@ public class DummyTagger implements Tagger {
 
 	// Not implemented
 	@Override
+	public void extractKeyphrases(int numTerms) {
+	}
+
+	// Not implemented
+	@Override
 	public void extractKeyphrasesFromFile(String fileName) {
 	}
 	
+	// Not implemented
+	@Override
+	public void extractKeyphrasesFromFile(String fileName, int numTerms) {
+	}
 }

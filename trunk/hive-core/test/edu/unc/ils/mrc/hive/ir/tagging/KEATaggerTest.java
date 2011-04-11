@@ -66,7 +66,7 @@ public class KEATaggerTest extends TestCase {
 			e.printStackTrace();
 		}
 		long start = System.currentTimeMillis();
-		tagger.extractKeyphrases();
+		tagger.extractKeyphrases(10);
 		long end = System.currentTimeMillis();
 		System.out.println("Duration: " + (end - start));
 
