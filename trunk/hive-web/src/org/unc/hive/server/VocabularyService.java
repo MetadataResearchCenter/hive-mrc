@@ -278,10 +278,10 @@ public class VocabularyService {
 	 * 
 	 * */
 
-	public List<ConceptProxy> getTags(String input, List<String> openedVocabularies)
+	public List<ConceptProxy> getTags(String input, List<String> openedVocabularies, int numTerms)
 	{
 		SKOSTagger tagger = this.skosServer.getSKOSTagger();
-		List<SKOSConcept> candidates = tagger.getTags(input, openedVocabularies,this.getSKOSSearcher());
+		List<SKOSConcept> candidates = tagger.getTags(input, openedVocabularies,this.getSKOSSearcher(), numTerms);
 		List<ConceptProxy> result = new ArrayList<ConceptProxy>(); 
 		for(SKOSConcept concept : candidates)
 		{
@@ -298,10 +298,10 @@ public class VocabularyService {
 		return result;
 	}
 	
-	public List<ConceptProxy> getTags(URL url, List<String> openedVocabularies, int maxHops)
+	public List<ConceptProxy> getTags(URL url, List<String> openedVocabularies, int maxHops, int numTerms)
 	{
 		SKOSTagger tagger = this.skosServer.getSKOSTagger();
-		List<SKOSConcept> candidates = tagger.getTags(url, openedVocabularies,this.getSKOSSearcher(), maxHops);
+		List<SKOSConcept> candidates = tagger.getTags(url, openedVocabularies,this.getSKOSSearcher(), maxHops, numTerms);
 		List<ConceptProxy> result = new ArrayList<ConceptProxy>(); 
 		for(SKOSConcept concept : candidates)
 		{
