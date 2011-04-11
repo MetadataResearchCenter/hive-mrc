@@ -663,7 +663,7 @@ public class ConceptsResource {
       
       if (skosSearcher != null && skosTagger != null) {
         skosConcepts = 
-          skosTagger.getTags(inputFilePath, vocabularyList, skosSearcher);
+          skosTagger.getTags(inputFilePath, vocabularyList, skosSearcher, 10);
         xmlString = conceptListToXML(skosConcepts);
       }
       file.delete();
