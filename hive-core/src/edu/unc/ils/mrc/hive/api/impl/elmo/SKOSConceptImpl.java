@@ -144,29 +144,60 @@ public class SKOSConceptImpl implements SKOSConcept {
 	{
 	    logger.trace("getSKOSFormat");
 	    
-		String output = "<rdf:RDF>" + "\n";
-		output = output + "\t<rdf:Description rdf:about=\"" + this.getQName().getNamespaceURI() + getQName().getLocalPart() + "\">\n";
-		output = output + "\t<rdf:type rdf:resource=\"http://www.w3.org/2004/02/skos/core#Concept\"/>\n";
-		output = output + "\t<skos:prefLabel>" + this.prefLabel + "</skos:prefLabel>" + "\n";
+	    StringBuffer skos =  new StringBuffer();
+	    
+	    skos.append("<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" " +
+		                     "xmlns:skos=\"http://www.w3.org/2004/02/skos/core#\">" + "\n");
+		
+		skos.append("  <rdf:Description rdf:about=\"");
+		skos.append(this.getQName().getNamespaceURI());
+		skos.append(getQName().getLocalPart());
+		skos.append("\">\n");
+		
+		skos.append("    <rdf:type rdf:resource=\"http://www.w3.org/2004/02/skos/core#Concept\"/>\n");
+		
+		skos.append("    <skos:prefLabel>");
+		skos.append(this.prefLabel);
+		skos.append("</skos:prefLabel>\n");
+		
 		for(String alt : this.altLabels) {
-			output = output + "\t<skos:altLabel>" + alt + "</skos:altLabel>" + "\n";
+			skos.append("    <skos:altLabel>");
+			skos.append(alt);
+			skos.append("</skos:altLabel>\n");
 		}
+		
 		for(String broader : this.broaders.keySet()){
-			output = output + "\t<skos:broader rdf:resource=\"" + this.broaders.get(broader).getNamespaceURI() + this.broaders.get(broader).getLocalPart() + "/>" + "\n";
+			skos.append("    <skos:broader rdf:resource=\"");
+			skos.append(this.broaders.get(broader).getNamespaceURI());
+			skos.append(this.broaders.get(broader).getLocalPart());
+			skos.append("/>\n");
 		}
 		for(String narrower : this.narrowers.keySet()){
-			output = output + "\t<skos:narrower rdf:resource=\"" + this.narrowers.get(narrower).getNamespaceURI() + this.narrowers.get(narrower).getLocalPart() + "/>" + "\n";
+			skos.append("    <skos:narrower rdf:resource=\"");
+			skos.append(this.narrowers.get(narrower).getNamespaceURI());
+			skos.append(this.narrowers.get(narrower).getLocalPart());
+			skos.append("/>\n");
 		}
 		for(String related : this.relateds.keySet()){
-			output = output + "\t<skos:related rdf:resource=\"" + this.relateds.get(related).getNamespaceURI() + this.relateds.get(related).getLocalPart() + "/>" + "\n";
+			skos.append("    <skos:related rdf:resource=\"");
+			skos.append(this.relateds.get(related).getNamespaceURI());
+			skos.append(this.relateds.get(related).getLocalPart());
+			skos.append("/>\n");
 		}
-		output = output + "\t<skos:inScheme rdf:resource=\"" + this.getQName().getNamespaceURI() +"\"/>\n";
-		for(String scopeNote : this.scopeNotes){
-			output = output + "\t<skos:scopeNote>" + scopeNote + "</skos:scopeNote>" + "\n";
-		}
-		output = output + "</rdf:RDF>" ;
 		
-		return output;
+		skos.append("    <skos:inScheme rdf:resource=\"");
+		skos.append(this.getQName().getNamespaceURI());
+		skos.append("\"/>\n");
+		
+		for(String scopeNote : this.scopeNotes){
+			skos.append("    <skos:scopeNote>");
+			skos.append(scopeNote);
+			skos.append("</skos:scopeNote>\n");
+		}
+		skos.append("  </rdf:Description>\n");
+		skos.append("</rdf:RDF>");
+		
+		return skos.toString();
 	}
 
 	public void setScore(double score) {
