@@ -19,6 +19,7 @@ import edu.unc.ils.mrc.hive.api.impl.elmo.SKOSServerImpl;
  */
 public class BatchTagger 
 {
+	static final int NUM_TERMS = 20;
 	public static void main(String[] args) 
 	{
 		if (args.length != 3) {
@@ -48,7 +49,7 @@ public class BatchTagger
 				String keyFileName = pdfName.substring(0, pdfName.lastIndexOf('.')) + ".key";
 				FileWriter keyFileWriter = new FileWriter(keyFileName);
 
-				List<SKOSConcept> concepts = tagger.getTags(file.getAbsolutePath(), vocabularies, searcher);
+				List<SKOSConcept> concepts = tagger.getTags(file.getAbsolutePath(), vocabularies, searcher, NUM_TERMS);
 				for (SKOSConcept concept : concepts) {
 					keyFileWriter.write(concept.getPrefLabel() + "\r\n");
 				}

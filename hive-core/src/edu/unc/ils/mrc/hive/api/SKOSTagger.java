@@ -37,10 +37,11 @@ public interface SKOSTagger {
 	 * @param path			Path to the file
 	 * @param vocabularies	List of vocabularies
 	 * @param searcher		Searcher implementation
+	 * @param maxTerms		Maximum number of terms
 	 * @return
 	 */
 	public List<SKOSConcept> getTags(String path, List<String> vocabularies, 
-			SKOSSearcher searcher);
+			SKOSSearcher searcher, int maxTerms);
 
 	/**
 	 * Returns a list of SKOSConcept objects for the specified URL
@@ -52,8 +53,9 @@ public interface SKOSTagger {
 	 * @param vocabularies  List of vocabularies
 	 * @param searcher		Searcher implementation
 	 * @param maxHops		Maximum number of links to be traversed (hops)
+	 * @param maxTerms		Maximum number of terms
 	 * @return
 	 */
 	public List<SKOSConcept> getTags(URL url, List<String> vocabularies, 
-			SKOSSearcher searcher, int maxHops);
+			SKOSSearcher searcher, int maxHops, int maxTerms);
 }

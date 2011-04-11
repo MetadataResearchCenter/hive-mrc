@@ -30,8 +30,10 @@ import java.util.List;
 public interface Tagger {
 
 	public void extractKeyphrases();
+	public void extractKeyphrases(int numTerms);
 
 	public void extractKeyphrasesFromFile(String fileName);
+	public void extractKeyphrasesFromFile(String fileName, int numTerms);
 	
 	public List<String> extractKeyphrases(String text);
 	

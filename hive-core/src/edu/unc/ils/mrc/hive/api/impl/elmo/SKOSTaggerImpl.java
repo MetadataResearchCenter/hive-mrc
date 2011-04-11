@@ -123,16 +123,17 @@ public class SKOSTaggerImpl implements SKOSTagger {
 	 * @param vocabularies  List of vocabularies
 	 * @param searcher		Searcher implementation
 	 * @param maxHops		Maximum number of links to be traversed (hops)
+	 * @param numTerms		Number of terms to be returned
 	 * @return
 	 */
 	public List<SKOSConcept> getTags(URL url, List<String> vocabulary, 
-			SKOSSearcher searcher, int maxHops)
+			SKOSSearcher searcher, int maxHops, int numTerms)
 	{
 		try
 		{
 			TextManager tm = new TextManager();
 			String text = tm.getPlainText(url, maxHops);
-			return getTagsInternal(text, vocabulary, searcher);
+			return getTagsInternal(text, vocabulary, searcher, numTerms);
 		} catch (Exception e) {
 			logger.error(e);
 		}
@@ -146,14 +147,15 @@ public class SKOSTaggerImpl implements SKOSTagger {
 	 * @param path			Path to the file
 	 * @param vocabularies	List of vocabularies
 	 * @param searcher		Searcher implementation
+	 * @param numTerms		Number of terms to be returned
 	 * @return
 	 */
 	public List<SKOSConcept> getTags(String filePath, List<String> vocabularies, 
-			SKOSSearcher searcher) 
+			SKOSSearcher searcher, int numTerms) 
 	{
 		TextManager tm = new TextManager();
 		String text = tm.getPlainText(filePath);
-		return getTagsInternal(text, vocabularies, searcher);          
+		return getTagsInternal(text, vocabularies, searcher, numTerms);          
 	}
 	
 	/**
@@ -163,9 +165,11 @@ public class SKOSTaggerImpl implements SKOSTagger {
 	 * @param text			Full-text of document
 	 * @param vocabularies	List of vocabularies
 	 * @param searcher		Searcher implementation
+	 * @param numTerms		Number of terms to be returned
 	 * @return
 	 */
-	private List<SKOSConcept> getTagsInternal(String text, List<String> vocabularies, SKOSSearcher searcher)
+	private List<SKOSConcept> getTagsInternal(String text, List<String> vocabularies, 
+			SKOSSearcher searcher, int numTerms)
 	{
 		StopWatch stopwatch = new Log4JStopWatch();
 
@@ -200,7 +204,7 @@ public class SKOSTaggerImpl implements SKOSTagger {
 				String vocabularyName = tagger.getVocabulary();
 				logger.info("Indexing with " + vocabularyName);
 				try {
-					tagger.extractKeyphrasesFromFile(tempFileName);
+					tagger.extractKeyphrasesFromFile(tempFileName, numTerms);
 				} catch (RuntimeException e) {
 					logger.error(e);
 				}
@@ -245,7 +249,7 @@ public class SKOSTaggerImpl implements SKOSTagger {
 			logger.debug("extracting keyphrases");
 			List<String> keywords = tagger.extractKeyphrases(text);
 			logger.info("Number of keyphrases: " + keywords.size());
-			int limit = LIMIT;
+			int limit = numTerms;
 			if (limit > keywords.size()) {
 				limit = keywords.size();
 			}
