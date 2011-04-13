@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE module PUBLIC "-//Google Inc.//DTD Google Web Toolkit 1.6.4//EN" "http://google-web-toolkit.googlecode.com/svn/tags/1.6.4/distro-source/core/src/gwt-module.dtd">
+<module rename-to='hivewebrowser'>
+	<inherits name='com.google.gwt.user.User' />
+	<inherits name='com.google.gwt.user.theme.standard.Standard' />
+	<inherits name='com.claudiushauptmann.gwt.multipage.gwt-multipage' />
+	<stylesheet src="../hive.css" />
+	<stylesheet src="../Upload.css" />
+	<!-- Inherit GlassPanel module  -->
+	<inherits name="com.google.gwt.widgetideas.GlassPanel" />
+	<inherits name="com.google.gwt.visualization.Visualization"/>
+	<entry-point
+		class='com.claudiushauptmann.gwt.multipage.client.EntrypointDispatcher' />
+</module>
