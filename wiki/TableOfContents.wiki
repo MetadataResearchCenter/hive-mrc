@@ -11,7 +11,7 @@
    * [ImportingVocabularies How to import vocabularies]
    * [HIVEMemoryUsage HIVE Memory Usage]
    * [InstallingHiveEC2 Installing HIVE on EC2]
-   * [Vocabulary Synchronization]
+   * [VocabularySynchronization Synchronization]
  * Using HIVE
    * [TrainingKEA How to train HIVE]
    * [VocabularyConversion How to convert vocabularies]
