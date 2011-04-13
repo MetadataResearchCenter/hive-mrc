@@ -1,0 +1,14 @@
+#summary How to synchronize HIVE with external vocabulary services
+
+Complete reload
+ * Given the URL for a SKOS/RDF file, periodically reload the entire vocabulary
+
+Atom feed
+ * Given the URL of an Atom feed, synchronize vocabularies daily
+
+
+vocabulary.properties 
+ * synchronize_vocabulary = true
+ * synchronization_frequency = 24
+ * rdf_url
+ * atom_feed_url
