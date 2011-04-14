@@ -1,6 +1,7 @@
 package org.unc.hive.server;
 
 import java.net.URL;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -18,7 +19,6 @@ import edu.unc.ils.mrc.hive.api.impl.elmo.SKOSServerImpl;
 
 import javax.xml.namespace.QName;
 
-import org.mortbay.log.Log;
 import org.unc.hive.client.*;
 
 public class VocabularyService {
