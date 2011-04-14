@@ -33,7 +33,7 @@
             <executions>
                 <execution>
                     <configuration>
-                        <module>org.unc.hive.client.ConceptBrowser</module>
+                        <module>org.unc.hive.ConceptBrowser</module>
             		</configuration>
             		<goals>
               			<goal>compile</goal>
@@ -248,7 +248,11 @@
         <artifactId>gwt-servlet</artifactId>
         <version>2.2.0</version>
     </dependency>
-    
+    <dependency>
+        <groupId>com.google.gwt</groupId>
+        <artifactId>gwt-user</artifactId>
+        <version>2.2.0</version>
+    </dependency>    
     <dependency>
         <groupId>com.google.gwt.google-apis</groupId>
         <artifactId>gwt-visualization</artifactId>
