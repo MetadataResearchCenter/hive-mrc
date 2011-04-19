@@ -15,6 +15,8 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -39,25 +41,65 @@ import org.xml.sax.SAXException;
  */
 public class SimpleTextCrawler 
 {	
+	/* Logger */
+	private static final Log logger = LogFactory.getLog(SimpleTextCrawler.class);
+			
+	/* Link extraction pattern */
 	static final Pattern HREF_PATTERN = Pattern.compile("<a\\b[^>]*href=\"([^\"]*)\"[^>]*>");
 	
+	/* Map of crawled URLs */
 	Map<String, String> retrievedURLs = new HashMap<String, String>();
 	
+	/**
+	 * Returns a text representation of the website at the specified URL by crawling
+	 * all links up to the maximum number of "hops" from the initial URL.
+	 * 
+	 * @param url 		Website to retrieve text for
+	 * @param maxHops	Maximum number of hops to crawl
+	 * @return
+	 * @throws ClientProtocolException
+	 * @throws IOException
+	 */
 	public String getText(URL url, int maxHops) throws ClientProtocolException, IOException {
 		return getText(url.toString(), url.toString(), maxHops, 0);
 	}
 	
+	/**
+	 * Returns a text representation of the website at the specified URL by crawling
+	 * all links up to the maximum number of "hops" from the initial URL limited 
+	 * by the base URL. All links must match the base URL to be traversed.
+	 * 
+	 * @param url		Website to retrieve text for
+	 * @param baseURL	Base URL used to filter links
+	 * @param maxHops	Maximum number of hops to crawl
+	 * @return
+	 * @throws ClientProtocolException
+	 * @throws IOException
+	 */
 	public String getText(URL url, String baseURL, int maxHops) throws ClientProtocolException, IOException {
 		return getText(url.toString(), baseURL, maxHops, 0);
 	}
 	
-	protected String getText(String url, String baseURL, int maxHops, 
+	/**
+	 * Internal method used to recursively traverse a website up to the maximum number of "hops"
+	 * 
+	 * @param url			Website to be crawled
+	 * @param baseURL		Base URL used as a filter
+	 * @param maxHops		Maximum number of hops to crawl
+	 * @param currentHop	Current hop
+	 * @return
+	 * @throws ClientProtocolException
+	 * @throws IOException
+	 */
+	private String getText(String url, String baseURL, int maxHops, 
 			int currentHop) throws ClientProtocolException, IOException
 	{
-		System.out.println("getText " + url + "(" + maxHops + "," + currentHop + ")");
+		logger.debug("getText " + url + "(" + maxHops + "," + currentHop + ")");
 		
-		if (!url.startsWith(baseURL))
+		if (!url.startsWith(baseURL)) {
+			logger.debug("Skipping " + url + ", not part of current site.");
 			return "";
+		}
 		
 		String text = "";
 		HttpClient client = new DefaultHttpClient();
@@ -68,6 +110,8 @@ public class SimpleTextCrawler
 		if (entity != null) {
 			
 			Header contentType = entity.getContentType();
+			
+			// Only process links of type text/html
 			if (!contentType.getValue().contains("text/html"))
 				return "";
 			
@@ -84,21 +128,23 @@ public class SimpleTextCrawler
 			String html = sw.toString();
 			try
 			{
+				// Get the text of the current page
 				String tmp =  getTextFromHtml(html);
-				tmp = tmp.replaceAll("\\n", " ");
-				tmp = tmp.replaceAll("\\t", " ");
 				tmp = tmp.replaceAll("\\s+", " ");
 				text += tmp;
-				text += "\n--------------------\n";
+				// Add this URL to the list of processed URLs
 				retrievedURLs.put(url, "1");
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.warn(e);
 			}
 			
+			// Continue to process additional links
 			if (currentHop < maxHops) 
 			{
+				// Get links from the current page
 				List<String> links = getLinks(url, sw.getBuffer());
 				for (String link : links) {
+					// For each link, if not already processed, get text
 					if (!retrievedURLs.containsKey(link)) {
 						String tmp = getText(link, baseURL, maxHops, currentHop+1);
 						text += tmp;
@@ -111,6 +157,15 @@ public class SimpleTextCrawler
 		return text;
 	}
 	
+	/**
+	 * Uses the Tika library to extract text from HTML
+	 * 
+	 * @param html HTML to process
+	 * @return
+	 * @throws IOException
+	 * @throws SAXException
+	 * @throws TikaException
+	 */
 	protected String getTextFromHtml(String html) throws IOException, SAXException, TikaException 
 	{
 		InputStream is = new ByteArrayInputStream(html.getBytes());
@@ -121,6 +176,7 @@ public class SimpleTextCrawler
 		is.close();
 		return handler.toString();
 	}
+	
 	/**
 	 * Returns a list of absolute URLs from the fetched page
 	 * @param baseUrl	Base URL
@@ -173,8 +229,7 @@ public class SimpleTextCrawler
 			absoluteUrl = base.resolve(relativeUrl).toString();
 			
 		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.warn(e);
 		}
 		return absoluteUrl;
 	}
