@@ -50,6 +50,7 @@ import org.openrdf.elmo.sesame.SesameManager;
 
 import edu.unc.ils.mrc.hive.api.SKOSConcept;
 import edu.unc.ils.mrc.hive.api.impl.elmo.SKOSConceptImpl;
+import edu.unc.ils.mrc.hive.ir.lucene.analysis.HIVEAnalyzer;
 
 /*
  * This class load Lucene indexes and create a Multisearcher with them
@@ -74,7 +75,7 @@ public class ConceptMultiSearcher implements Searcher {
 	    logger.trace("search " + word);
 		String[] fields = { "prefLabel", "altLabel" };
 		MultiFieldQueryParser parser = new MultiFieldQueryParser(fields,
-				new StandardAnalyzer());
+				new HIVEAnalyzer());
 
 		List<Concept> ranking = new ArrayList<Concept>();
 
@@ -85,16 +86,24 @@ public class ConceptMultiSearcher implements Searcher {
 			ScoreDoc[] hits = collector.topDocs().scoreDocs;
 			logger.debug("Total number of results: " + collector.getTotalHits());
 			for (int i = 0; i < hits.length; i++) {
+				
 				Concept concept;
 				int docId = hits[i].doc;
 				Document doc = searcher.doc(docId);
 				String uri = doc.get("uri");
 				String lp = doc.get("localPart");
+
 				for (int n = 0; n < managers.length; n++) {
 					concept = managers[n].find(Concept.class,
 							new QName(uri, lp));
-					if (concept != null)
-						ranking.add(concept);
+					if (concept != null) {
+						// An exact match on prefLabel should always be first.
+						if (concept.getSkosPrefLabel().equalsIgnoreCase(word)) {
+							ranking.add(0, concept);
+						} else {
+							ranking.add(concept);
+						}
+					}
 				}
 
 			}

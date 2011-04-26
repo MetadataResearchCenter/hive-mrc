@@ -39,6 +39,8 @@ import org.apache.lucene.store.LockObtainFailedException;
 
 import org.openrdf.concepts.skos.core.Concept;
 
+import edu.unc.ils.mrc.hive.ir.lucene.analysis.HIVEAnalyzer;
+
 /**
  * Create or update a Lucene index of SKOS concepts. This class uses a document-oriented
  * approach to represent SKOS concepts in the inverted index, where each concept is 
@@ -58,8 +60,9 @@ public class ConceptIndexer implements Indexer
 	 */
 	public ConceptIndexer(String indexDir, boolean create) {
 		try {
+			
 			this.writer = new IndexWriter(indexDir,
-					new StandardAnalyzer(), create,
+					new HIVEAnalyzer(), create,
 					IndexWriter.MaxFieldLength.UNLIMITED);
 		} catch (CorruptIndexException e) {
 			logger.error(e);
@@ -101,6 +104,7 @@ public class ConceptIndexer implements Indexer
 			Field prefLabelL = new Field("prefLabel",
 				concept.getSkosPrefLabel(), Field.Store.YES,
 				Field.Index.ANALYZED);
+			prefLabelL.setBoost(1.5f);
 			docLucene.add(prefLabelL);
 		} catch (Exception e) {
 			logger.warn("Concept " + concept.getQName() + " missing prefLabel. Skipping.");
