@@ -72,6 +72,16 @@ To load the vocabulary without training, omit the parameter "train".
 
 Once the vocabulary has been loaded, you may start Tomcat and test to make sure the vocabulary is working properly.
 
+=== Reindexing in Lucene ===
+
+With the HIVE 1.1 release it is now possible to re-create the Lucene index for a vocabulary from an existing Sesame store. This process will skip the RDF import, KEA model generation and training.
+
+For example
+{{{
+java  -Djava.ext.dirs=/path/to/tomcat6/webapps/ROOT/WEB-INF/lib  edu.unc.ils.mrc.hive.admin.AdminVocabularies /path/to/tomcat6/webapps/WEB-INF/conf/ lcsh lucene-only
+}}}
+
+
 == Effects of AdminVocabularies ==
 
 The AdminVocabularies class uses a SKOSScheme that represents a SKOS vocabulary and an Importer which implements the import process. Importer is implemented as a Factory, although at this moment there is only one importer, for SKOS. Once an importer has been selected, the appropriate methods are called to store the thesaurus in appropriately indexed formats:
