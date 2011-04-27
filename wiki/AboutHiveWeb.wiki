@@ -38,6 +38,10 @@ The HIVE indexing interface, displayed in \ref{indexing}, demonstrates the appli
 
 <img src="http://hive-mrc.googlecode.com/svn/trunk/doc/HIVE-Documentation/img/indexing.jpg" width=700 height=600 />
 
+==== Multi-hop Website Indexing ====
+
+As of HIVE version 1.0, indexing a website only used content from the first page of the specified URL. As of HIVE version 1.1, support has been added for "multi-hop" indexing. Using this feature, a simple web crawler will download text for all pages within the selected number of "hops" from the initial URL.
+
 
 === Linked data for concepts ===
 
