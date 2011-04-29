@@ -191,7 +191,7 @@ public class HomePage implements EntryPoint {
 						vocabulariesGrid.getRowFormatter().setStyleName(0,"tableHead");
 						vocabularyStatistics.add(vocabulariesGrid);
 						final Label lb = new Label(
-								"Last Updated On: February 9, 2011");
+								"Last Updated On: April 26, 2011");
 						lb.addStyleName("lastupdate");
 						final VerticalPanel vp = new VerticalPanel();
 						vp.add(vocabulariesGrid);
