@@ -16,6 +16,7 @@
    * [TrainingKEA How to train HIVE]
    * [VocabularyConversion How to convert vocabularies]
    * [MeshToSKOS Converting MeSH to SKOS]
+   * [SupportedFormats Supported Formats]
  * Developing HIVE
    * [DevelopingHIVE Developing]
    * [HivePerformance HIVE Performance]
