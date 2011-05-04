@@ -53,7 +53,7 @@ public class IndexerServiceImpl extends RemoteServiceServlet implements
      *   */
    
 	public List<ConceptProxy> getTags(String input, List<String> openedVocabularies, int maxHops, int numTerms) {
-		if(input.contains("http://")) {
+		if(input.startsWith("http://") || input.startsWith("https://")) {
 			try
 			{
 				URL url = new URL (input);
