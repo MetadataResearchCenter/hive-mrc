@@ -61,6 +61,7 @@ public class AdminVocabularies {
 		String configpath = args[0];
 		String vocabularyName = args[1].toLowerCase();
 		boolean doImport = (args.length==2) || (args.length==3 && !args[2].equals("train-only"));
+		boolean doLuceneOnly = (args.length==3 && (args[2].equals("lucene-only") || args[2].equals("lucene-only")));
 		boolean doTrain = (args.length==3 && (args[2].equals("train") || args[2].equals("train-only")));
 		
 		logger.info("Starting import of vocabulary " + vocabularyName);
@@ -72,7 +73,11 @@ public class AdminVocabularies {
 			if (doImport)
 			{
 				Importer importer = ImporterFactory.getImporter(schema);
-				importer.importThesaurustoDB();
+				if (!doLuceneOnly) {
+					logger.info("Importing vocabulary to Sesame store");
+					importer.importThesaurustoDB();
+				}
+				logger.info("Importing vocabulary to Lucene index");
 				importer.importThesaurustoInvertedIndex();
 				importer.close();
 				logger.info("Vocabulary import complete");
