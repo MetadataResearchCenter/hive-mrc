@@ -24,6 +24,8 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpParams;
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.AutoDetectParser;
@@ -104,6 +106,11 @@ public class SimpleTextCrawler
 		String text = "";
 		HttpClient client = new DefaultHttpClient();
 		HttpGet get = new HttpGet(url);
+	
+		HttpParams params = new BasicHttpParams();
+		params.setParameter("http.protocol.handle-redirects", true);
+		get.setParams(params);
+
 		HttpResponse response = client.execute(get);
 		HttpEntity entity = response.getEntity();
 		
@@ -111,9 +118,15 @@ public class SimpleTextCrawler
 			
 			Header contentType = entity.getContentType();
 			
-			// Only process links of type text/html
-			if (!contentType.getValue().contains("text/html"))
-				return "";
+			
+			try
+			{
+				// Only process links of type text/html
+				if (!contentType.getValue().contains("text/html"))
+					return getTextFromURL(url);
+			} catch (Exception e) {
+				logger.error(e);
+			}
 			
 			// Read the response
 			InputStream is = entity.getContent();	
@@ -170,6 +183,34 @@ public class SimpleTextCrawler
 	{
 		InputStream is = new ByteArrayInputStream(html.getBytes());
 		Metadata metadata = new Metadata();
+		Parser parser = new AutoDetectParser();
+		ContentHandler handler = new BodyContentHandler();
+		parser.parse(is, handler, metadata);
+		is.close();
+		return handler.toString();
+	}
+	
+	/**
+	 * Uses the Tika library to extract text from a URL
+	 * 
+	 * @param path	URL to process
+	 * @return
+	 * @throws IOException
+	 * @throws SAXException
+	 * @throws TikaException
+	 */
+	protected String getTextFromURL(String path) throws IOException, SAXException, TikaException 
+	{
+		URL url = new URL(path);
+
+		InputStream is = url.openStream();
+		Metadata metadata = new Metadata();
+		
+		int slash = path.lastIndexOf('/');
+		String name = path.substring(slash + 1);
+		if (name.length() > 0) {
+			metadata.set(Metadata.RESOURCE_NAME_KEY, name);
+		}		
 		Parser parser = new AutoDetectParser();
 		ContentHandler handler = new BodyContentHandler();
 		parser.parse(is, handler, metadata);
