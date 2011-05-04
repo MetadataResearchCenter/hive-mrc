@@ -33,7 +33,27 @@ import edu.unc.ils.mrc.hive.api.SKOSConcept;
 
 public interface Searcher {
 	
+	/**
+	 * Search for a word or phrase in the Lucene index. Lookup the 
+	 * returned concepts in Sesame to compose full SKOSConcept objects.
+	 * 
+	 * @param word		Phrase to search
+	 * @param manager	SesameManager used for concept lookup
+	 * @return
+	 */
 	public List<SKOSConcept> search(String word,SesameManager[] manager);
+	
+	/**
+	 * Search for a word or phrase in the Lucene index. Optionally, lookup the 
+	 * returned concepts in Sesame to compose full SKOSConcept objects.
+	 * 
+	 * @param word		Phrase to search
+	 * @param manager	SesameManager used for concept lookup (only used if brief=true)
+	 * @param brief		Whether to return brief or full records
+	 * @return
+	 */
+	public List<SKOSConcept> search(String word, SesameManager[] manager, boolean brief);
+	
 	public void close();
 
 }

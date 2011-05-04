@@ -71,6 +71,63 @@ public class ConceptMultiSearcher implements Searcher {
 	}
 
 	@Override
+	public List<SKOSConcept> search(String word, SesameManager[] managers, boolean brief) {
+		if (brief)
+			return searchBrief(word);
+		else
+			return search(word, managers);
+		
+	}
+	
+	/**
+	 * Searches for the specified word/phrase in Lucene and
+	 * returns brief SKOSConcept records. This method does not lookup 
+	 * the concept in Sesame and compose a full set of relationships.
+	 * 
+	 * @param word 	Word or phrase to search for
+	 * @return  	List of brief SKOSConcept objects
+	 */
+	protected List<SKOSConcept> searchBrief(String word) {
+	    logger.trace("search " + word);
+		String[] fields = { "prefLabel", "altLabel" };
+		MultiFieldQueryParser parser = new MultiFieldQueryParser(fields,
+				new HIVEAnalyzer());
+
+		List<SKOSConcept> skosConceptList = new ArrayList<SKOSConcept>();
+
+		try {
+			Query query = parser.parse(word);
+			
+			TopDocCollector collector = new TopDocCollector(NUMBER_RESULTS);
+			this.searcher.search(query, collector);
+			ScoreDoc[] hits = collector.topDocs().scoreDocs;
+			logger.debug("Total number of results: " + hits.length);
+			for (int i = 0; i < hits.length; i++) {
+				
+				int docId = hits[i].doc;
+				Document doc = searcher.doc(docId);
+				String uri = doc.get("uri");
+				String lp = doc.get("localPart");
+				String prefLabel = doc.get("prefLabel");
+
+				SKOSConcept concept = new SKOSConceptImpl(new QName(uri, lp));
+				concept.setPrefLabel(prefLabel);
+				skosConceptList.add(concept);
+			}
+		} catch (IOException e) {
+			logger.error(e);
+		} catch (ParseException e) {
+		    logger.error(e);
+		}
+		
+		return skosConceptList;
+	}
+	
+	/**
+	 * Searches for the specified word/phrase in Lucene and uses the Sesame store
+	 * to compose full SKOSConcept objects including all relations.
+	 */
+	@Override
 	public List<SKOSConcept> search(String word, SesameManager[] managers) {
 	    logger.trace("search " + word);
 		String[] fields = { "prefLabel", "altLabel" };
