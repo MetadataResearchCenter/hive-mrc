@@ -121,6 +121,15 @@ public class SKOSSearcherImpl implements SKOSSearcher {
 		List<SKOSConcept> ranking = searcher.search(keyword, this.managers);
 		return ranking;
 	}
+	
+	@Override
+	public List<SKOSConcept> searchConceptByKeyword(String keyword, boolean brief) {
+	    logger.trace("searchConceptByKeyword " + keyword + ", " + brief);
+	    
+		// Retrieve a concept from lucene indexes
+		List<SKOSConcept> ranking = searcher.search(keyword, this.managers, brief);
+		return ranking;
+	}
 
 	@Override
 	public SKOSConcept searchConceptByURI(String uri, String lp) {
