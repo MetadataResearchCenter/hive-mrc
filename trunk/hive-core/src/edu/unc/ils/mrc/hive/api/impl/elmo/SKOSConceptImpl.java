@@ -170,19 +170,19 @@ public class SKOSConceptImpl implements SKOSConcept {
 			skos.append("    <skos:broader rdf:resource=\"");
 			skos.append(this.broaders.get(broader).getNamespaceURI());
 			skos.append(this.broaders.get(broader).getLocalPart());
-			skos.append("/>\n");
+			skos.append("\"/>\n");
 		}
 		for(String narrower : this.narrowers.keySet()){
 			skos.append("    <skos:narrower rdf:resource=\"");
 			skos.append(this.narrowers.get(narrower).getNamespaceURI());
 			skos.append(this.narrowers.get(narrower).getLocalPart());
-			skos.append("/>\n");
+			skos.append("\"/>\n");
 		}
 		for(String related : this.relateds.keySet()){
 			skos.append("    <skos:related rdf:resource=\"");
 			skos.append(this.relateds.get(related).getNamespaceURI());
 			skos.append(this.relateds.get(related).getLocalPart());
-			skos.append("/>\n");
+			skos.append("\"/>\n");
 		}
 		
 		skos.append("    <skos:inScheme rdf:resource=\"");
