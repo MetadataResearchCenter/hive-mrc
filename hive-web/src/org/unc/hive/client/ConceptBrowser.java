@@ -771,7 +771,8 @@ public class ConceptBrowser implements EntryPoint, ValueChangeHandler<String> {
 		final Tree topSub = new Tree();
 		conceptList.clear();
 		conceptList.add(loadingBar);
-		conceptBrowserService.getSubTopConcept(vocabulary.toLowerCase(), letter.toLowerCase(), new AsyncCallback<List<ConceptProxy>>() {
+		conceptBrowserService.getSubTopConcept(vocabulary.toLowerCase(), letter.toLowerCase(), true, 
+				new AsyncCallback<List<ConceptProxy>>() {
 
 			@Override
 			public void onFailure(Throwable caught) {

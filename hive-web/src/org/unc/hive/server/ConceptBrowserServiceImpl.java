@@ -133,9 +133,9 @@ public class ConceptBrowserServiceImpl extends RemoteServiceServlet implements
 		return this.service.getAllVocabularyNames();
 	}
 	
-	public List<ConceptProxy> getSubTopConcept(String vocabulary,String letter)
+	public List<ConceptProxy> getSubTopConcept(String vocabulary,String letter, boolean brief)
 	{
-		return this.service.getSubTopConcept(vocabulary, letter);
+		return this.service.getSubTopConcept(vocabulary, letter, brief);
 	}
 	
 	public ConceptProxy getFirstConcept(String vocabulary)

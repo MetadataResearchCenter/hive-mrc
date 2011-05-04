@@ -1,8 +1,7 @@
 package org.unc.hive.client;
-import java.util.HashMap;
+
 import java.util.List;
-import java.util.Set;
-import java.util.TreeMap;
+
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -10,7 +9,9 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  * The async counterpart of <code>ConceptBrowserService/code>.
  */
 public interface ConceptBrowserServiceAsync {
-	public void getSubTopConcept(String vocabulary, String letter, AsyncCallback<List<ConceptProxy>> callback);
+	public void getSubTopConcept(String vocabulary, String letter, boolean brief, 
+			AsyncCallback<List<ConceptProxy>> callback);
+
 	public void getNumberOfConcept(String Vocabulary,AsyncCallback<Integer> callback);
 	public void getNumberOfRelationships(String Vocabulary,AsyncCallback<Integer> callback);
 	public void getDate(String vocabulary,AsyncCallback<String> callback);

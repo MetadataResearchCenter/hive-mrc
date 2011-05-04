@@ -2,6 +2,7 @@ package org.unc.hive.server;
 
 import java.net.URL;
 
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -23,7 +24,6 @@ import org.unc.hive.client.*;
 
 public class VocabularyService {
 
-	private static int MAX_RESULTS = 300;
 	private static VocabularyService instance = null;
 	private SKOSServer skosServer;
 
@@ -105,8 +105,8 @@ public class VocabularyService {
 	// return this.getConceptByURI(namespaceURI, localPart);
 	// }
 
-
-	public List<ConceptProxy> getSubTopConcept(String vocabulary, String letter) {
+	
+	public List<ConceptProxy> getSubTopConcept(String vocabulary, String letter, boolean brief) {
 		TreeMap<String, SKOSScheme> vocabularies = this.skosServer
 				.getSKOSSchemas();
 		SKOSScheme targetVoc = vocabularies.get(vocabulary);
@@ -117,25 +117,28 @@ public class VocabularyService {
 		while (it.hasNext()) {
 			String key = it.next();
 			QName q = top.get(key);
-			SKOSConcept concept = this.skosServer.getSKOSSearcher()
-					.searchConceptByURI(q.getNamespaceURI(), q.getLocalPart());
-			int numberOfChildren = concept.getNumberOfChildren();
 			boolean isleaf = false;
-			if (numberOfChildren == 0)
-				isleaf = true;
+			
+			if (!brief) 
+			{
+				SKOSConcept concept = this.skosServer.getSKOSSearcher()
+					.searchConceptByURI(q.getNamespaceURI(), q.getLocalPart());
+				int numberOfChildren = concept.getNumberOfChildren();
+				
+				if (numberOfChildren == 0)
+					isleaf = true;
+			}
 			String uri = q.getNamespaceURI();
 			String localPart = q.getLocalPart();
 			String URI = uri + " " + localPart;
-			String preLabel = key;
-			ConceptProxy father = new ConceptProxy(vocabulary, preLabel, URI,
+			String prefLabel = key;
+			ConceptProxy father = new ConceptProxy(vocabulary, prefLabel, URI,
 					isleaf);
 			fatherList.add(father);
-			
-			if (fatherList.size() >= MAX_RESULTS)
-				break;
 		}
 		return fatherList;
 	}
+	
 
 	/**
 	 * @gwt.typeArgs <client.ConceptProxy>
@@ -180,7 +183,7 @@ public class VocabularyService {
 
 		// maintain the rank list
 		SKOSSearcher searcher = this.skosServer.getSKOSSearcher();
-		List<SKOSConcept> result = searcher.searchConceptByKeyword(keyword);
+		List<SKOSConcept> result = searcher.searchConceptByKeyword(keyword, true);
 		List<ConceptProxy> rankedlist = new ArrayList<ConceptProxy>();
 		for(String s : openedVocabularies) {
 			System.out.println(s);
@@ -202,8 +205,6 @@ public class VocabularyService {
 					//System.out.println("CONCEPT PROXI: " + cp.getOrigin());
 					rankedlist.add(cp);
 					
-					if (rankedlist.size() >= MAX_RESULTS)
-						break;
 				}
 			}
 

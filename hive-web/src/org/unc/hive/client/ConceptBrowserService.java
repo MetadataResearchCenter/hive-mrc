@@ -17,7 +17,7 @@ public interface ConceptBrowserService extends RemoteService {
 //	List<String> getVStat(); /*Get the statistics of vocabularies information at HIVE*/
 //    String openNewVocabulary(String name); /*Retrieve and open a new vocabulary from sever*/
 //    String setup(String modelName);
-	public List<ConceptProxy> getSubTopConcept(String vocabulary,String letter);
+	public List<ConceptProxy> getSubTopConcept(String vocabulary,String letter, boolean brief);
 	public List<ConceptProxy> getChildConcept(String nameSpaceURI, String localPart);
 	public Integer getNumberOfConcept(String Vocabulary);
 	public Integer getNumberOfRelationships(String Vocabulary);
