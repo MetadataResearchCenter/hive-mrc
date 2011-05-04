@@ -43,6 +43,7 @@ import org.apache.lucene.store.LockObtainFailedException;
 import org.apache.lucene.store.RAMDirectory;
 
 import edu.unc.ils.mrc.hive.api.SKOSScheme;
+import edu.unc.ils.mrc.hive.ir.lucene.analysis.HIVEAnalyzer;
 import edu.unc.ils.mrc.hive.ir.tagging.dummy.nlp.Dictionary;
 import edu.unc.ils.mrc.hive.ir.tagging.dummy.nlp.Postagger;
 import edu.unc.ils.mrc.hive.ir.tagging.dummy.ranking.Rankeable;
@@ -75,7 +76,7 @@ public class DummyTagger implements Tagger {
 	public List<String> extractKeyphrases(String text) {
 		List<String> keywords = new ArrayList<String>();
 		// TODO Auto-generated method stub
-		Analyzer analyzer = new StandardAnalyzer();
+		Analyzer analyzer = new HIVEAnalyzer();
 		Directory index = new RAMDirectory();
 		IndexWriter w;
 		try {
