@@ -31,20 +31,6 @@ public class KEATaggerTest extends TestCase {
 			e1.printStackTrace();
 		}
 		
-		NativeStore store = new NativeStore(new File(scheme.getStoreDirectory()));
-		Repository repository = new SailRepository(store);
-		try {
-			repository.initialize();
-		} catch (RepositoryException e) {
-			e.printStackTrace();
-		}
-		ElmoModule module = new ElmoModule();
-		SesameManagerFactory factory = new SesameManagerFactory(module,
-				repository);
-		SesameManager manager = factory.createElmoManager();
-
-		scheme.setManager(manager);
-		
 		KEATagger tagger = new KEATagger(scheme.getKEAtestSetDir(), scheme.getKEAModelPath(),
 				scheme.getStopwordsPath(), scheme);
 		
