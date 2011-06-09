@@ -25,6 +25,7 @@
 package edu.unc.ils.mrc.hive2.api.impl;
 
 import java.io.File;
+
 import java.io.IOException;
 
 
@@ -46,7 +47,6 @@ import org.openrdf.concepts.skos.core.Concept;
 import org.openrdf.elmo.ElmoModule;
 import org.openrdf.elmo.sesame.SesameManager;
 import org.openrdf.elmo.sesame.SesameManagerFactory;
-import org.openrdf.model.Resource;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
 import org.openrdf.model.ValueFactory;
