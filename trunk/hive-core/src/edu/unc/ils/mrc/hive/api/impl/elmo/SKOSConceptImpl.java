@@ -49,6 +49,7 @@ public class SKOSConceptImpl implements SKOSConcept {
 	private List<String> scopeNotes;
 	private List<String> schemes;
 	private double score;
+	private boolean isLeaf = false;
 
 	public SKOSConceptImpl(QName uri) {
 		this.qname = uri;
@@ -206,6 +207,14 @@ public class SKOSConceptImpl implements SKOSConcept {
 
 	public double getScore() {
 		return score;
+	}
+	
+	public boolean isLeaf() {
+		return isLeaf;
+	}
+	
+	public void setIsLeaf(boolean isLeaf) {
+		this.isLeaf = isLeaf;
 	}
 
 }

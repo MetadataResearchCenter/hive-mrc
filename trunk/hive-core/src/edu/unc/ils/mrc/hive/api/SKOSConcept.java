@@ -68,5 +68,7 @@ public interface SKOSConcept {
 	public void setScore(double score);
 
 	public double getScore();
+	
+	public boolean isLeaf();
 
 }
