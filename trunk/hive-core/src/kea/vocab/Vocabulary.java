@@ -124,6 +124,8 @@ public abstract class Vocabulary implements Serializable
 	 * which are stemmed and sorted into alphabetical order. 
 	 */
 	public String pseudoPhrase(String str) {
+		if (str == null)
+			return null;
 		// System.err.print(str + "\t");
 		String[] pseudophrase;
 		String[] words;
@@ -171,7 +173,7 @@ public abstract class Vocabulary implements Serializable
 		
 		for (int i = 0; i < words.length; i++) {
 			String word = words[i];
-			if (!m_Stopwords.isStopword(word)) {
+			if (m_Stopwords != null && !m_Stopwords.isStopword(word)) {
 				
 				if (word.matches(".+?\\'.+?")) {
 					String[] elements = word.split("\\'");
