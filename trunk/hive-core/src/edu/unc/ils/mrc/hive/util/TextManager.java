@@ -40,6 +40,7 @@ import java.net.URL;
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.AutoDetectParser;
+import org.apache.tika.parser.ParseContext;
 import org.apache.tika.parser.Parser;
 import org.apache.tika.sax.BodyContentHandler;
 import org.xml.sax.ContentHandler;
@@ -142,9 +143,11 @@ public class TextManager
 	 */
 	protected String parse(InputStream is, Metadata metadata) throws IOException, SAXException, TikaException 
 	{
+		ParseContext context = new ParseContext();
 		Parser parser = new AutoDetectParser();
-		ContentHandler handler = new BodyContentHandler();
-		parser.parse(is, handler, metadata);
+		context.set(Parser.class, parser);
+		ContentHandler handler = new BodyContentHandler(-1);
+		parser.parse(is, handler, metadata, context);
 		return handler.toString();
 	}
 	
