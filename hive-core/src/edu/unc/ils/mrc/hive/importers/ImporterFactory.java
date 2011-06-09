@@ -28,6 +28,7 @@ package edu.unc.ils.mrc.hive.importers;
 import edu.unc.ils.mrc.hive.HiveException;
 import edu.unc.ils.mrc.hive.api.SKOSScheme;
 
+@Deprecated
 public class ImporterFactory {
 
 	public static final int SKOSIMPORTER = 1;
