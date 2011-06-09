@@ -749,7 +749,7 @@ public class KEAModelBuilder implements OptionHandler {
 	public void buildModel(Hashtable stems, SKOSScheme schema, String stopwordsPath, SesameManager manager) throws Exception {
 		
 		String h2path = new File(schema.getRdfPath()).getParentFile().getAbsolutePath();
-		h2path += File.separator + schema.getName().toLowerCase() + "H2" + File.separator + schema.getName().toLowerCase();
+		//h2path += File.separator + schema.getName().toLowerCase() + "H2" + File.separator + schema.getName().toLowerCase();
 		this.vocabulary = new VocabularyH2(schema.getName(), h2path, m_documentLanguage, schema.getManager());
 		
 		// Check whether there is actually any data
@@ -867,8 +867,6 @@ public class KEAModelBuilder implements OptionHandler {
 	public static void main(String[] ops) throws RepositoryException {
 		
 		String trainDir = "/home/hive/hive-data/nbii/nbiiKEA/train";
-		String modelPath = "/home/hive/hive-data/nbii/nbiiKEA/nbii";
-		String vocabularyPath = "/home/hive/hive-data/nbii/nbii3.rdf";
 		String stopwordsPath = "/home/hive/hive-data/nbii/nbiiKEA/data/stopwords/stopwords_en.txt";
 		
 		String confPath = "/home/hive/workspace/hive-core/conf/";
@@ -877,17 +875,7 @@ public class KEAModelBuilder implements OptionHandler {
 		try
 		{
 			SKOSScheme schema = new SKOSSchemeImpl(confPath, vocabularyName, false);
-	
-			NativeStore store  = new NativeStore(new File(schema.getStoreDirectory()));
-			Repository repository = new SailRepository(store);
-			repository.initialize();
-			ElmoModule module = new ElmoModule();
-			SesameManagerFactory factory = new SesameManagerFactory(module, repository);
-			SesameManager manager = factory.createElmoManager();
-			
-			schema.setManager(manager);
-			
-			
+
 			KEAModelBuilder kmb = new KEAModelBuilder(schema);
 			try {
 				kmb.setOptions(ops);

@@ -5,6 +5,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -30,6 +31,9 @@ import org.openrdf.repository.sail.SailRepository;
 import org.openrdf.sail.nativerdf.NativeStore;
 import org.perf4j.StopWatch;
 import org.perf4j.log4j.Log4JStopWatch;
+
+import edu.unc.ils.mrc.hive2.api.impl.HiveH2IndexImpl;
+import edu.unc.ils.mrc.hive2.api.impl.HiveVocabularyImpl;
 
 import kea.stemmers.PorterStemmer;
 import kea.stopwords.Stopwords;
@@ -67,6 +71,8 @@ public class VocabularyH2 extends Vocabulary
 	FileWriter vocabularyREL;
 	
 	File h2;
+	
+	HiveH2IndexImpl h2Index = null;
 
 	/**
 	 * Constructs a VocabularyH2 instance 
@@ -76,25 +82,14 @@ public class VocabularyH2 extends Vocabulary
 	 * @throws ClassNotFoundException
 	 * @throws SQLException
 	 */
-	public VocabularyH2(String name, String h2path, String documentLanguage, SesameManager manager) 
+	public VocabularyH2(String name, String basePath, String documentLanguage, SesameManager manager) 
 		throws ClassNotFoundException, SQLException 
 	{
 		super(documentLanguage);
 		this.manager = manager;
 		this.name = name;
-		this.h2 = new File(h2path + ".h2.db");
-		
-		logger.info("H2 store path: " + h2path);
-		// Initialize an H2 connection pool
-		String uri = "jdbc:h2:" + h2path;
-		Class.forName("org.h2.Driver");		
-		
-		ObjectPool connectionPool = new GenericObjectPool(null); 
-		ConnectionFactory connectionFactory = new DriverManagerConnectionFactory(uri, "", "");
-		PoolableConnectionFactory poolableConnectionFactory = new PoolableConnectionFactory(connectionFactory,connectionPool,null,null,false,true); 
-		Class.forName("org.apache.commons.dbcp.PoolingDriver"); 
-		PoolingDriver driver = (PoolingDriver) DriverManager.getDriver("jdbc:apache:commons:dbcp:"); 
-		driver.registerPool(name, connectionPool);
+		HiveVocabularyImpl hv = HiveVocabularyImpl.getInstance(basePath, name);
+		h2Index = (HiveH2IndexImpl)hv.getH2Index();
 	}
 	
 	/**
@@ -103,7 +98,9 @@ public class VocabularyH2 extends Vocabulary
 	 * @throws Exception
 	 */
 	protected Connection getConnection() throws SQLException {
-		return DriverManager.getConnection("jdbc:apache:commons:dbcp:" + name);
+		
+		logger.debug("getConnection()");
+		return h2Index.getConnection();
 	}
 		
 	
@@ -112,15 +109,43 @@ public class VocabularyH2 extends Vocabulary
 	{
 		try
 		{
-			if (!h2.exists()) {
+			if (!exists()) {
 				buildSKOS();
 			} else {
-				logger.info("H2 directory exists, skipping H2 initialization");
+				logger.info("H2 database exists, skipping H2 initialization");
 			}
 			
 		} catch (Exception e) {
 			logger.error(e);
 		}
+	}
+	
+	protected boolean exists() {
+
+		if (!h2Index.exists())
+			return false;
+		else
+		{
+			Connection con = null;
+			try {
+				con = getConnection();
+				DatabaseMetaData dm = con.getMetaData();
+				ResultSet rs = dm.getTables(null, null, "VOCABULARY_EN", null);
+				if (rs.next())
+					return true;
+				else
+					return false;
+			} catch (SQLException e) {
+			} finally {
+				if (con != null) {
+					try {
+						con.close();
+					} catch (Exception e) { }
+				}
+			}
+		}
+		return false;
+			
 	}
 
 	/**
@@ -131,7 +156,7 @@ public class VocabularyH2 extends Vocabulary
 	public void buildSKOS() throws Exception {
 		StopWatch stopwatch = new Log4JStopWatch();
 		
-		logger.trace("buildSKOS");
+		logger.info("buildSKOS");
 		
 		// Temporary files used to store KEA++ maps prior to import into H2
 		File fileEN = File.createTempFile("vocabularyEN", null);
@@ -142,6 +167,11 @@ public class VocabularyH2 extends Vocabulary
 		boolean hasAltLabels = false;
 		
 		try {
+			
+			logger.info("Creating temp file " + fileEN.getAbsolutePath());
+			logger.info("Creating temp file " + fileENrev.getAbsolutePath());
+			logger.info("Creating temp file " + fileUSE.getAbsolutePath());
+			logger.info("Creating temp file " + fileREL.getAbsolutePath());
 			
 			vocabularyEN = new FileWriter(fileEN);
 			vocabularyENrev = new FileWriter(fileENrev);
@@ -157,6 +187,7 @@ public class VocabularyH2 extends Vocabulary
 				String uri = concept.getQName().getNamespaceURI()
 						+ concept.getQName().getLocalPart();
 
+				logger.debug("Adding concept " + uri);
 				String preferredLabel = concept.getSkosPrefLabel();
 				String pseudoPhrase = pseudoPhrase(preferredLabel);
 				if (pseudoPhrase == null) {
@@ -186,7 +217,7 @@ public class VocabularyH2 extends Vocabulary
 						addBroader(uri, uriBroader);
 					}
 				} catch (Exception e) {					
-					logger.error("Failed to get broader:" +uriBroader, e);
+					logger.error("Failed to get broader:" + uriBroader + "for (" + concept.getQName() + ")", e);
 				}
 
 				String uriNarrower = "";
@@ -231,36 +262,37 @@ public class VocabularyH2 extends Vocabulary
 		vocabularyREL.close();
 		vocabularyUSE.close();
 		
+		logger.info("Importing to H2");
 		Connection con = null;
+		Statement s = null;
 		try {
 
 			con = getConnection();
-			Statement s = con.createStatement();
+			s = con.createStatement();
 		
 			StopWatch stopWatch = new Log4JStopWatch();
 			
 			// Bulk load KEA++ relations from temporary files
 			s.execute("CREATE TABLE vocabulary_en (id varchar(512) , value varchar(1024)) AS SELECT * FROM CSVREAD('" + fileEN.getAbsolutePath() + "',null, 'UTF-8', '|');");
-			s.execute("CREATE INDEX idx1 on vocabulary_en(id);");
+			s.execute("CREATE INDEX idx_kea_1 on vocabulary_en(id);");
 
 			s.execute("CREATE TABLE vocabulary_enrev (id varchar(512) , value varchar(1024)) AS SELECT * FROM CSVREAD('" + fileENrev.getAbsolutePath() + "',null, 'UTF-8', '|');");
-			s.execute("CREATE INDEX idx2 on vocabulary_enrev(id);");
+			s.execute("CREATE INDEX idx_kea_2 on vocabulary_enrev(id);");
 			
 			if (hasRelated)
 				s.execute("CREATE TABLE vocabulary_rel (id varchar(512), value varchar(1024), relation varchar(20)) AS SELECT * FROM CSVREAD('" + fileREL.getAbsolutePath() + "',null, 'UTF-8', '|');");
 			else
 				s.execute("CREATE TABLE vocabulary_rel (id varchar(512), value varchar(1024), relation varchar(20));");
 
-			s.execute("CREATE INDEX idx3 on vocabulary_rel(id);");
+			s.execute("CREATE INDEX idx_kea_3 on vocabulary_rel(id);");
 					
 			if (hasAltLabels) 
 				s.execute("CREATE TABLE vocabulary_use ( id varchar(512) , value varchar(1024)) AS SELECT * FROM CSVREAD('" + fileUSE.getAbsolutePath() + "',null, 'UTF-8', '|');");
 			else
 				s.execute("CREATE TABLE vocabulary_use ( id varchar(512) , value varchar(1024));");
 			
-			s.execute("CREATE INDEX idx4 on vocabulary_use(id);");		
+			s.execute("CREATE INDEX idx_kea_4 on vocabulary_use(id);");		
 			
-			s.close();
 			stopWatch.lap("H2 Created");
 
 		} catch (Exception e) {
@@ -268,7 +300,10 @@ public class VocabularyH2 extends Vocabulary
 		} finally {
 			if (con != null) {
 				try {
-					con.close();
+					if (con != null)
+						con.close();
+					if (s != null)
+						s.close();
 				} catch (Exception e) { }
 			}
 		}
@@ -356,31 +391,43 @@ public class VocabularyH2 extends Vocabulary
 		String pseudo = pseudoPhrase(phrase);
 		String id = null;
 		if (pseudo != null) {
+			Connection con = null;
+			PreparedStatement ps = null;
+			PreparedStatement ps2 = null;
 			try {
 				String sql = "select value from vocabulary_en where id = ?";
 				
-				Connection con = getConnection();
-				PreparedStatement ps = con.prepareStatement(sql);
+				con = getConnection();
+				ps = con.prepareStatement(sql);
 				ps.setString(1, pseudo);
 				ResultSet rs = ps.executeQuery();
 				while (rs.next())
 					id = rs.getString(1);
-				ps.close();
-
 
 				String sql2 = "select value from vocabulary_use where id = ?";
 
-				PreparedStatement ps2 = con.prepareStatement(sql2);
+				ps2 = con.prepareStatement(sql2);
 				ps2.setString(1, id);
 				ResultSet rs2 = ps2.executeQuery();
 				// TODO: To replicate KEA behavior, use the last entry, sadly
 				while (rs2.next())
 					id = rs2.getString(1);
-				ps2.close();
-				con.close();
+
 			} catch (SQLException e) {
 				e.printStackTrace();
 				logger.error(e);
+			} finally {
+				try
+				{
+					if (con != null) 
+						con.close();
+					if (ps != null)
+						ps.close();
+					if (ps2 != null)
+						ps2.close();
+				} catch (SQLException e) {
+					logger.error(e);
+				}
 			}
 		}
 		return id;
@@ -393,21 +440,31 @@ public class VocabularyH2 extends Vocabulary
 		
 		String orig = null;
 
+		Connection con = null;
+		PreparedStatement ps = null;
 		try {
 			String sql = "select value from vocabulary_enrev where id = ?";
 			
-			Connection con = getConnection();
-			PreparedStatement ps = con.prepareStatement(sql);
+			con = getConnection();
+			ps = con.prepareStatement(sql);
 			ps.setString(1, id);
 			ResultSet rs = ps.executeQuery();
 			if (rs.next())
 				orig = rs.getString(1);
-			ps.close();
 
-			con.close();
 		} catch (SQLException e) {
 			logger.error(e);
-		}		
+		} finally {
+			try
+			{
+				if (con != null) 
+					con.close();
+				if (ps != null)
+					ps.close();
+			} catch (SQLException e) {
+				logger.error(e);
+			}
+		}
 			
 		return orig;
 	}
@@ -419,21 +476,31 @@ public class VocabularyH2 extends Vocabulary
 		
 		Vector<String> related = new Vector<String>();
 
+		Connection con = null;
+		PreparedStatement ps = null;
 		try {
 			String sql = "select value from vocabulary_rel where id = ? and relation = 'related'";
 			
-			Connection con = getConnection();
-			PreparedStatement ps = con.prepareStatement(sql);
+			con = getConnection();
+			ps = con.prepareStatement(sql);
 			ps.setString(1, id);
 			ResultSet rs = ps.executeQuery();
 			while (rs.next()) {
 				related.add(rs.getString(1));
 			}
-			ps.close();
-			con.close();
 		} catch (SQLException e) {
 			logger.error(e);
-		}	
+		} finally {
+			try
+			{
+				if (con != null) 
+					con.close();
+				if (ps != null)
+					ps.close();
+			} catch (SQLException e) {
+				logger.error(e);
+			}
+		}
 		return related;
 		
 	}
@@ -445,21 +512,33 @@ public class VocabularyH2 extends Vocabulary
 		
 		Vector<String> related = new Vector<String>();
 
+		Connection con = null;
+		PreparedStatement ps = null;
 		try {
 			String sql = "select value from vocabulary_rel where id = ? and relation = ?";
 			
-			Connection con = getConnection();
-			PreparedStatement ps = con.prepareStatement(sql);
+			con = getConnection();
+			ps = con.prepareStatement(sql);
 			ps.setString(1, id);
 			ps.setString(2, relation);
 			ResultSet rs = ps.executeQuery();
 			while (rs.next()) {
 				related.add(rs.getString(1));
 			}
-			ps.close();
+
 		} catch (SQLException e) {
 			logger.error(e);
-		}	
+		} finally {
+			try
+			{
+				if (con != null) 
+					con.close();
+				if (ps != null)
+					ps.close();
+			} catch (SQLException e) {
+				logger.error(e);
+			}
+		}
 		return related;
 
 	}
