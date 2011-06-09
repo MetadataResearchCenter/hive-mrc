@@ -31,6 +31,8 @@ import javax.xml.namespace.QName;
 
 import org.openrdf.elmo.sesame.SesameManager;
 
+import edu.unc.ils.mrc.hive.ir.lucene.search.AutocompleteTerm;
+
 /**
  * This interface represents a Hive vocabulary. A Hive vocabulary is
  * primarily backed by a Sesame repository and one or more underlying 
@@ -139,4 +141,9 @@ public interface HiveVocabulary
 	 * Close this vocabulary and the underlying indexes.
 	 */
 	public void close();
+	
+	/**
+	 * Suggest terms given a string
+	 */
+	public List<AutocompleteTerm> suggestTermsFor(String str, int numTerms) throws Exception;
 }

@@ -3,6 +3,7 @@ package edu.unc.ils.mrc.hive.ir.lucene.search;
 import java.io.IOException;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -35,7 +36,10 @@ import edu.unc.ils.mrc.hive.ir.lucene.analysis.AutocompleteAnalyzer;
 public final class Autocomplete 
 {
 
-	/* Lucene index field name to store the grammed words */
+	/* Lucene index field to store concept ID */
+	private static final String ID_FIELD = "id";
+	
+	/* Lucene index field to store the grammed words */
     private static final String GRAMMED_WORDS_FIELD = "words";
 
     /* Lucene index field to store the full source word */
@@ -69,7 +73,7 @@ public final class Autocomplete
      * @throws IOException
      * @throws ParseException
      */
-    public List<String> suggestTermsFor(String str, int numTerms) throws IOException, ParseException {
+    public List<AutocompleteTerm> suggestTermsFor(String str, int numTerms) throws IOException, ParseException {
  
     	str = str.replaceAll(" ", "");
     	str = str.toLowerCase();
@@ -78,10 +82,14 @@ public final class Autocomplete
     	Sort sort = new Sort(SORT_FIELD, false);
     	
     	TopDocs docs = autoCompleteSearcher.search(query, null, numTerms, sort);
-    	List<String> suggestions = new ArrayList<String>();
+    	List<AutocompleteTerm> suggestions = new ArrayList<AutocompleteTerm>();
     	for (ScoreDoc doc : docs.scoreDocs) {
-    		suggestions.add(autoCompleteReader.document(doc.doc).get(
-    				SOURCE_WORD_FIELD));
+    		String id = autoCompleteReader.document(doc.doc).get(
+    				ID_FIELD);
+    		String label = autoCompleteReader.document(doc.doc).get(
+    				SOURCE_WORD_FIELD);
+    		AutocompleteTerm term = new AutocompleteTerm(id, label);
+    		suggestions.add(term);
     	}
     	
     	return suggestions;
@@ -108,18 +116,21 @@ public final class Autocomplete
     	writer.setMaxBufferedDocs(150);
 
     	Map<String, Integer> wordsMap = new TreeMap<String, Integer>();
+    	Map<String, String> idMap = new HashMap<String, String>();
 
     	for (int i = 0; i<sourceReader.numDocs(); i++)
     	{
     		Document d = sourceReader.document(i);
-    		String[] values = d.getValues("prefLabel");
-    		for (String value: values) 
+    		String[] prefLabels = d.getValues("prefLabel");
+    		String[] ids = d.getValues("id");
+    		for (String prefLabel: prefLabels) 
     		{
-    			if (!wordsMap.containsKey(value)) {
+    			if (!wordsMap.containsKey(prefLabel)) {
 	    			// use the number of documents this word appears in
-    				System.out.println("Adding: " + value);
-	    			wordsMap.put(value, sourceReader.docFreq(new Term(
-	    					fieldToAutocomplete, value)));
+    				System.out.println("Adding: " + prefLabel);
+	    			wordsMap.put(prefLabel, sourceReader.docFreq(new Term(
+	    					fieldToAutocomplete, prefLabel)));
+	    			idMap.put(prefLabel, ids[0]);
 	    		}
     		}
 
@@ -139,6 +150,8 @@ public final class Autocomplete
     		
     		// ok index the word
     		Document doc = new Document();
+    		doc.add(new Field(ID_FIELD, idMap.get(word), Field.Store.YES, 
+    				Field.Index.NOT_ANALYZED));
     		doc.add(new Field(SOURCE_WORD_FIELD, word, Field.Store.YES,
     				Field.Index.NOT_ANALYZED)); // orig term
     		doc.add(new Field(GRAMMED_WORDS_FIELD, nospaces, Field.Store.YES,
@@ -174,4 +187,5 @@ public final class Autocomplete
 
     	autoCompleteSearcher = new IndexSearcher(autoCompleteReader);
     }
+
 }

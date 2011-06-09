@@ -33,6 +33,8 @@ import javax.xml.namespace.QName;
 
 import org.openrdf.elmo.sesame.SesameManager;
 
+import edu.unc.ils.mrc.hive.ir.lucene.search.AutocompleteTerm;
+
 public interface SKOSScheme {
 	
 	public String getName();
@@ -75,5 +77,6 @@ public interface SKOSScheme {
 	public void deleteConcept(QName qname) throws Exception;
 	public long getNumberOfTopConcepts() throws Exception;
 	public void close() throws Exception;
+	public List<AutocompleteTerm> suggestTermsFor(String str, int numTerms) throws Exception;
 	
 }
