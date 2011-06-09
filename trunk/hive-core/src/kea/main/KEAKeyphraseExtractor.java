@@ -172,7 +172,7 @@ public class KEAKeyphraseExtractor implements OptionHandler {
 		try
 		{
 			String h2path = new File(schema.getRdfPath()).getParentFile().getAbsolutePath();
-			h2path += File.separator + schema.getName().toLowerCase() + "H2" + File.separator + schema.getName().toLowerCase();
+			//h2path += File.separator + schema.getName().toLowerCase() + "H2" + File.separator + schema.getName().toLowerCase();
 			this.vocabulary = new VocabularyH2(schema.getName(), h2path, m_documentLanguage, schema.getManager());
 		} catch (Exception e) {
 			e.printStackTrace();
