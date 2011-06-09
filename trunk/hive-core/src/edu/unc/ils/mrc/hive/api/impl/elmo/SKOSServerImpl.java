@@ -134,7 +134,7 @@ public class SKOSServerImpl implements SKOSServer {
 		this.searcher.close();
 	}
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws Exception {
 		
 		logger.debug("starting SKOSServerImpl");
 		// Levanto el servidor de vocabularios
@@ -162,7 +162,7 @@ public class SKOSServerImpl implements SKOSServer {
 			System.out.println("\t SIZE: " + voc.getSubAlphaIndex("a").size());
 			System.out.println();
 			System.out.println("\t TOP CONCEPTS: "
-					+ voc.getTopConceptIndex().size());
+					+ voc.getNumberOfTopConcepts());
 		}
 
 		// /**
