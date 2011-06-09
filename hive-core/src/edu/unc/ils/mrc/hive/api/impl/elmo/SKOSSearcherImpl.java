@@ -50,6 +50,7 @@ import org.openrdf.query.TupleQueryResult;
 import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
+import org.openrdf.repository.contextaware.ContextAwareConnection;
 import org.openrdf.repository.sail.SailRepository;
 import org.openrdf.sail.nativerdf.NativeStore;
 
@@ -69,44 +70,37 @@ public class SKOSSearcherImpl implements SKOSSearcher {
     
 	private Map<String, SKOSScheme> vocabularies;
 	private String[] indexes;
-	private Repository[] repositories;
-	private SesameManagerFactory[] factories;
+	//private Repository[] repositories;
+	//private SesameManagerFactory[] factories;
 	private SesameManager[] managers;
-	private NativeStore stores[];
+	//private NativeStore stores[];
 	private File files[];
 	private Searcher searcher;
 
 	public SKOSSearcherImpl(Map<String, SKOSScheme> vocabularies) {
 		this.vocabularies = vocabularies;
-		this.repositories = new Repository[this.vocabularies.size()];
-		this.factories = new SesameManagerFactory[this.vocabularies.size()];
+		//this.repositories = new Repository[this.vocabularies.size()];
+		//this.factories = new SesameManagerFactory[this.vocabularies.size()];
 		this.managers = new SesameManager[this.vocabularies.size()];
-		this.stores = new NativeStore[this.vocabularies.size()];
+		//this.stores = new NativeStore[this.vocabularies.size()];
 		this.files = new File[this.vocabularies.size()];
 		this.indexes = new String[this.vocabularies.size()];
 		Set<String> keys = this.vocabularies.keySet();
 		int i = 0;
-		try {
+		//try {
 			for (String schemeName : keys) {
 				this.files[i] = new File(this.vocabularies.get(schemeName)
 						.getStoreDirectory());
 				logger.debug(this.files[i].getAbsolutePath());
-				this.stores[i] = new NativeStore(this.files[i]);
-				// create repository
-				repositories[i] = new SailRepository(stores[i]);
-				repositories[i].initialize();
-				ElmoModule module = new ElmoModule();
-				factories[i] = new SesameManagerFactory(module, repositories[i]);
-				this.managers[i] = factories[i].createElmoManager();
-				// this.managers[i].setLocale(Locale.ENGLISH);
+
+				this.managers[i] = this.vocabularies.get(schemeName).getManager();
 				this.indexes[i] = this.vocabularies.get(schemeName)
 						.getIndexDirectory();
-				this.vocabularies.get(schemeName).setManager(this.managers[i]);
 				i++;
 			}
-		} catch (RepositoryException e) {
-			logger.error(e);
-		}
+		//} catch (RepositoryException e) {
+		//	logger.error(e);
+		//}
 
 		SearcherFactory
 				.selectSearcher(SearcherFactory.BASICLUCENECONCEPTSEARCHER);
@@ -148,18 +142,35 @@ public class SKOSSearcherImpl implements SKOSSearcher {
 				}
 				Set<Concept> broaderSet = elmoConcept.getSkosBroaders();
 				for (Concept broader : broaderSet) {
-					sconcept.addBroader(broader.getSkosPrefLabel(), broader
-							.getQName());
+					try
+					{
+						sconcept.addBroader(broader.getSkosPrefLabel(), broader
+								.getQName());
+					} catch (Exception e) {
+						logger.warn("Error getting broader concept");
+					}
 				}
 				Set<Concept> narrowerSet = elmoConcept.getSkosNarrowers();
 				for (Concept narrower : narrowerSet) {
-					sconcept.addNarrower(narrower.getSkosPrefLabel(), narrower
-							.getQName());
+					try
+					{
+						sconcept.addNarrower(narrower.getSkosPrefLabel(), narrower
+								.getQName());
+						
+					} catch (Exception e) {
+						logger.warn("Error getting narrower concept");
+					}
 				}
 				Set<Concept> relatedSet = elmoConcept.getSkosRelated();
 				for (Concept related : relatedSet) {
-					sconcept.addRelated(related.getSkosPrefLabel(), related
+					try
+					{
+						sconcept.addRelated(related.getSkosPrefLabel(), related
 							.getQName());
+				
+					} catch (Exception e) {
+						logger.warn("Error getting related concept");
+					}
 				}
 
 				Set<Object> scopeNotes = elmoConcept.getSkosScopeNotes();
@@ -222,7 +233,8 @@ public class SKOSSearcherImpl implements SKOSSearcher {
 			List<String> voc = new ArrayList<String>();
 			voc.addAll(this.vocabularies.keySet());
 			int i = voc.indexOf(vocabulary.toLowerCase());
-			RepositoryConnection con = this.repositories[i].getConnection();
+			//RepositoryConnection con = this.repositories[i].getConnection();
+			ContextAwareConnection con = this.managers[i].getConnection();
 			try {
 				TupleQuery query = con.prepareTupleQuery(org.openrdf.query.QueryLanguage.SPARQL, qs);
 				TupleQueryResult qres = query.evaluate();
@@ -263,14 +275,14 @@ public class SKOSSearcherImpl implements SKOSSearcher {
 		for (int i = 0; i < this.managers.length; i++) {
 			this.managers[i].close();
 			logger.debug("Manager " + i + " closed OK");
-			this.factories[i].close();
-			logger.debug("Factory " + i + " closed OK");
-			try {
-				this.repositories[i].shutDown();
-				logger.debug("Repository " + i + " closed OK");
-			} catch (RepositoryException e) {
-				logger.error(e);
-			}
+			//this.factories[i].close();
+			//logger.debug("Factory " + i + " closed OK");
+			//try {
+			//	this.repositories[i].shutDown();
+			//	logger.debug("Repository " + i + " closed OK");
+			//} catch (RepositoryException e) {
+			//	logger.error(e);
+			//}
 		}
 		this.searcher.close();
 		logger.debug("Indexes closed OK");

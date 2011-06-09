@@ -25,6 +25,8 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package edu.unc.ils.mrc.hive.api;
 
+import java.util.Date;
+import java.util.List;
 import java.util.TreeMap;
 
 import javax.xml.namespace.QName;
@@ -34,7 +36,11 @@ import org.openrdf.elmo.sesame.SesameManager;
 public interface SKOSScheme {
 	
 	public String getName();
+	public Date getCreationDate();
+	public Date getLastUpdateDate() throws Exception;
+	
 	public String getLastDate();
+
 	public int getNumberOfConcepts();
 	public int getNumberOfBroader();
 	public int getNumberOfNarrower();
@@ -42,7 +48,6 @@ public interface SKOSScheme {
 	public int getNumberOfRelations();
 	public String getStoreDirectory();
 	public SesameManager getManager();
-	public void setManager(SesameManager manager);
 	public String getIndexDirectory();
 	public String getSchemaURI();
 	
@@ -53,13 +58,22 @@ public interface SKOSScheme {
 	public String getKEAtestSetDir();
 	public String getKEAModelPath();
 	public String getRdfPath();
-	public String getTopConceptIndexPath();
-	public String getAlphaFilePath();
+	public String getAutoCompletePath();
 
+	public String getAtomFeedURL();
+	
 	public String getLingpipeModel();
 	
-	public TreeMap<String,QName> getAlphaIndex();
 	public TreeMap<String,QName> getSubAlphaIndex(String startLetter);
-	public TreeMap<String, QName> getTopConceptIndex();
-	public TreeMap<String, QName> getSubTopConceptIndex(String startLetter);
+	public List<SKOSConcept> getSubTopConceptIndex(String startLetter);
+	
+	public void importConcepts(String path) throws Exception;
+	public void importConcepts(String path, boolean doSesame, boolean doLucene, boolean doH2, boolean doH2KEA, boolean doAutocomplete) throws Exception;
+	public void importConcept(QName qname, String path) throws Exception;
+	public void importConcept(String uri) throws Exception;
+	public void deleteConcept(String uri) throws Exception;
+	public void deleteConcept(QName qname) throws Exception;
+	public long getNumberOfTopConcepts() throws Exception;
+	public void close() throws Exception;
+	
 }

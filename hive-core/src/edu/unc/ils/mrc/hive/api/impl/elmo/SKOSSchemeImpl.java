@@ -30,6 +30,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.Properties;
 import java.util.TreeMap;
 
@@ -39,9 +42,15 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openrdf.elmo.sesame.SesameManager;
 
+import java.text.SimpleDateFormat;
+
 import edu.unc.ils.mrc.hive.HiveException;
+import edu.unc.ils.mrc.hive.api.SKOSConcept;
 import edu.unc.ils.mrc.hive.api.SKOSScheme;
 import edu.unc.ils.mrc.hive.ir.lucene.indexing.IndexAdministrator;
+import edu.unc.ils.mrc.hive2.api.HiveConcept;
+import edu.unc.ils.mrc.hive2.api.HiveVocabulary;
+import edu.unc.ils.mrc.hive2.api.impl.HiveVocabularyImpl;
 
 /**
  * This class represents a HIVE vocabulary and associated indexes as 
@@ -70,11 +79,14 @@ public class SKOSSchemeImpl implements SKOSScheme {
 	/* Sesame store directory */
 	private String storeDirectory;
 	
+	/* H2 database directory */
+	private String h2Directory;
+	
 	/* Alphabetic index file name */
-	private String alphaFilePath;
+	//private String alphaFilePath;
 	
 	/* Top concept index file name */
-	private String topConceptIndexPath;
+	//private String topConceptIndexPath;
 
 	/* KEA+ stopwords file path */
 	private String stopwordsPath;
@@ -94,14 +106,16 @@ public class SKOSSchemeImpl implements SKOSScheme {
 	/* Lingpipe model path */
 	private String lingpipeModel;
 	
-	/* Sesame store manager */
-	private SesameManager manager;
-
-	/* Alphabetic index (serialized TreeMap) */
-	private TreeMap<String, QName> alphaIndex;
+	/* Vocabulary creation date */
+	private Date creationDate;
 	
-	/* Top-concept index (serialized TreeMap) */
-	private TreeMap<String, QName> topConceptIndex;
+	/* Atom feed URL */
+	private String atomFeedURL;
+	
+	/* Autocomplete index path */
+	private String autocompletePath;
+	
+	private HiveVocabulary hiveVocab;
 	
 	private String date;
 	private int numberOfConcepts;
@@ -117,11 +131,6 @@ public class SKOSSchemeImpl implements SKOSScheme {
 		init(propertiesFile);
 
 		if (!firstTime) {
-			this.alphaIndex = IndexAdministrator
-					.getAlphaIndex(this.alphaFilePath);
-			this.topConceptIndex = IndexAdministrator
-					.getTopConceptIndex(this.topConceptIndexPath);
-
 			this.date = IndexAdministrator.getDate(this.indexDirectory);
 			this.numberOfConcepts = IndexAdministrator
 					.getNumconcepts(this.indexDirectory);
@@ -176,15 +185,10 @@ public class SKOSSchemeImpl implements SKOSScheme {
 			if (storeDirectory.isEmpty())
 				logger.warn("store property is empty");
 			
-			// Alphabetic index file name
-			this.alphaFilePath = properties.getProperty("alpha_file");
-			if (alphaFilePath.isEmpty())
-				logger.warn("alpha_file property is empty");
-			
-			// Top concept index file name
-			this.topConceptIndexPath = properties.getProperty("top_concept_file");
-			if (topConceptIndexPath.isEmpty())
-				logger.warn("top_concept_file property is empty");
+			// H2 store path
+			this.h2Directory = properties.getProperty("h2");
+			if (h2Directory.isEmpty())
+				logger.warn("h2 property is empty");
 
 			// KEA+ model path
 			this.KEAModelPath = properties.getProperty("kea_model");
@@ -216,7 +220,29 @@ public class SKOSSchemeImpl implements SKOSScheme {
 			if (lingpipeModel == null || lingpipeModel.isEmpty())
 				logger.warn("lingpipe_model property is empty");		
 			
+			String dateStr = properties.getProperty("creationDate");
+			SimpleDateFormat df = new SimpleDateFormat("MM-DD-yyyy");
+			try {
+				this.creationDate = df.parse(dateStr);
+			} catch (Exception e) {
+				logger.warn("Missing or invalid creationDate");
+			}
+			
+			// Atom feed URL for synchronization
+			this.atomFeedURL = properties.getProperty("atomFeedURL");
+			if (atomFeedURL == null || atomFeedURL.isEmpty())
+				logger.warn("atomFeedURL property is empty");	
+			
+			// Autocomplete index path
+			this.autocompletePath = properties.getProperty("autocomplete");
+			if (autocompletePath == null || autocompletePath.isEmpty())
+				logger.warn("autocomplete property is empty");
+			
 			fis.close();
+			
+			this.hiveVocab = HiveVocabularyImpl.getInstance(schemeName, indexDirectory, storeDirectory,
+					h2Directory, autocompletePath);
+			
 			
 		} catch (FileNotFoundException e) {
 			throw new HiveException("Property file not found", e);
@@ -250,10 +276,14 @@ public class SKOSSchemeImpl implements SKOSScheme {
 	public String getKEAModelPath() {
 		return KEAModelPath;
 	}
-
+	
+	public String getAtomFeedURL() {
+		return this.atomFeedURL;
+	}
+	
 	@Override
-	public TreeMap<String, QName> getAlphaIndex() {
-		return this.alphaIndex;
+	public String getAutoCompletePath() {
+		return this.autocompletePath;
 	}
 
 	@Override
@@ -261,28 +291,43 @@ public class SKOSSchemeImpl implements SKOSScheme {
 	   Returns an index of all terms, sorted alphabetically.
 	**/
 	public TreeMap<String, QName> getSubAlphaIndex(String startLetter) {
-		return IndexAdministrator
-				.getSubAlphaIndex(startLetter, this.alphaIndex);
+		TreeMap<String, QName> terms = new TreeMap<String, QName>();
+		
+		try
+		{
+			List<HiveConcept> hcs = hiveVocab.findConcepts(startLetter + "%", false);
+			for (HiveConcept hc: hcs) {
+				terms.put(hc.getPrefLabel(), hc.getQName());
+			}
+		} catch (Exception e) {
+			logger.error(e);
+		}
+		return terms;
 	}
 
 	@Override
-	/**
-	   Returns the top level of the concept hierarchy.
-	**/
-	public TreeMap<String, QName> getTopConceptIndex() {
-		return this.topConceptIndex;
-	}
-
-	@Override
-	public TreeMap<String, QName> getSubTopConceptIndex(String startLetter) {
-		return IndexAdministrator.getSubAlphaIndex(startLetter,
-				this.topConceptIndex);
+	public List<SKOSConcept> getSubTopConceptIndex(String startLetter) {
+		List<SKOSConcept> terms = new ArrayList<SKOSConcept>();
+		try
+		{
+			List<HiveConcept> hcs = hiveVocab.findConcepts(startLetter + "%", true);
+			for (HiveConcept hc: hcs) {
+				SKOSConceptImpl sc = new SKOSConceptImpl(hc.getQName());
+				sc.setPrefLabel(hc.getPrefLabel());
+				sc.setIsLeaf(hc.isLeaf());
+				terms.add(sc);
+			}
+		} catch (Exception e) {
+			logger.error(e);
+		}
+		return terms;
 	}
 
 	@Override
 	public String getLastDate() {
 		return this.date;
 	}
+
 
 	@Override
 	public String getName() {
@@ -336,26 +381,67 @@ public class SKOSSchemeImpl implements SKOSScheme {
 
 	@Override
 	public SesameManager getManager() {
-		return this.manager;
+		try {
+			return hiveVocab.getManager();
+		} catch (Exception e) {
+			logger.error(e);
+		}
+		return null;
 	}
-
-	@Override
-	public void setManager(SesameManager manager) {
-		this.manager = manager;
-	}
-
-	@Override
-	public String getAlphaFilePath() {
-		return alphaFilePath;
-	}
-
-	@Override
-	public String getTopConceptIndexPath() {
-		return topConceptIndexPath;
-	}
-
+	
 	@Override
 	public String getLingpipeModel() {
 		return this.lingpipeModel;
+	}
+	
+	@Override
+	public Date getCreationDate() {
+		return this.creationDate;
+	}
+
+	@Override
+	public void importConcept(String uri) throws Exception {
+		hiveVocab.importConcept(QName.valueOf(uri), uri);
+	}
+
+	@Override
+	public void deleteConcept(String uri) throws Exception {
+		deleteConcept(QName.valueOf(uri));
+	}
+	
+	@Override
+	public void deleteConcept(QName qname) throws Exception {
+		hiveVocab.removeConcept(qname);
+	}
+		
+	@Override
+	public long getNumberOfTopConcepts() throws Exception {
+		return hiveVocab.getNumTopConcepts();
+	}
+
+	@Override
+	public void importConcepts(String path) throws Exception {
+		hiveVocab.importConcepts(path);
+	}
+	
+	@Override
+	public void importConcepts(String path, boolean doSesame, boolean doLucene,
+			boolean doH2, boolean doH2KEA, boolean doAutocomplete) throws Exception {
+		hiveVocab.importConcepts(path, doSesame, doLucene, doH2, doH2KEA, doAutocomplete);
+	}
+
+	@Override
+	public void importConcept(QName qname, String path) throws Exception {
+		hiveVocab.importConcept(qname, path);
+	}
+
+	@Override
+	public Date getLastUpdateDate() throws Exception{
+		return hiveVocab.getLastUpdateDate();
+	}
+	
+	@Override
+	public void close() throws Exception {
+		hiveVocab.close();
 	}
 }
