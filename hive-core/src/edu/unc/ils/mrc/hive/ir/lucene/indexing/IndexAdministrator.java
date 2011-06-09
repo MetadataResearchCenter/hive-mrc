@@ -26,12 +26,12 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package edu.unc.ils.mrc.hive.ir.lucene.indexing;
 
 import java.io.File;
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.Date;
-import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
