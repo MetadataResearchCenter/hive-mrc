@@ -60,31 +60,9 @@ public class TaggerTrainer {
 	public void trainAutomaticIndexingModule() throws HiveException {
 		logger.trace("trainAutomaticIndexingModule");
 		
-		logger.info("Initializing Sesame store");		
-		NativeStore store = new NativeStore(
-				new File(schema.getStoreDirectory()));
-		Repository repository = new SailRepository(store);
-		try {
-			repository.initialize();
-		} catch (RepositoryException e) {
-			throw new HiveException("Failed to initialize Sesame store", e);
-		}
-		ElmoModule module = new ElmoModule();
-		SesameManagerFactory factory = new SesameManagerFactory(module,
-				repository);
-		SesameManager manager = factory.createElmoManager();
-
-		this.schema.setManager(manager);
-				
 		KEAModelGenerator generator = new KEAModelGenerator(this.schema);
 		generator.createModel(this.schema.getStopwordsPath());
-		manager.close();
-		factory.close();
-		try {
-			repository.shutDown();
-		} catch (RepositoryException e) {
-			throw new HiveException("Error during shutdown of Sesame store", e);
-		}
+
 	}
 
 	/**
