@@ -139,6 +139,7 @@ public class VocabularyH2 extends Vocabulary
 		File fileUSE = File.createTempFile("vocabularyUSE", null);
 		File fileREL = File.createTempFile("vocabularyREL", null);
 		boolean hasRelated = false;
+		boolean hasAltLabels = false;
 		
 		try {
 			
@@ -171,6 +172,8 @@ public class VocabularyH2 extends Vocabulary
 					addNonDescriptor(count, uri, altLabel);
 					count++;
 				}
+				if (altLabels.size() > 0)
+					hasAltLabels = true;
 
 
 				String uriBroader = "";
@@ -250,7 +253,11 @@ public class VocabularyH2 extends Vocabulary
 
 			s.execute("CREATE INDEX idx3 on vocabulary_rel(id);");
 					
-			s.execute("CREATE TABLE vocabulary_use ( id varchar(512) , value varchar(1024)) AS SELECT * FROM CSVREAD('" + fileUSE.getAbsolutePath() + "',null, 'UTF-8', '|');");
+			if (hasAltLabels) 
+				s.execute("CREATE TABLE vocabulary_use ( id varchar(512) , value varchar(1024)) AS SELECT * FROM CSVREAD('" + fileUSE.getAbsolutePath() + "',null, 'UTF-8', '|');");
+			else
+				s.execute("CREATE TABLE vocabulary_use ( id varchar(512) , value varchar(1024));");
+			
 			s.execute("CREATE INDEX idx4 on vocabulary_use(id);");		
 			
 			s.close();
