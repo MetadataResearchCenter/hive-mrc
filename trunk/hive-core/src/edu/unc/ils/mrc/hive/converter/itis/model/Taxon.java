@@ -77,32 +77,39 @@ public class Taxon {
 	public String toSKOS() {
 		StringBuffer buffer = new StringBuffer();
 		buffer
-				.append("<rdf:Description rdf:about=\"http://taxonomy.itis.gov/itis#");
-		String longnameURI = this.longName.replaceAll(" ", "-");
-		buffer.append(longnameURI);
-		buffer.append(">\n");
+				.append("<rdf:Description rdf:about=\"http://www.itis.gov/itis/");
+		buffer.append(tsn);
+		buffer.append("#concept\">\n");
 		buffer
 				.append("\t<rdf:type rdf:resource=\"http://www.w3.org/2004/02/skos/core#Concept\"/>\n");
 		buffer
-				.append("\t<skos:inScheme rdf:resource=\"http://thesaurus.nbii.gov/nbii#conceptScheme\"/>\n");
+				.append("\t<skos:inScheme rdf:resource=\"http://www.itis.gov/itis#conceptScheme\"/>\n");
 
 		if (this.children != null) {
 			for (String c : this.children) {
 				buffer
-						.append("\t<skos:narrower rdf:resource=\"http://thesaurus.nbii.gov/nbii#");
+						.append("\t<skos:narrower rdf:resource=\"http://www.itis.gov/itis/");
 				buffer.append(c);
-				buffer.append("\"/>\n");
+				buffer.append("#concept\"/>\n");
 			}
 		}
 		if (this.parent != null) {
 			buffer
-					.append("\t<skos:broader rdf:resource=\"http://thesaurus.nbii.gov/nbii#");
+					.append("\t<skos:broader rdf:resource=\"http://www.itis.gov/itis/");
 			buffer.append(this.parent);
-			buffer.append("\"/>\n");
+			buffer.append("#concept\"/>\n");
 		}
 		buffer.append("\t<skos:prefLabel>");
 		buffer.append(this.longName);
 		buffer.append("</skos:prefLabel>\n");
+		
+		if (this.synonyms != null) {
+			for (String alt : synonyms){
+				buffer.append("\t<skos:altLabel>");
+				buffer.append(alt);
+				buffer.append("</skos:altLabel>\n");
+			}
+		}
 		buffer.append("</rdf:Description>");
 
 		return buffer.toString();
