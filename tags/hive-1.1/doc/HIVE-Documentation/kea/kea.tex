@@ -1,0 +1,148 @@
+\section{Introduction}
+
+The algorithm that we are using in HIVE is KEA++, KEA++ has been
+developed for Ian Witten's group from University of Waikakato. Last
+version of KEA has been part of the Olena Medelyan phd. The other
+interesting result of her thesis has been Maui\footnote{http://code.google.com/p/maui-indexer/}, that is based on KEA.
+
+%The implementation that we are using in HIVE was very well explained
+%in this paper: http://www.cs.waikato.ac.nz/~olena/publications/efita2005_kea.pdf,
+%following I will try to explain how it works:
+
+\section{How it works?}
+
+KEA use a Machine Learning approach for automatic keyphrase extraction:
+
+Machine Learning approaches use to have two different phases:
+\begin{itemize}
+ \item Training phase, where examples of solutions are used to explain to
+the system how the problem can be resolved. In our case these
+solutions are documents indexed by human indexers using controlled
+vocabularies. From now this set of documents will be called training
+set.
+ \item Test phase, where the system try to solve new problems which are
+similar to the solved problems used to train the system. In our case,
+these problems to solve will be the documents that we want to index
+using the vocabularies that we have in HIVE.
+\end{itemize}
+
+KEA use a Machine Learning scheme that can be divided in the following parts:
+\begin{itemize}
+ \item Candidate identification using a set of features
+\begin{itemize}
+\item Candidate extraction
+\item Features identification
+\end{itemize}
+\item Filtering
+\begin{itemize}
+\item Training the model using the training set
+\item Extracting keyphrases from new documents that are not present in the training set
+\end{itemize}
+\end{itemize}
+
+\subsection{Candidate identification}
+
+Candidate identification is the process where the most representative
+keyphrases are identified for each document in the training set.
+
+\subsubsection{Candidate extraction}
+Candidates are extracted from documents using some simple methods like
+n-gram identification, stopwords filtering and stemming. KEA calls
+this candidates pseudo-phrases. This pseudo phrases  are normalized
+using the vocabularies. For example, phrases such as “algorithm
+efficiency”, “the algorithms’ efficiency”, “an efficient algorithm”
+and even “these algorithms are very efficient” are matched to the same
+pseudo phrase “algorithm effici”, where “algorithm” and “effici” are
+the stemmed versions for the corresponding full forms.
+
+The result is a set of candidate index terms for a document, and their
+occurrence counts. As an optional extension, the set is enriched with
+all terms that are related to the candidate terms, even though they
+may not correspond to pseudo-phrases that appear in the document. For
+each candidate its one-path related terms, i.e. its hierarchical
+neighbors (BT and NT in Agrovoc), and associatively related terms
+(RT), are included. If a term is related to an existing candidate, its
+occurrence count is increased by that candidate’s count. For example,
+suppose a term appears in the document 10 times and is one-path
+related to 6 terms that appear once each in the document and to 5 that
+do not appear at all. Then its final frequency is 16, the frequency of
+the other terms that occur is 11 (since the relations are
+bidirectional), and the frequency of each non-occurring term is 10.
+This technique helps to cover the entire semantic scope of the
+document, and boosts the frequency of the original candidate phrases
+based on their relations with other candidates.
+
+In both cases—with and without related terms—the resulting candidate
+descriptors are all grammatical terms that relate to the document’s
+content, and each has an occurrence count. The next step is to
+identify a subset containing the most important of these candidates.
+
+\subsubsection{Features identification}
+The features which KEA use are the followings:
+\begin{itemize}
+\item TF*IDF
+\item First occurrence position of the keyphrase in the document
+normalized by document length
+\item Length of the keyphrases (in words, which boots multiterms)
+\item Node degree reflects how richly the term is connected in the
+thesaurus graph structure. The “degree” of a thesaurus term is the
+number of semantic links that connect it to other terms—for example, a
+term with one broader term and four related terms has degree 5. KEA
+considers three different variants:
+\begin{itemize}
+   \item the number of links that connect the term to other thesaurus terms
+   \item the number of links that connect the term to other candidate phrases
+   \item the ratio of the two.
+\end{itemize}
+\item Appearance is a binary attribute that reflects whether the
+pseudo-phrase corresponding to a term actually appears in the
+document.
+\end{itemize}
+
+\subsection{Filtering}
+\subsubsection{Training the model using the training set}
+KEA use a classifier to create a model for good and bad keyphrases. In
+Machine Learning clustering and classification are very common
+techniques. In this case we have a classifier. Classifiers can be
+understood using the same sense that we use when we classify books. In
+these example we hay to classify keyphrases in only two classes: GOOD
+Keyphrases (these keyphrases that were used by human indexers in our
+training set) and BAD keyphrases (these keyphrases that, although
+appears in the documents that we are using to train the system, has
+not been used by our human indexer to index the documents). These kind
+of binaries classifiers are very common in automatic classification
+and there exits a lot of methods to classify elements. KEA use a
+method named Naive Bayes, which is very simple and effective. When we
+finish to classify the keyphrases that appears in our training set, we
+have a model that we can use to estimate the probability that a
+keyphrase have to be a good or a bad keyphrase for a new document,
+based on the model that we are generated using our training set.
+
+\subsubsection{Extracting keyphrases from new documents that are not present in the training set}
+Once the model has been generated, we can offer our system to the
+users to index new documents. To index a new document, we only need to
+know the probability that have the keyphrase that occur in this new
+document to be a GOOD or a BAD keyphrase. The computation of this
+probability is quite simple. We need to compute both probabilities
+based on the information which we have in our model and in the new
+document. So, suppose just the two features $TF×IDF$ and position of
+first occurrence are being used. When the Naïve Bayes model is used on
+a candidate pseudo phrase with feature values t and f respectively,
+two quantities are computed:
+
+$P[ yes ] = (Y / Y + N) P_tfidf [ t | yes ]  P_distance[ f | yes ]$
+
+and
+
+$P[ no ] = (N / N + Y) P_tfidf [ t | no ]  P_distance[ f | no ]$
+
+where Y is the number of positive instances in the training files—that
+is, author-identified keyphrases—and N is the number of negative
+instances—that is, candidate phrases that are not keyphrases.
+
+The overall probability that the candidate phrase is a keyphrase can
+then be calculated:
+
+$P_k = P[ yes ] / (P[ yes ]+P[ no ])$
+
+Candidate phrases are ranked according to this value.
