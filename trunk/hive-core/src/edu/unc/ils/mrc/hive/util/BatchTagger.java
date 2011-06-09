@@ -1,6 +1,7 @@
 package edu.unc.ils.mrc.hive.util;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,6 +47,10 @@ public class BatchTagger
 			try
 			{
 				String pdfName = file.getAbsolutePath();
+				TextManager tm = new TextManager();
+				String text = tm.getPlainText(new FileInputStream(file));
+				String textFileName = pdfName.substring(0, pdfName.lastIndexOf('.')) + ".txt";
+
 				String keyFileName = pdfName.substring(0, pdfName.lastIndexOf('.')) + ".key";
 				FileWriter keyFileWriter = new FileWriter(keyFileName);
 
@@ -54,6 +59,11 @@ public class BatchTagger
 					keyFileWriter.write(concept.getPrefLabel() + "\r\n");
 				}
 				keyFileWriter.close();
+				
+				FileWriter textFileWriter = new FileWriter(textFileName);
+				textFileWriter.write(text);
+				textFileWriter.close();
+				
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
