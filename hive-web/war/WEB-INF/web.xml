@@ -4,6 +4,35 @@
     "http://java.sun.com/dtd/web-app_2_3.dtd">
 
 <web-app>
+     <context-param>
+         <param-name>quartz:config-file</param-name>
+         <param-value>quartz.properties</param-value>
+     </context-param>
+     <context-param>
+         <param-name>quartz:shutdown-on-unload</param-name>
+         <param-value>true</param-value>
+     </context-param>
+     <context-param>
+         <param-name>quartz:wait-on-shutdown</param-name>
+         <param-value>true</param-value>
+     </context-param>
+     <context-param>
+         <param-name>quartz:start-on-load</param-name>
+         <param-value>true</param-value>
+     </context-param>
+     <context-param>
+        <param-name>quartz:scheduler-context-servlet-context-key</param-name>
+          <param-value>QuartzServletContext</param-value>
+      </context-param>
+      
+     <listener>
+         <listener-class>org.quartz.ee.servlet.QuartzInitializerListener</listener-class>
+     </listener>
+     
+	<servlet>
+		<servlet-name>autocomplete</servlet-name>
+		<servlet-class>org.unc.hive.servlet.AutocompleteSerlvet</servlet-class>
+	</servlet>
 
 	<servlet>
 		<servlet-name>ConceptBrowserService</servlet-name>
@@ -23,6 +52,11 @@
 	</servlet>
 
 	<servlet-mapping>
+		<servlet-name>autocomplete</servlet-name>
+		<url-pattern>/autocomplete</url-pattern>
+	</servlet-mapping>
+	
+	<servlet-mapping>
 		<servlet-name>ConceptBrowserService</servlet-name>
 		<url-pattern>/hivewebrowser/ConceptBrowser</url-pattern>
 	</servlet-mapping>
@@ -41,5 +75,6 @@
 	<welcome-file-list>
 		<welcome-file>index.html</welcome-file>
 	</welcome-file-list>
+
 
 </web-app>

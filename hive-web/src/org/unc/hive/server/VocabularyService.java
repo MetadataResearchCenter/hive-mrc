@@ -17,6 +17,7 @@ import edu.unc.ils.mrc.hive.api.SKOSServer;
 import edu.unc.ils.mrc.hive.api.SKOSTagger;
 import edu.unc.ils.mrc.hive.api.SKOSConcept;
 import edu.unc.ils.mrc.hive.api.impl.elmo.SKOSServerImpl;
+import edu.unc.ils.mrc.hive.ir.lucene.search.AutocompleteTerm;
 
 import javax.xml.namespace.QName;
 
@@ -110,14 +111,13 @@ public class VocabularyService {
 		TreeMap<String, SKOSScheme> vocabularies = this.skosServer
 				.getSKOSSchemas();
 		SKOSScheme targetVoc = vocabularies.get(vocabulary);
-		TreeMap<String, QName> top = targetVoc.getSubTopConceptIndex(letter);
-		Set<String> c = top.keySet();
-		Iterator<String> it = c.iterator();
+
+		List<SKOSConcept> top = targetVoc.getSubTopConceptIndex(letter);
 		List<ConceptProxy> fatherList = new ArrayList<ConceptProxy>();
-		while (it.hasNext()) {
-			String key = it.next();
-			QName q = top.get(key);
-			boolean isleaf = false;
+		for(SKOSConcept sc: top) {
+
+			QName q = sc.getQName();
+			boolean isleaf = sc.isLeaf();
 			
 			if (!brief) 
 			{
@@ -131,7 +131,7 @@ public class VocabularyService {
 			String uri = q.getNamespaceURI();
 			String localPart = q.getLocalPart();
 			String URI = uri + " " + localPart;
-			String prefLabel = key;
+			String prefLabel = sc.getPrefLabel();
 			ConceptProxy father = new ConceptProxy(vocabulary, prefLabel, URI,
 					isleaf);
 			fatherList.add(father);
@@ -323,13 +323,19 @@ public class VocabularyService {
 	{
 		TreeMap<String, SKOSScheme> vocabularyMap = this.skosServer.getSKOSSchemas();
 	    SKOSScheme voc = vocabularyMap.get(vocabulary.toLowerCase());
-	    TreeMap<String, QName> top = voc.getSubTopConceptIndex("a");
-	    Entry<String, QName> first = top.firstEntry();
-	    QName value = first.getValue();
+	    List<SKOSConcept> top = voc.getSubTopConceptIndex("a");
+	    QName value = top.get(0).getQName();
 	    ConceptProxy cp = this.getConceptByURI(value.getNamespaceURI(), value.getLocalPart());
 	    return cp;  
 	}
 
+	public List<AutocompleteTerm> suggestTermsFor(String vocabulary, String str, int numTerms) throws Exception
+	{
+		TreeMap<String, SKOSScheme> vocabularyMap = this.skosServer.getSKOSSchemas();
+	    SKOSScheme voc = vocabularyMap.get(vocabulary.toLowerCase());
+	    return voc.suggestTermsFor(str, numTerms);
+	}
+	
 	public void close() {
 		this.skosServer.close();
 	}
