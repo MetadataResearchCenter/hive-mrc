@@ -27,6 +27,7 @@ package edu.unc.ils.mrc.hive.importers;
 
 import edu.unc.ils.mrc.hive.HiveException;
 
+@Deprecated
 public interface Importer {
 	
 	public void importThesaurustoDB() throws HiveException;

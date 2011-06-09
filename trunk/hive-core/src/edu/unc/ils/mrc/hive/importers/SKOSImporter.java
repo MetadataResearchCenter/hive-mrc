@@ -63,6 +63,7 @@ import edu.unc.ils.mrc.hive.api.SKOSScheme;
  * two serialized TreeMaps representing the alphabetic and top-concept
  * indexes. 
  */
+@Deprecated
 public class SKOSImporter implements Importer 
 {
     private static final Logger logger = Logger.getLogger(SKOSImporter.class);
@@ -98,9 +99,8 @@ public class SKOSImporter implements Importer
     public SKOSImporter(SKOSScheme scheme) throws HiveException 
     {
         this.vocabularyName = scheme.getName();
-        this.topConceptIndexFile = scheme.getTopConceptIndexPath();
         this.topConceptIndex = new TreeMap<String, QName>();
-        this.alphaIndexFile = scheme.getAlphaFilePath();
+        //this.alphaIndexFile = scheme.getAlphaFilePath();
         this.alphaIndex = new TreeMap<String, QName>();
         this.indexDirectory = scheme.getIndexDirectory();
         this.SKOSfile = new File(scheme.getRdfPath());
