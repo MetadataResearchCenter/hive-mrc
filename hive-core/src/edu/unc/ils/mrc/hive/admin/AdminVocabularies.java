@@ -29,20 +29,36 @@ package edu.unc.ils.mrc.hive.admin;
 
 
 
+import java.io.File;
+
+
+import kea.stemmers.PorterStemmer;
+import kea.stopwords.Stopwords;
+import kea.stopwords.StopwordsEnglish;
+import kea.vocab.VocabularyH2;
+
+import org.apache.commons.cli.BasicParser;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import edu.unc.ils.mrc.hive.HiveException;
 import edu.unc.ils.mrc.hive.api.SKOSScheme;
 import edu.unc.ils.mrc.hive.api.impl.elmo.SKOSSchemeImpl;
-import edu.unc.ils.mrc.hive.importers.Importer;
 import edu.unc.ils.mrc.hive.importers.ImporterFactory;
 
 /**
- * This class is used to administer the HIVE vocabularies. For the specified
- * vocabulary in SKOS RDF/XML format, create the Sesame store (NativeStore),
- * Lucene index, alphabetic and top-concept indexes (serialized TreeMaps). 
- * Optionally, create and train the KEA+ index.
+ * This class is used to administer HIVE vocabularies. For the specified vocabulary
+ * in SKOS RDF/XML format, this class creates
+ *   - SSesame store (NativeStore)
+ *   - Lucene index
+ *   - H2 tables and indexes
+ *   - KEA++ model (based on training set)
  * 
  * This class expects the following:
  *  - SKOS vocabulary file in RDF/XML format
@@ -52,46 +68,116 @@ public class AdminVocabularies {
 
     private static final Log logger = LogFactory.getLog(AdminVocabularies.class);
 	
+    /**
+     * Returns the CLI options
+     * @return
+     */
+    public static Options getOptions()
+    {
+    	Options options = new Options();
+    	Option config = new Option("c", true, "Path to directory that contains hive.properties");
+    	config.setRequired(true);
+    	options.addOption(config);
+    	
+    	Option vocab = new Option("v", true, "Name of the vocabulary to be initialized");
+    	vocab.setRequired(true);
+    	options.addOption(vocab);
+    	
+    	options.addOption("h", false, "Print this help message");
+    	options.addOption("a", false, "Initialize everything");
+    	options.addOption("s", false, "Initialize Sesame");
+    	options.addOption("l", false, "Initialize Lucene");
+    	options.addOption("h", false, "Initialize H2");
+    	options.addOption("k", false, "Initialize H2 (KEA)");
+    	options.addOption("t", false, "Train KEA");
+    	options.addOption("x", false, "Initialize autocomplete index");
+    	return options;
+    }
+    
 	/**
 	 * This method is a main to run HIVE importers
+	 * @throws ParseException 
 	 */	
-	public static void main(String[] args) 
+	public static void main(String[] args) throws ParseException 
 	{
 
-		String configpath = args[0];
-		String vocabularyName = args[1].toLowerCase();
-		boolean doImport = (args.length==2) || (args.length==3 && !args[2].equals("train-only"));
-		boolean doLuceneOnly = (args.length==3 && (args[2].equals("lucene-only") || args[2].equals("lucene-only")));
-		boolean doTrain = (args.length==3 && (args[2].equals("train") || args[2].equals("train-only")));
-		
-		logger.info("Starting import of vocabulary " + vocabularyName);
-		ImporterFactory.selectImporter(ImporterFactory.SKOSIMPORTER);
-		try
+		// Get the options specified
+		CommandLineParser parser = new BasicParser( );
+
+		Options options = getOptions();
+		CommandLine commandLine = parser.parse( options, args );
+
+		if (commandLine.hasOption("h")) 
 		{
-			SKOSScheme schema = new SKOSSchemeImpl(configpath, vocabularyName, true);
+			// Print the help message
+			HelpFormatter formatter = new HelpFormatter();
+			formatter.printHelp( "java edu.unc.ils.mrc.hive.admin.AdminVocabularies", options );
+		}
+		else
+		{
+
+			String configpath = commandLine.getOptionValue("c");
+			String vocabularyName = commandLine.getOptionValue("v");
 			
-			if (doImport)
+			boolean doAll = commandLine.hasOption("a");
+			boolean doSesame = commandLine.hasOption("s");
+			boolean doLucene = commandLine.hasOption("l");
+			boolean doH2 = commandLine.hasOption("h");
+			boolean doKEAH2 = commandLine.hasOption("k");
+			boolean doTrain = commandLine.hasOption("t");
+			boolean doAutocomplete = commandLine.hasOption("x");
+			
+			if (doAll)
+				doSesame = doLucene = doH2 = doKEAH2 = doTrain = true;
+			
+			logger.info("Starting import of vocabulary " + vocabularyName);
+			try
 			{
-				Importer importer = ImporterFactory.getImporter(schema);
-				if (!doLuceneOnly) {
-					logger.info("Importing vocabulary to Sesame store");
-					importer.importThesaurustoDB();
+				SKOSScheme scheme = new SKOSSchemeImpl(configpath, vocabularyName, true);
+				
+				try
+				{
+					scheme.importConcepts(scheme.getRdfPath(), doSesame, doLucene, doH2, doKEAH2, doAutocomplete);
+				} catch (Exception e) {
+					logger.error(e);
 				}
-				logger.info("Importing vocabulary to Lucene index");
-				importer.importThesaurustoInvertedIndex();
-				importer.close();
-				logger.info("Vocabulary import complete");
+			
+				if (doKEAH2) 
+				{
+					logger.info("Initializing KEA H2 index");
+					try
+					{
+						Stopwords sw = new StopwordsEnglish("/Users/cwillis/dev/hive/hive-data/agrovoc/agrovocKEA/data/stopwords/stopwords_en.txt");
+						String h2path = new File(scheme.getRdfPath()).getParentFile().getAbsolutePath();
+						VocabularyH2 keaH2 = new VocabularyH2(scheme.getName(), h2path, "en", scheme.getManager());
+						keaH2.setStopwords(sw);
+						keaH2.setStemmer(new PorterStemmer());
+						keaH2.initialize();		
+					} catch (Exception e) {
+						logger.error(e);
+					}
+				} 
+				else
+					logger.info("Skipping KEA H2 initialization");
+				
+				if (doTrain) 
+				{
+					logger.info("Starting KEA training");
+					TaggerTrainer trainer = new TaggerTrainer(scheme);
+					trainer.trainAutomaticIndexingModule();
+					logger.info("KEA training complete");
+		 		} 
+				else
+					logger.info("Skipping KEA training");
+				
+				try {
+					scheme.close();
+				} catch (Exception e) {
+					logger.error(e);
+				}
+			} catch (HiveException e) {
+				logger.error("Vocabulary import failed", e);
 			}
-		
-			if (doTrain) 
-			{
-				logger.info("Training KEA");
-				TaggerTrainer trainer = new TaggerTrainer(schema);
-				trainer.trainAutomaticIndexingModule();
-				logger.info("KEA training complete");
-	 		}
-		} catch (HiveException e) {
-			logger.error("Vocabulary import failed", e);
 		}
 	}
 }
