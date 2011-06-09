@@ -72,13 +72,21 @@ public class IndexAdministrator {
 		Set<String> keys = index.keySet();
 		for (String s : keys) {
 			String sl = s.toLowerCase();
-			if (sl.startsWith(startLetter) && !finded) {
+			if (startLetter.equals("[0-9]") && Character.isDigit(sl.charAt(0)) && !finded) {
+				start = s;
+				finded = true;
+			}
+			else if (sl.startsWith(startLetter) && !finded) {
 				start = s;
 				finded = true;
 			}
 			if(finded)
 				j++;
-			if (!sl.startsWith(startLetter) && finded) {
+			if (startLetter.equals("[0-9]") && !Character.isDigit(sl.charAt(0)) && finded) {
+				end = ant;
+				break;
+			}
+			else if (!startLetter.equals("[0-9]") && !sl.startsWith(startLetter) && finded) {
 				end = ant;
 				break;
 			}
@@ -87,7 +95,7 @@ public class IndexAdministrator {
 
 		TreeMap<String, QName> tree = null;
 		if (j > 1) {
-			SortedMap<String, QName> l2 = index.subMap(start, end);		
+			SortedMap<String, QName> l2 = index.subMap(start, true, end, true);		
 			logger.debug("Result size: " + l2.size());			
 			return tree = new TreeMap<String, QName>(l2);
 		} else if (j == 1) {
