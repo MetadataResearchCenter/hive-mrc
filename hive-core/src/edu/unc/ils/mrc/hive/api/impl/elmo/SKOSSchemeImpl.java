@@ -48,6 +48,7 @@ import edu.unc.ils.mrc.hive.HiveException;
 import edu.unc.ils.mrc.hive.api.SKOSConcept;
 import edu.unc.ils.mrc.hive.api.SKOSScheme;
 import edu.unc.ils.mrc.hive.ir.lucene.indexing.IndexAdministrator;
+import edu.unc.ils.mrc.hive.ir.lucene.search.AutocompleteTerm;
 import edu.unc.ils.mrc.hive2.api.HiveConcept;
 import edu.unc.ils.mrc.hive2.api.HiveVocabulary;
 import edu.unc.ils.mrc.hive2.api.impl.HiveVocabularyImpl;
@@ -443,5 +444,11 @@ public class SKOSSchemeImpl implements SKOSScheme {
 	@Override
 	public void close() throws Exception {
 		hiveVocab.close();
+	}
+	
+	@Override
+	public List<AutocompleteTerm> suggestTermsFor(String str, int numTerms) throws Exception
+	{
+		return hiveVocab.suggestTermsFor(str, numTerms);
 	}
 }

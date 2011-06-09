@@ -26,6 +26,7 @@ package edu.unc.ils.mrc.hive2.api.impl;
 
 import java.io.File;
 
+
 import java.io.IOException;
 
 
@@ -66,6 +67,7 @@ import org.openrdf.sail.memory.MemoryStore;
 import org.openrdf.sail.nativerdf.NativeStore;
 
 import edu.unc.ils.mrc.hive.ir.lucene.search.Autocomplete;
+import edu.unc.ils.mrc.hive.ir.lucene.search.AutocompleteTerm;
 import edu.unc.ils.mrc.hive2.api.HiveConcept;
 import edu.unc.ils.mrc.hive2.api.HiveIndex;
 import edu.unc.ils.mrc.hive2.api.HiveVocabulary;
@@ -749,5 +751,10 @@ public class HiveVocabularyImpl implements HiveVocabulary
 	@Override
 	public SesameManager getManager() throws Exception {
 		return this.manager;
+	}
+	
+	@Override
+	public List<AutocompleteTerm> suggestTermsFor(String str, int numTerms) throws Exception {
+		return autocomplete.suggestTermsFor(str, numTerms);
 	}
 }
