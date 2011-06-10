@@ -451,4 +451,8 @@ public class SKOSSchemeImpl implements SKOSScheme {
 	{
 		return hiveVocab.suggestTermsFor(str, numTerms);
 	}
+	@Override
+	public HiveVocabulary getHiveVocabulary() {
+		return hiveVocab;
+	}
 }
