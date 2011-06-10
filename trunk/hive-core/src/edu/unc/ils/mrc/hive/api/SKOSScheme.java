@@ -34,6 +34,7 @@ import javax.xml.namespace.QName;
 import org.openrdf.elmo.sesame.SesameManager;
 
 import edu.unc.ils.mrc.hive.ir.lucene.search.AutocompleteTerm;
+import edu.unc.ils.mrc.hive2.api.HiveVocabulary;
 
 public interface SKOSScheme {
 	
@@ -78,5 +79,6 @@ public interface SKOSScheme {
 	public long getNumberOfTopConcepts() throws Exception;
 	public void close() throws Exception;
 	public List<AutocompleteTerm> suggestTermsFor(String str, int numTerms) throws Exception;
+	public HiveVocabulary getHiveVocabulary();
 	
 }
