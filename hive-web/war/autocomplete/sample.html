@@ -2,23 +2,22 @@
 <html lang="en">
 <head>
 	<meta charset="utf-8">
-	<title>jQuery UI Autocomplete - Remote datasource</title>
-	<link rel="stylesheet" href="http://hotlink.jquery.com/jqueryui/themes/base/jquery.ui.all.css">
+	<title>HIVE Autocomplete</title>
+	<link rel="stylesheet" href="/jquery/themes/base/jquery.ui.all.css">
 	
-	<script src="http://hotlink.jquery.com/jqueryui/jquery-1.5.1.js"></script>
-	<script src="http://hotlink.jquery.com/jqueryui/ui/jquery.ui.core.js"></script>
-	<script src="http://hotlink.jquery.com/jqueryui/ui/jquery.ui.widget.js"></script>
 
-	<script src="http://hotlink.jquery.com/jqueryui/ui/jquery.ui.position.js"></script>
-	<script src="http://hotlink.jquery.com/jqueryui/ui/jquery.ui.autocomplete.js"></script>
-	<link rel="stylesheet" href="../demos.css">
+	<script src="/jquery/jquery-1.5.1.js"></script>
+	<script src="/jquery/ui/jquery.ui.core.js"></script>
+	<script src="/jquery/ui/jquery.ui.widget.js"></script>
+	<script src="/jquery/ui/jquery.ui.position.js"></script>
+	<script src="/jquery/ui/jquery.ui.autocomplete.js"></script>
 	
 	<style>
-	.ui-autocomplete-loading { background: white url('http://hotlink.jquery.com/images/ui-anim_basic_16x16.gif') right center no-repeat; }
+	.ui-autocomplete-loading { background: white url('/jquery/images/ui-anim_basic_16x16.gif') right center no-repeat; }
 	</style>
 	<script>
 
-	var cv = 'itis';
+	var cv = 'agrovoc';
 	
 	function changeSource(cv) {
 		this.cv = cv;
@@ -35,24 +34,10 @@
 			  return s.replace(matcher, "<strong>$1</strong>");
 			}
 
-		
-		
-		/*
-		$( "#taxon" ).autocomplete({
-			source: "/search?cv=itis&",
-			minLength: 5,
-			select: function( event, ui ) {
-				log( ui.item ?
-					"Selected: " + ui.item.value + " aka " + ui.item.id :
-					"Nothing selected, input was " + this.value );
-			},
-			
-		});
-		*/
 		$( "#taxon" ).autocomplete({
 		    source: function(request, response) {
 		      $.ajax({
-		        url: '/search?cv=' + cv + '&',
+		        url :  '/ac?cv=' + cv + '&',
 		        dataType: 'json',
 		        data: { term: request.term },
 		        success: function(data) {
@@ -71,7 +56,7 @@
 					"Nothing selected, input was " + this.value );
 			},
 		    delay: 100,
-		    minLength: 2,
+		    minLength: 2
 
 		})
 		.data( "autocomplete" )._renderItem = function( ul, item ) {
@@ -92,8 +77,11 @@
 	<label for="taxon">Taxonomic name: </label>
 	<input id="taxon"  style="width: 400px"/>
 	<select id="cv" onchange="changeSource(this.options[this.selectedIndex].id)">
-		<option id="itis">ITIS</option>
 		<option id="agrovoc">AGROVOC</option>
+		<option id="itis">ITIS</option>
+		<option id="lcsh">LCSH</option>
+		<option id="nbii">NBII</option>	
+		<option id="tgn">TGN</option>
 	</select>
 </div>
 
@@ -102,9 +90,6 @@
 	<div id="log" style="height: 200px; width: 400px; overflow: auto;" class="ui-widget-content"></div>
 </div>
 
-</div><!-- End demo -->
-
-
-
+</div>
 </body>
 </html>
