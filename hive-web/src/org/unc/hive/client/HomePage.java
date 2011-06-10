@@ -162,7 +162,7 @@ public class HomePage implements EntryPoint {
 								vocabulariesGrid.setWidget(i, 2, new Label(
 										"Relationships"));
 								vocabulariesGrid.setWidget(i, 3, new Label(
-										"Date Added"));
+										"Last Updated"));
 							} else {
 								List<String> vocabularyInfo = result.get(i - 1);
 								for (int j = 0; j < vocabularyInfo.size(); j++) {
@@ -190,12 +190,14 @@ public class HomePage implements EntryPoint {
 						vocabulariesGrid.setCellSpacing(0);
 						vocabulariesGrid.getRowFormatter().setStyleName(0,"tableHead");
 						vocabularyStatistics.add(vocabulariesGrid);
+						/*
 						final Label lb = new Label(
 								"Last Updated On: April 26, 2011");
 						lb.addStyleName("lastupdate");
 						final VerticalPanel vp = new VerticalPanel();
 						vp.add(vocabulariesGrid);
 						vp.add(lb);
+						*/
 						vocabularyStatistics.add(vp);
 					}
 				});

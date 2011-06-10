@@ -1,4 +1,5 @@
 package org.unc.hive.client;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
@@ -19,9 +20,9 @@ public interface ConceptBrowserService extends RemoteService {
 //    String setup(String modelName);
 	public List<ConceptProxy> getSubTopConcept(String vocabulary,String letter, boolean brief);
 	public List<ConceptProxy> getChildConcept(String nameSpaceURI, String localPart);
-	public Integer getNumberOfConcept(String Vocabulary);
-	public Integer getNumberOfRelationships(String Vocabulary);
-	public String getDate(String vocabulary);
+	public Long getNumberOfConcept(String Vocabulary);
+	public Long getNumberOfRelationships(String Vocabulary);
+	public Date getLastUpdateDate(String vocabulary);
 	public List<List<String>> getAllVocabularies();
 	public ConceptProxy getConceptByURI(String namespaceURI, String localPart);
 	public List<ConceptProxy> searchForConcept(String keywords, List<String> openedVocabularies);
