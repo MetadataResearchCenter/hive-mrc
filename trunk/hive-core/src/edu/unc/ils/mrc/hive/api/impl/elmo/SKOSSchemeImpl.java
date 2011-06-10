@@ -27,12 +27,14 @@ package edu.unc.ils.mrc.hive.api.impl.elmo;
 
 import java.io.File;
 
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.TreeMap;
 
@@ -47,7 +49,6 @@ import java.text.SimpleDateFormat;
 import edu.unc.ils.mrc.hive.HiveException;
 import edu.unc.ils.mrc.hive.api.SKOSConcept;
 import edu.unc.ils.mrc.hive.api.SKOSScheme;
-import edu.unc.ils.mrc.hive.ir.lucene.indexing.IndexAdministrator;
 import edu.unc.ils.mrc.hive.ir.lucene.search.AutocompleteTerm;
 import edu.unc.ils.mrc.hive2.api.HiveConcept;
 import edu.unc.ils.mrc.hive2.api.HiveVocabulary;
@@ -119,11 +120,11 @@ public class SKOSSchemeImpl implements SKOSScheme {
 	private HiveVocabulary hiveVocab;
 	
 	private String date;
-	private int numberOfConcepts;
-	private int numberOfRelations;
-	private int numberOfBroaders;
-	private int numberOfNarrowers;
-	private int numberOfRelated;	
+	private long numberOfConcepts;
+	private long numberOfRelations;
+	private long numberOfBroaders;
+	private long numberOfNarrowers;
+	private long numberOfRelated;	
 
 	public SKOSSchemeImpl(String confPath, String vocabularyName,
 			boolean firstTime) throws HiveException
@@ -132,17 +133,19 @@ public class SKOSSchemeImpl implements SKOSScheme {
 		init(propertiesFile);
 
 		if (!firstTime) {
-			this.date = IndexAdministrator.getDate(this.indexDirectory);
-			this.numberOfConcepts = IndexAdministrator
-					.getNumconcepts(this.indexDirectory);
-			this.numberOfRelations = IndexAdministrator
-					.getNumRelationShips(this.indexDirectory);
-			this.numberOfBroaders = IndexAdministrator
-					.getNumBroader(this.indexDirectory);
-			this.numberOfNarrowers = IndexAdministrator
-					.getNumNarrower(this.indexDirectory);
-			this.numberOfRelated = IndexAdministrator
-					.getNumRelated(this.indexDirectory);
+		
+			try {
+				Map<String, Long> stats = hiveVocab.getStats();
+				this.date = hiveVocab.getLastUpdateDate().toString();
+				this.numberOfBroaders = stats.get("broader");
+				this.numberOfConcepts = stats.get("concepts");
+				this.numberOfNarrowers = stats.get("narrower");
+				this.numberOfRelated = stats.get("related");
+				this.numberOfRelations = numberOfBroaders + numberOfNarrowers + numberOfRelated;
+			} catch (Exception e) {
+				logger.error(e);
+			}
+
 		}
 	}
 
@@ -336,27 +339,27 @@ public class SKOSSchemeImpl implements SKOSScheme {
 	}
 
 	@Override
-	public int getNumberOfConcepts() {
+	public long getNumberOfConcepts() {
 		return this.numberOfConcepts;
 	}
 
 	@Override
-	public int getNumberOfBroader() {
+	public long getNumberOfBroader() {
 		return this.numberOfBroaders;
 	}
 
 	@Override
-	public int getNumberOfNarrower() {
+	public long getNumberOfNarrower() {
 		return this.numberOfNarrowers;
 	}
 
 	@Override
-	public int getNumberOfRelated() {
+	public long getNumberOfRelated() {
 		return this.numberOfRelated;
 	}
 
 	@Override
-	public int getNumberOfRelations() {
+	public long getNumberOfRelations() {
 		return this.numberOfRelations;
 	}
 
@@ -437,8 +440,15 @@ public class SKOSSchemeImpl implements SKOSScheme {
 	}
 
 	@Override
-	public Date getLastUpdateDate() throws Exception{
-		return hiveVocab.getLastUpdateDate();
+	public Date getLastUpdateDate() {
+		Date lastUpdate = null;
+		try
+		{
+			lastUpdate = hiveVocab.getLastUpdateDate();
+		} catch (Exception e) {
+			logger.error(e);
+		}
+		return lastUpdate;
 	}
 	
 	@Override

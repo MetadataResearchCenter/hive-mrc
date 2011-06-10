@@ -122,7 +122,7 @@ public class AdminVocabularies {
 			boolean doAll = commandLine.hasOption("a");
 			boolean doSesame = commandLine.hasOption("s");
 			boolean doLucene = commandLine.hasOption("l");
-			boolean doH2 = commandLine.hasOption("h");
+			boolean doH2 = commandLine.hasOption("d");
 			boolean doKEAH2 = commandLine.hasOption("k");
 			boolean doTrain = commandLine.hasOption("t");
 			boolean doAutocomplete = commandLine.hasOption("x");

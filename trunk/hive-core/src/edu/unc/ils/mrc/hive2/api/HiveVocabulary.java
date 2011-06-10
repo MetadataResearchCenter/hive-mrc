@@ -26,6 +26,7 @@ package edu.unc.ils.mrc.hive2.api;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.namespace.QName;
 
@@ -146,4 +147,9 @@ public interface HiveVocabulary
 	 * Suggest terms given a string
 	 */
 	public List<AutocompleteTerm> suggestTermsFor(String str, int numTerms) throws Exception;
+	
+	/**
+	 * Returns the number of concepts, broader, narrower and related concepts for this vocabulary
+	 */
+	public Map<String, Long> getStats() throws Exception;
 }

@@ -764,4 +764,9 @@ public class HiveVocabularyImpl implements HiveVocabulary
 	public List<AutocompleteTerm> suggestTermsFor(String str, int numTerms) throws Exception {
 		return autocomplete.suggestTermsFor(str, numTerms);
 	}
+	
+	@Override
+	public Map<String, Long> getStats() throws Exception {
+		return((HiveH2IndexImpl)h2Index).getStats();
+	}
 }

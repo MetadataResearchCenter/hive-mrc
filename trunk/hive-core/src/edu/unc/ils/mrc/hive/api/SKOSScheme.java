@@ -40,15 +40,15 @@ public interface SKOSScheme {
 	
 	public String getName();
 	public Date getCreationDate();
-	public Date getLastUpdateDate() throws Exception;
+	public Date getLastUpdateDate();
 	
 	public String getLastDate();
 
-	public int getNumberOfConcepts();
-	public int getNumberOfBroader();
-	public int getNumberOfNarrower();
-	public int getNumberOfRelated();
-	public int getNumberOfRelations();
+	public long getNumberOfConcepts();
+	public long getNumberOfBroader();
+	public long getNumberOfNarrower();
+	public long getNumberOfRelated();
+	public long getNumberOfRelations();
 	public String getStoreDirectory();
 	public SesameManager getManager();
 	public String getIndexDirectory();
