@@ -1,5 +1,6 @@
 package edu.unc.ils.mrc.hive.ir.lucene.search;
 
+import java.io.File;
 import java.io.IOException;
 
 import java.util.ArrayList;
@@ -52,7 +53,7 @@ public final class Autocomplete
     private static final String SORT_FIELD = "sort";
 
     /* Lucene directory for autocomplete index */
-    private final Directory autoCompleteDirectory;
+    private Directory autoCompleteDirectory;
 
     private IndexReader autoCompleteReader;
 
@@ -62,7 +63,18 @@ public final class Autocomplete
     	this.autoCompleteDirectory = FSDirectory.getDirectory(autoCompleteDir,
     			null);
 
-    	reOpenReader();
+    	if (exists(autoCompleteDir))
+    		reOpenReader();
+    }
+    
+    public boolean exists(String autoCompleteDir) {
+    	File dir = new File(autoCompleteDir);
+    	String[] files = dir.list();
+    	if (files != null && files.length > 0)
+    		return true;
+    	else
+    		return false;
+
     }
 
     /**
@@ -120,18 +132,22 @@ public final class Autocomplete
 
     	for (int i = 0; i<sourceReader.numDocs(); i++)
     	{
-    		Document d = sourceReader.document(i);
-    		String[] prefLabels = d.getValues("prefLabel");
-    		String[] ids = d.getValues("id");
-    		for (String prefLabel: prefLabels) 
+    		try
     		{
-    			if (!wordsMap.containsKey(prefLabel)) {
-	    			// use the number of documents this word appears in
-    				System.out.println("Adding: " + prefLabel);
-	    			wordsMap.put(prefLabel, sourceReader.docFreq(new Term(
-	    					fieldToAutocomplete, prefLabel)));
-	    			idMap.put(prefLabel, ids[0]);
+	    		Document d = sourceReader.document(i);
+	    		String[] prefLabels = d.getValues("prefLabel");
+	    		String[] ids = d.getValues("id");
+	    		for (String prefLabel: prefLabels) 
+	    		{
+	    			if (!wordsMap.containsKey(prefLabel)) {
+		    			// use the number of documents this word appears in
+		    			wordsMap.put(prefLabel, sourceReader.docFreq(new Term(
+		    					fieldToAutocomplete, prefLabel)));
+		    			idMap.put(prefLabel, ids[0]);
+		    		}
 	    		}
+    		} catch (Exception e) {
+    			e.printStackTrace();
     		}
 
     	} 
@@ -139,15 +155,21 @@ public final class Autocomplete
     	int i = 0;
     	for (String word : wordsMap.keySet()) 
     	{
-    		System.out.println("Indexing: " + word);
     		i++;
     		
     		// TODO: Need better way strip characters from terms.
     		String nospaces = word.replaceAll(" ", "");
     		nospaces = nospaces.replaceAll("\\(", "");
     		nospaces = nospaces.replaceAll("\\)", "");
+    		nospaces = nospaces.replaceAll("\\[", "");
+    		nospaces = nospaces.replaceAll("\\]", "");
     		nospaces = nospaces.replaceAll("\\.", "");
+    		nospaces = nospaces.replaceAll("-", "");
+    		nospaces = nospaces.replaceAll(",", "");
+    		nospaces = nospaces.replaceAll(":", "");
+    		nospaces = nospaces.replaceAll("'", "");
     		
+    		System.out.println("Indexing: " + nospaces); 
     		// ok index the word
     		Document doc = new Document();
     		doc.add(new Field(ID_FIELD, idMap.get(word), Field.Store.YES, 
