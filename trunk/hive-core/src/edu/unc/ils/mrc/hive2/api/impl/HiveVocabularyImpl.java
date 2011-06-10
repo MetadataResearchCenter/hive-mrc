@@ -36,6 +36,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.Date;
 
@@ -90,7 +91,7 @@ public class HiveVocabularyImpl implements HiveVocabulary
 {
 	private static final Log logger = LogFactory.getLog(HiveVocabularyImpl.class);
 			
-	private static HiveVocabularyImpl instance = null;
+	private static Map<String, HiveVocabularyImpl> instances = new HashMap<String, HiveVocabularyImpl>();
 	
 	/* Vocabulary name */
 	String name;
@@ -179,15 +180,21 @@ public class HiveVocabularyImpl implements HiveVocabulary
 	}
 	
 	public static HiveVocabularyImpl getInstance(String basePath, String name) {
-		if (instance == null) 
+		HiveVocabularyImpl instance = instances.get(name);
+		if (instance == null) {
 			instance = new HiveVocabularyImpl(basePath, name);
+			instances.put(name, instance);
+		}
 		return instance;
 	}
 	
 	public static HiveVocabularyImpl getInstance(String name, String lucenePath, String sesamePath, 
 			String h2Path, String autocompletePath) {
-		if (instance == null) 
+		HiveVocabularyImpl instance = instances.get(name);
+		if (instance == null) {
 			instance = new HiveVocabularyImpl(name, lucenePath, sesamePath, h2Path, autocompletePath);
+			instances.put(name, instance);
+		}
 		return instance;
 	}
 
