@@ -32,6 +32,8 @@ import org.openrdf.sail.nativerdf.NativeStore;
 import org.perf4j.StopWatch;
 import org.perf4j.log4j.Log4JStopWatch;
 
+import edu.unc.ils.mrc.hive.api.SKOSScheme;
+import edu.unc.ils.mrc.hive2.api.HiveVocabulary;
 import edu.unc.ils.mrc.hive2.api.impl.HiveH2IndexImpl;
 import edu.unc.ils.mrc.hive2.api.impl.HiveVocabularyImpl;
 
@@ -91,6 +93,20 @@ public class VocabularyH2 extends Vocabulary
 		HiveVocabularyImpl hv = HiveVocabularyImpl.getInstance(basePath, name);
 		h2Index = (HiveH2IndexImpl)hv.getH2Index();
 	}
+	
+	public VocabularyH2(SKOSScheme scheme, String documentLanguage) 
+		throws ClassNotFoundException, SQLException 
+	{
+		super(documentLanguage);
+		this.manager = scheme.getManager();
+		this.name = scheme.getName();
+		HiveVocabularyImpl hv = (HiveVocabularyImpl)scheme.getHiveVocabulary();
+		if (hv != null)
+			h2Index = (HiveH2IndexImpl)hv.getH2Index();
+		
+		setStopwords(new StopwordsEnglish(scheme.getStopwordsPath()));
+		setStemmer(new PorterStemmer());
+	}	
 	
 	/**
 	 * Returns a connection from the pool
