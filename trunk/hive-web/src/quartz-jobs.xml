@@ -14,7 +14,8 @@
                 <name>SyncJob</name>
                 <group>SyncJob</group>
                 <job-name>SyncJob</job-name>
-                <cron-expression>20 * * * * ?</cron-expression>
+                <!-- Fire at midnight every day -->
+                <cron-expression>0 0 * * * ?</cron-expression>
             </cron>
         </trigger>
     </schedule>    
