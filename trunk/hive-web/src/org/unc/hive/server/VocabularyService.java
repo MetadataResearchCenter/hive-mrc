@@ -3,7 +3,10 @@ package org.unc.hive.server;
 import java.net.URL;
 
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -49,19 +52,19 @@ public class VocabularyService {
 		return this.skosServer.getSKOSSearcher();
 	}
 
-	public int getNumberOfConcept(String vocabularyName) {
+	public long getNumberOfConcept(String vocabularyName) {
 		return this.skosServer.getSKOSSchemas().get(vocabularyName)
 				.getNumberOfConcepts();
 	}
 
-	public int getNumerOfRelations(String vocabularyName) {
+	public long getNumerOfRelations(String vocabularyName) {
 		return this.skosServer.getSKOSSchemas().get(vocabularyName)
 				.getNumberOfRelations();
 	}
 
-	public String getDate(String vocabularyName) {
+	public Date getLastUpdateDate(String vocabularyName) {
 		return this.skosServer.getSKOSSchemas().get(vocabularyName)
-				.getLastDate();
+				.getLastUpdateDate();
 	}
 
 	public List<List<String>> getAllVocabularies() {
@@ -74,13 +77,13 @@ public class VocabularyService {
 			SKOSScheme vocabulary = vocabularyMap.get(it.next());
 			List<String> vocabularyInfo = new ArrayList<String>();
 			vocabularyInfo.add(vocabulary.getName());
-			vocabularyInfo.add(Integer.toString(vocabulary
+			vocabularyInfo.add(Long.toString(vocabulary
 					.getNumberOfConcepts()));
-			vocabularyInfo.add(Integer.toString(vocabulary
+			vocabularyInfo.add(Long.toString(vocabulary
 					.getNumberOfRelations()));
-			String datetime = vocabulary.getLastDate();
-			String dates[] = datetime.split(" ");
-			String date = dates[1] + " " + dates[2] + "," + dates[5];
+			Date lastUpdate = vocabulary.getLastUpdateDate();
+			DateFormat df = new SimpleDateFormat("MMM d, yyyy");
+			String date = df.format(lastUpdate);
 			vocabularyInfo.add(date);
 			vocabularyList.add(vocabularyInfo);
 		}
