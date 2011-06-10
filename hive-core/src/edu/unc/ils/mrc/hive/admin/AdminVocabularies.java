@@ -87,7 +87,7 @@ public class AdminVocabularies {
     	options.addOption("a", false, "Initialize everything");
     	options.addOption("s", false, "Initialize Sesame");
     	options.addOption("l", false, "Initialize Lucene");
-    	options.addOption("h", false, "Initialize H2");
+    	options.addOption("d", false, "Initialize H2");
     	options.addOption("k", false, "Initialize H2 (KEA)");
     	options.addOption("t", false, "Train KEA");
     	options.addOption("x", false, "Initialize autocomplete index");
@@ -147,11 +147,7 @@ public class AdminVocabularies {
 					logger.info("Initializing KEA H2 index");
 					try
 					{
-						Stopwords sw = new StopwordsEnglish("/Users/cwillis/dev/hive/hive-data/agrovoc/agrovocKEA/data/stopwords/stopwords_en.txt");
-						String h2path = new File(scheme.getRdfPath()).getParentFile().getAbsolutePath();
-						VocabularyH2 keaH2 = new VocabularyH2(scheme.getName(), h2path, "en", scheme.getManager());
-						keaH2.setStopwords(sw);
-						keaH2.setStemmer(new PorterStemmer());
+						VocabularyH2 keaH2 = new VocabularyH2(scheme, "en");
 						keaH2.initialize();		
 					} catch (Exception e) {
 						logger.error(e);
