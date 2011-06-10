@@ -36,7 +36,9 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.namespace.QName;
 
@@ -187,8 +189,10 @@ public class HiveH2IndexImpl implements HiveIndex
 						" uri varchar(1000), " + 
 						" local_part varchar(1000), " +
 						" is_top_concept int, " + 
-						" is_leaf int )"
-						);
+						" is_leaf int, " + 
+						" num_narrower int, " + 
+						" num_broader int, " + 
+						" num_related int)"); 
 
 			s.execute("CREATE INDEX idx_alpha_1 on concept (uri, local_part)");
 			s.execute("CREATE INDEX idx_alpha_2 on concept (pref_label_lower)");
@@ -253,6 +257,49 @@ public class HiveH2IndexImpl implements HiveIndex
 		return lastUpdate;
 	}
 	
+	/**
+	 * Returns counts of broader, narrower, related terms
+	 * 
+	 * @return
+	 * @throws SQLException
+	 */
+	public Map<String, Long> getStats() throws Exception
+	{
+		logger.trace("getStats()");
+		
+		Map<String, Long> stats = new HashMap<String, Long>();
+		Connection con = null;
+		Statement s = null;
+		try
+		{
+			long numConcepts = getNumConcepts();
+			
+			con = getConnection();
+			s = con.createStatement();
+			ResultSet rs = s.executeQuery("select sum(num_broader), " + 
+					"sum(num_narrower), sum(num_related) from concept");
+			if (rs.next()) {
+				long numBroader = rs.getInt(1);
+				long numNarrower = rs.getInt(2);
+				long numRelated = rs.getInt(3);
+	
+				stats.put("concepts", numConcepts);
+				stats.put("broader", numBroader);
+				stats.put("narrower", numNarrower);
+				stats.put("related", numRelated);
+			}
+		} finally {
+			try {
+				if (con != null)
+					con.close();
+				if (s != null)
+					s.close();
+			} catch (SQLException e) {
+				logger.error(e);
+			}
+		}
+		return stats;
+	}
 	
 	/**
 	 * Returns the date this HIVE index was created.
@@ -307,14 +354,20 @@ public class HiveH2IndexImpl implements HiveIndex
 				boolean isTopConcept = false;
 				boolean isLeafConcept = false;
 				
-				if (concept.getBroaderConcepts().size() == 0) 
+				int numBroader = concept.getBroaderConcepts().size();
+				int numNarrower = concept.getNarrowerConcepts().size();
+				int numRelated = concept.getRelatedConcepts().size();
+				
+				if (numBroader == 0) 
 					isTopConcept = true;
 				
-				if (concept.getNarrowerConcepts().size() == 0)
+				if (numNarrower == 0)
 					isLeafConcept = true;
 				
 				insertConcept(con, concept.getPrefLabel(), qname.getNamespaceURI(), 
-						qname.getLocalPart(), isTopConcept, isLeafConcept);    
+						qname.getLocalPart(), isTopConcept, isLeafConcept, numBroader, 
+						numNarrower, numRelated);    
+				
 	    	} else {
 	    		logger.warn("Concept " + concept.getQName() + " missing prefLabel. Skipping.");
 	    	}
@@ -349,14 +402,20 @@ public class HiveH2IndexImpl implements HiveIndex
 				boolean isTopConcept = false;
 				boolean isLeafConcept = false;
 				
-				if (concept.getBroaderConcepts().size() == 0) 
+				int numBroader = concept.getBroaderConcepts().size();
+				int numNarrower = concept.getNarrowerConcepts().size();
+				int numRelated = concept.getRelatedConcepts().size();
+				
+				if (numBroader == 0) 
 					isTopConcept = true;
 				
-				if (concept.getNarrowerConcepts().size() == 0)
+				if (numNarrower == 0)
 					isLeafConcept = true;
 				
 				insertConcept(con, concept.getPrefLabel(), qname.getNamespaceURI(), 
-						qname.getLocalPart(), isTopConcept, isLeafConcept);    
+						qname.getLocalPart(), isTopConcept, isLeafConcept, numBroader,
+						numNarrower, numRelated);   
+				
 	    	} else {
 	    		logger.warn("Concept " + concept.getQName() + " missing prefLabel. Skipping.");
 	    	}
@@ -385,6 +444,7 @@ public class HiveH2IndexImpl implements HiveIndex
 			
 			deleteConcept(con, qname.getNamespaceURI(), 
 					qname.getLocalPart());
+
 		} finally {
 			try {
 				if (con != null)
@@ -525,7 +585,8 @@ public class HiveH2IndexImpl implements HiveIndex
 	 * @throws SQLException
 	 */
 	protected void insertConcept(Connection con, String prefLabel, String uri, String localPart, 
-			boolean isTopConcept, boolean isLeafConcept) throws SQLException
+			boolean isTopConcept, boolean isLeafConcept, int numBroader, int numNarrower, 
+			int numRelated) throws SQLException
 	{
 		logger.trace("insertConcept: " + uri + localPart);
 		
@@ -534,14 +595,19 @@ public class HiveH2IndexImpl implements HiveIndex
 			deleteConcept(con, uri, localPart);
 		
 		PreparedStatement ps = con.prepareStatement("insert into concept " + 
-				"(pref_label, pref_label_lower, uri, local_part, is_top_concept, is_leaf) " + 
-				" values (?, ?, ?, ?, ?, ?)");
+				"(pref_label, pref_label_lower, uri, local_part, is_top_concept, is_leaf, " + 
+				" num_broader, num_narrower, num_related) " + 
+				" values (?, ?, ?, ?, ?, ?, ?, ?, ?)");
 		ps.setString(1, prefLabel);
 		ps.setString(2, prefLabel.toLowerCase());
 		ps.setString(3, uri);
 		ps.setString(4, localPart);
 		ps.setBoolean(5, isTopConcept);
 		ps.setBoolean(6, isLeafConcept);
+		ps.setInt(7, numBroader);
+		ps.setInt(8, numNarrower);
+		ps.setInt(9, numRelated);
+		
 		ps.executeUpdate();
 		ps.close();
 		
@@ -592,6 +658,7 @@ public class HiveH2IndexImpl implements HiveIndex
 			}
 		}
 	}
+	
 
 	@Override
 	public void startTransaction() {
