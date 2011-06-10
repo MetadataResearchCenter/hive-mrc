@@ -2,6 +2,7 @@ package org.unc.hive.server;
 
 import org.unc.hive.server.VocabularyService;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
@@ -79,18 +80,18 @@ public class ConceptBrowserServiceImpl extends RemoteServiceServlet implements
 
 
 	@Override
-	public Integer getNumberOfConcept(String vocabulary) {
-		return new Integer(this.service.getNumberOfConcept(vocabulary));
+	public Long getNumberOfConcept(String vocabulary) {
+		return new Long(this.service.getNumberOfConcept(vocabulary));
 	}
 
 	@Override
-	public Integer getNumberOfRelationships(String vocabulary) {
-		return new Integer(this.service.getNumerOfRelations(vocabulary));
+	public Long getNumberOfRelationships(String vocabulary) {
+		return new Long(this.service.getNumerOfRelations(vocabulary));
 	}
 
 	@Override
-	public String getDate(String vocabulary) {
-		return this.service.getDate(vocabulary);
+	public Date getLastUpdateDate(String vocabulary) {
+		return this.service.getLastUpdateDate(vocabulary);
 	}
 
 	public List<List<String>> getAllVocabularies() {
