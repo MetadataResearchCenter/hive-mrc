@@ -465,4 +465,14 @@ public class SKOSSchemeImpl implements SKOSScheme {
 	public HiveVocabulary getHiveVocabulary() {
 		return hiveVocab;
 	}
+	
+	@Override
+	public Map<String, QName> getAlphaIndex() {
+		return hiveVocab.findAllConcepts(false);
+	}
+	
+	@Override
+	public Map<String, QName> getTopConceptIndex() {
+		return hiveVocab.findAllConcepts(true);
+	}
 }
