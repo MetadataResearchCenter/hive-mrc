@@ -11,5 +11,4 @@
 	<inherits name="com.google.gwt.visualization.Visualization" />
 	<entry-point
 		class='com.claudiushauptmann.gwt.multipage.client.EntrypointDispatcher' />
-	<entry-point class="org.unc.hive.client.Suggester" />
 </module>
