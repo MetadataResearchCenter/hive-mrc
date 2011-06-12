@@ -14,6 +14,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.Map.Entry;
 
+import edu.unc.ils.mrc.hive.api.ConceptNode;
 import edu.unc.ils.mrc.hive.api.SKOSScheme;
 import edu.unc.ils.mrc.hive.api.SKOSSearcher;
 import edu.unc.ils.mrc.hive.api.SKOSServer;
@@ -320,6 +321,13 @@ public class VocabularyService {
 		  result.add(cp);
 		}
 		return result;
+	}
+	
+	public List<ConceptNode> getTagsAsTree(String text, List<String> openedVocabularies, int maxHops, int numTerms)
+	{
+		SKOSTagger tagger = this.skosServer.getSKOSTagger();
+		List<ConceptNode> tree = tagger.getTagsAsTree(text, openedVocabularies,this.getSKOSSearcher(), maxHops, numTerms);
+		return tree;
 	}
 	
 	public ConceptProxy getFirstConcept(String vocabulary)
