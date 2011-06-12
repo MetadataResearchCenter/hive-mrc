@@ -152,4 +152,12 @@ public interface HiveVocabulary
 	 * Returns the number of concepts, broader, narrower and related concepts for this vocabulary
 	 */
 	public Map<String, Long> getStats() throws Exception;
+	
+	/**
+	 * Returns a map of preflabel to QName for all concepts in the vocabulary
+	 * @param topOnly
+	 * @return
+	 * @throws Exception
+	 */
+	public Map<String, QName> findAllConcepts(boolean topOnly) ;
 }
