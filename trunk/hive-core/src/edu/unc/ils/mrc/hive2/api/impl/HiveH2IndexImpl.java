@@ -39,6 +39,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import javax.xml.namespace.QName;
 
@@ -487,6 +488,45 @@ public class HiveH2IndexImpl implements HiveIndex
 				hc.setTopConcept(isTopConcept);
 				hc.setLeaf(isLeaf);
 				concepts.add(hc);
+		
+			}
+		} finally {
+			try {
+				if (con != null)
+					con.close();
+				if (ps != null)
+					ps.close();
+			} catch (SQLException e) {
+				logger.error(e);
+			}
+		}
+		return concepts;
+	}
+
+	public Map<String, QName> findAllConcepts(boolean topOnly) throws SQLException {
+		logger.trace("findAllConcepts()");
+		
+		Map<String, QName> concepts = new TreeMap<String, QName>();
+		
+		Connection con = null;
+		PreparedStatement ps = null;
+		try
+		{	
+			con = getConnection();
+			
+			if (topOnly)
+				ps = con.prepareStatement("select * from concept where is_top_concept = 1 order by pref_label_lower");
+			else
+				ps = con.prepareStatement("select * from concept order by pref_label_lower");
+			
+			ResultSet rs = ps.executeQuery();
+			while (rs.next())
+			{
+				String prefLabel = rs.getString("pref_label");
+				String uri = rs.getString("uri");
+				String localPart = rs.getString("local_part");
+				
+				concepts.put(prefLabel, new QName(uri, localPart));
 		
 			}
 		} finally {
