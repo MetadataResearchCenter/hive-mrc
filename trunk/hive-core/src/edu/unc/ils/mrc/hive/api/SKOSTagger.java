@@ -58,4 +58,10 @@ public interface SKOSTagger {
 	 */
 	public List<SKOSConcept> getTags(URL url, List<String> vocabularies, 
 			SKOSSearcher searcher, int maxHops, int maxTerms);
+	
+	public List<SKOSConcept> getTagsFromText(String text, List<String> vocabularies, 
+			SKOSSearcher searcher,  int maxTerms, int minOccur);
+	
+	public List<ConceptNode> getTagsAsTree(String text, List<String> vocabularies, 
+			SKOSSearcher searcher,  int maxTerms, int minOccur);
 }
