@@ -114,9 +114,10 @@ public class KEATagger implements Tagger{
 	 * read by the calling application.
 	 */
 	@Override
-	public void extractKeyphrases(int numTerms) {
+	public void extractKeyphrases(int numTerms, int minOccur) {
 		StopWatch stopwatch = new Log4JStopWatch();
 		try {
+			this.ke.setMinNumOccur(minOccur);
 			this.ke.setNumPhrases(numTerms);
 			this.ke.extractKeyphrases(ke.collectStems());
 		} catch (Exception e) {
@@ -127,7 +128,7 @@ public class KEATagger implements Tagger{
 	
 	@Override
 	public void extractKeyphrases() {
-		extractKeyphrases(DEFAULT_NUM_PHRASES);
+		extractKeyphrases(DEFAULT_NUM_PHRASES, 2);
 	}
 
 	/**
@@ -138,11 +139,12 @@ public class KEATagger implements Tagger{
 	 * the ".key" file.
 	 */
 	@Override
-	public void extractKeyphrasesFromFile(String baseName, int numTerms) {
+	public void extractKeyphrasesFromFile(String baseName, int numTerms, int minOccur) {
 		StopWatch stopwatch = new Log4JStopWatch();
 		try {
 			Hashtable<String, Double> stems = new Hashtable<String, Double>();
 			stems.put(baseName, new Double(0));
+			this.ke.setMinNumOccur(minOccur);
 			this.ke.setNumPhrases(numTerms);
 			this.ke.extractKeyphrases(stems);
 		} catch (Exception e) {
@@ -152,7 +154,7 @@ public class KEATagger implements Tagger{
 	}
 	
 	public void extractKeyphrasesFromFile(String baseName) {
-		extractKeyphrasesFromFile(baseName, DEFAULT_NUM_PHRASES);
+		extractKeyphrasesFromFile(baseName, DEFAULT_NUM_PHRASES, 2);
 	}
 	
 	// Not implemented

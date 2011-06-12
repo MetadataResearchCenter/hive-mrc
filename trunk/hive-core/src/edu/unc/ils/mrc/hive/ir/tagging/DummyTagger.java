@@ -165,7 +165,7 @@ public class DummyTagger implements Tagger {
 
 	// Not implemented
 	@Override
-	public void extractKeyphrases(int numTerms) {
+	public void extractKeyphrases(int numTerms, int minOccur) {
 	}
 
 	// Not implemented
@@ -175,6 +175,6 @@ public class DummyTagger implements Tagger {
 	
 	// Not implemented
 	@Override
-	public void extractKeyphrasesFromFile(String fileName, int numTerms) {
+	public void extractKeyphrasesFromFile(String fileName, int numTerms, int minOccur) {
 	}
 }
