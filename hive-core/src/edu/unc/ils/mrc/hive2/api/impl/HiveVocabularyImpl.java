@@ -39,6 +39,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Date;
+import java.util.TreeMap;
 
 import javax.xml.namespace.QName;
 
@@ -768,5 +769,17 @@ public class HiveVocabularyImpl implements HiveVocabulary
 	@Override
 	public Map<String, Long> getStats() throws Exception {
 		return((HiveH2IndexImpl)h2Index).getStats();
+	}
+	
+	public Map<String, QName> findAllConcepts(boolean topOnly) {
+	
+		Map<String, QName> concepts = new TreeMap<String, QName>();
+		try
+		{
+			concepts = ((HiveH2IndexImpl)h2Index).findAllConcepts(topOnly); 
+		} catch (SQLException e) {
+			logger.error(e);
+		}
+		return concepts;
 	}
 }
