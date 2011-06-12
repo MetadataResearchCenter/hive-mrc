@@ -33,6 +33,10 @@
 		<servlet-name>autocomplete</servlet-name>
 		<servlet-class>org.unc.hive.servlet.AutocompleteServlet</servlet-class>
 	</servlet>
+	<servlet>
+		<servlet-name>suggest</servlet-name>
+		<servlet-class>org.unc.hive.servlet.TermSuggestionServlet</servlet-class>
+	</servlet>
 
 	<servlet>
 		<servlet-name>ConceptBrowserService</servlet-name>
@@ -54,6 +58,11 @@
 	<servlet-mapping>
 		<servlet-name>autocomplete</servlet-name>
 		<url-pattern>/ac</url-pattern>
+	</servlet-mapping>
+	
+		<servlet-mapping>
+		<servlet-name>suggest</servlet-name>
+		<url-pattern>/suggest</url-pattern>
 	</servlet-mapping>
 	
 	<servlet-mapping>
