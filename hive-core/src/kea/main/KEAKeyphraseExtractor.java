@@ -270,6 +270,10 @@ public class KEAKeyphraseExtractor implements OptionHandler {
 		return m_Stopwords;
 	}
 	
+	public void setMinNumOccur(int newMinNumOccur) {
+		this.m_KEAFilter.setMinNumOccur(newMinNumOccur);
+	}
+	
 	public void setStopwords(String stopwordsPath) {
 		this.m_Stopwords = new StopwordsEnglish(stopwordsPath);
 	}
