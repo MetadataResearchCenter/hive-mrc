@@ -27,6 +27,7 @@ package edu.unc.ils.mrc.hive.api;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.TreeMap;
 
 import javax.xml.namespace.QName;
@@ -69,6 +70,10 @@ public interface SKOSScheme {
 	
 	public TreeMap<String,QName> getSubAlphaIndex(String startLetter);
 	public List<SKOSConcept> getSubTopConceptIndex(String startLetter);
+	
+	public Map<String, QName> getAlphaIndex();
+	public Map<String, QName> getTopConceptIndex();
+	
 	
 	public void importConcepts(String path) throws Exception;
 	public void importConcepts(String path, boolean doSesame, boolean doLucene, boolean doH2, boolean doH2KEA, boolean doAutocomplete) throws Exception;
