@@ -71,4 +71,7 @@ public interface SKOSConcept {
 	
 	public boolean isLeaf();
 
+	public String getTree();
+	
+	public void setTree(String tree);
 }

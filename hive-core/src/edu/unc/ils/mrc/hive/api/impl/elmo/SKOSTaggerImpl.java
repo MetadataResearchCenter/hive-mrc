@@ -39,15 +39,20 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.UUID;
+
+import javax.xml.namespace.QName;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.perf4j.StopWatch;
 import org.perf4j.log4j.Log4JStopWatch;
 
+import edu.unc.ils.mrc.hive.api.ConceptNode;
+import edu.unc.ils.mrc.hive.api.ConceptTreeBuilder;
 import edu.unc.ils.mrc.hive.api.SKOSConcept;
 import edu.unc.ils.mrc.hive.api.SKOSScheme;
 import edu.unc.ils.mrc.hive.api.SKOSSearcher;
@@ -133,7 +138,7 @@ public class SKOSTaggerImpl implements SKOSTagger {
 		{
 			TextManager tm = new TextManager();
 			String text = tm.getPlainText(url, maxHops);
-			return getTagsInternal(text, vocabulary, searcher, numTerms);
+			return getTagsInternal(text, vocabulary, searcher, numTerms, 2);
 		} catch (Exception e) {
 			logger.error(e);
 		}
@@ -155,8 +160,30 @@ public class SKOSTaggerImpl implements SKOSTagger {
 	{
 		TextManager tm = new TextManager();
 		String text = tm.getPlainText(filePath);
-		return getTagsInternal(text, vocabularies, searcher, numTerms);          
+		return getTagsInternal(text, vocabularies, searcher, numTerms, 2);          
 	}
+	
+	
+	@Override
+	public List<SKOSConcept> getTagsFromText(String text,
+			List<String> vocabularies, SKOSSearcher searcher, 
+			int maxTerms, int minOccur) {
+		return getTagsInternal(text, vocabularies, searcher, maxTerms, minOccur);
+	}
+	
+	@Override
+	public List<ConceptNode> getTagsAsTree(String text, List<String> vocabularies,
+			SKOSSearcher searcher, int maxTerms, int minOccur) 
+	{
+		List<SKOSConcept> concepts =  getTagsInternal(text, vocabularies, searcher, maxTerms, minOccur);
+		ConceptTreeBuilder tree = new ConceptTreeBuilder();
+		for (SKOSConcept concept: concepts) {
+			tree.add(concept, searcher);
+		}
+		return tree.getTree();
+	}	
+	
+
 	
 	/**
 	 * Returns a list of SKOSConcept objects for the specified text
@@ -169,7 +196,7 @@ public class SKOSTaggerImpl implements SKOSTagger {
 	 * @return
 	 */
 	private List<SKOSConcept> getTagsInternal(String text, List<String> vocabularies, 
-			SKOSSearcher searcher, int numTerms)
+			SKOSSearcher searcher, int numTerms, int minOccur)
 	{
 		StopWatch stopwatch = new Log4JStopWatch();
 
@@ -204,7 +231,7 @@ public class SKOSTaggerImpl implements SKOSTagger {
 				String vocabularyName = tagger.getVocabulary();
 				logger.info("Indexing with " + vocabularyName);
 				try {
-					tagger.extractKeyphrasesFromFile(tempFileName, numTerms);
+					tagger.extractKeyphrasesFromFile(tempFileName, numTerms, minOccur);
 				} catch (RuntimeException e) {
 					logger.error(e);
 				}
@@ -271,4 +298,6 @@ public class SKOSTaggerImpl implements SKOSTagger {
 
 		return result;
 	}
+	
+
 }

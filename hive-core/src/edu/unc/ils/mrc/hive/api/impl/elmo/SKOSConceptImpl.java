@@ -51,6 +51,9 @@ public class SKOSConceptImpl implements SKOSConcept {
 	private double score;
 	private boolean isLeaf = false;
 
+	private String tree = "";
+
+
 	public SKOSConceptImpl(QName uri) {
 		this.qname = uri;
 		this.broaders = new TreeMap<String, QName>();
@@ -215,6 +218,15 @@ public class SKOSConceptImpl implements SKOSConcept {
 	
 	public void setIsLeaf(boolean isLeaf) {
 		this.isLeaf = isLeaf;
+	}
+	
+	
+	public String getTree() {
+		return tree;
+	}
+
+	public void setTree(String tree) {
+		this.tree = tree;
 	}
 
 }
