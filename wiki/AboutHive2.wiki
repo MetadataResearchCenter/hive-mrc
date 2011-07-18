@@ -1,0 +1,41 @@
+#summary Description of the HIVE 2.0 release.
+
+= New Features =
+
+This release includes a major restructuring of the HIVE vocabulary storage model and upgrade of the Sesame store that will require re-initialization of each vocabulary.
+ 
+  * HIVE 2.0 API
+  * LCSH [VocabularySynchronization Synchronization]
+  * Sample [Autocomplete autocomplete] implementation
+  * Sample [TermSuggestionWidget term suggestion widget] implementation
+  * Upgrade to Sesame 2.4 and Tika 0.7
+  * Finalized ITIS converter
+  * Moved alpha and top-concept indexes to the H2 database
+
+== HIVE 2.0 API ==
+
+The HIVE 1.0 API was designed to work with vocabularies as a whole. Administering a vocabulary required complete re-initialization of all indexes. The HIVE 2.0 API introduces methods for managing individual concepts in a vocabulary (add/update/remove).
+
+== LCSH Synchronization ==
+
+See the [VocabularySynchronization synchronization] page.
+
+== Autocomplete widget ==
+
+The HIVE 2.0 release introduces a new Lucene-based autocomplete index and a simple widget to demonstrate integration of HIVE with external services.
+
+== Term suggestion widget ==
+
+The term suggestion widget is a simple example of how HIVE can be integrated into external services.
+
+== Sesame upgrade ==
+
+To support the HIVE 2.0 API features (update/remove), the Sesame triple store was upgraded. Earlier versions of the Sesame store had notable performance problems when removing items.
+
+== ITIS converter ==
+
+The preliminary version of the ITIS-to-SKOS converter did not include support for common names as alternate labels.
+
+== Alpha and top-concept indexes ==
+
+In earlier versions of HIVE, the alpha and top-concept indexes were stored as serialized maps loaded during service initialization. For larger vocabularies, these maps required significant memory. By moving these indexes into the existing H2 database, overall memory requirements have been reduced.
