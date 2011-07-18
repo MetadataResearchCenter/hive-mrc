@@ -5,6 +5,7 @@
    * [AboutHiveWeb About HIVE Web]
    * [AboutHiveRestService About HIVE Rest Service]
    * [AboutKEA About KEA]
+   * [AboutHive2 About HIVE 2.0]
  * Installation  
    * [InstallingHiveWeb Installing HIVE Web]
    * [InstallingHiveRestService Installing HIVE Rest Service]
