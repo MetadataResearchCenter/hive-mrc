@@ -184,7 +184,7 @@ public class SimpleTextCrawler
 		InputStream is = new ByteArrayInputStream(html.getBytes());
 		Metadata metadata = new Metadata();
 		Parser parser = new AutoDetectParser();
-		ContentHandler handler = new BodyContentHandler();
+		ContentHandler handler = new BodyContentHandler(-1);
 		parser.parse(is, handler, metadata);
 		is.close();
 		return handler.toString();
@@ -212,7 +212,7 @@ public class SimpleTextCrawler
 			metadata.set(Metadata.RESOURCE_NAME_KEY, name);
 		}		
 		Parser parser = new AutoDetectParser();
-		ContentHandler handler = new BodyContentHandler();
+		ContentHandler handler = new BodyContentHandler(-1);
 		parser.parse(is, handler, metadata);
 		is.close();
 		return handler.toString();
