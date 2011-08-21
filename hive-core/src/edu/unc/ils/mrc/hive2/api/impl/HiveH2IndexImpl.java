@@ -457,6 +457,49 @@ public class HiveH2IndexImpl implements HiveIndex
 
 	}
 	
+	public HiveConcept findConceptByName(String name) throws SQLException 
+	{
+		logger.trace("findConceptByName()");
+		
+		HiveConcept hc = null;
+		
+		Connection con = null;
+		PreparedStatement ps = null;
+		try
+		{	
+			con = getConnection();
+			
+			ps = con.prepareStatement("select * from concept where pref_label_lower = ?");
+
+			ps.setString(1, name.toLowerCase());
+			ResultSet rs = ps.executeQuery();
+			while (rs.next())
+			{
+				String prefLabel = rs.getString("pref_label");
+				String uri = rs.getString("uri");
+				String localPart = rs.getString("local_part");
+				boolean isTopConcept = rs.getBoolean("is_top_concept");
+				boolean isLeaf = rs.getBoolean("is_leaf");
+				
+				hc =  new HiveConcept();
+				hc.setPrefLabel(prefLabel);
+				hc.setQName(new QName(uri, localPart));
+				hc.setTopConcept(isTopConcept);
+				hc.setLeaf(isLeaf);
+			}
+		} finally {
+			try {
+				if (con != null)
+					con.close();
+				if (ps != null)
+					ps.close();
+			} catch (SQLException e) {
+				logger.error(e);
+			}
+		}
+		return hc;
+	}
+	
 	public List<HiveConcept> findConceptsByName(String name, boolean topOnly) throws SQLException {
 		logger.trace("findConceptsByName()");
 		

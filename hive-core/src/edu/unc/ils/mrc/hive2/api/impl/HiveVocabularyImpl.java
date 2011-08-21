@@ -24,14 +24,10 @@
 
 package edu.unc.ils.mrc.hive2.api.impl;
 
+
 import java.io.File;
-
-
 import java.io.IOException;
-
-
 import java.net.URL;
-
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -769,6 +765,11 @@ public class HiveVocabularyImpl implements HiveVocabulary
 	@Override
 	public Map<String, Long> getStats() throws Exception {
 		return((HiveH2IndexImpl)h2Index).getStats();
+	}
+	
+	public HiveConcept findConceptByName(String name) throws Exception 
+	{
+		return((HiveH2IndexImpl)h2Index).findConceptByName(name);
 	}
 	
 	public Map<String, QName> findAllConcepts(boolean topOnly) {
