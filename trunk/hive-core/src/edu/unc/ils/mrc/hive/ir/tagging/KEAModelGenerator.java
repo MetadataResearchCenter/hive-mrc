@@ -78,7 +78,7 @@ public class KEAModelGenerator {
 		String stopwordsPath = schema.getStopwordsPath();
 		String stemmerClass = schema.getStemmerClass();
 		
-		this.km = new KEAModelBuilder();
+		this.km = new KEAModelBuilder(schema);
 		
 
 		this.km.setStopwords(stopwordsPath);
