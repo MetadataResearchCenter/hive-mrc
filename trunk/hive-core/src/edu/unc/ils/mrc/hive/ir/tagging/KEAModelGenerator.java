@@ -28,13 +28,16 @@ package edu.unc.ils.mrc.hive.ir.tagging;
 import org.apache.commons.logging.Log;
 
 import org.apache.commons.logging.LogFactory;
+import org.openrdf.repository.RepositoryException;
 import org.perf4j.StopWatch;
 import org.perf4j.log4j.Log4JStopWatch;
 
 import edu.unc.ils.mrc.hive.HiveException;
 import edu.unc.ils.mrc.hive.api.SKOSScheme;
+import edu.unc.ils.mrc.hive.api.impl.elmo.SKOSSchemeImpl;
 import kea.main.KEAModelBuilder;
 import kea.stemmers.PorterStemmer;
+import kea.stemmers.Stemmer;
 import kea.stopwords.StopwordsEnglish;
 
 public class KEAModelGenerator {
@@ -73,8 +76,9 @@ public class KEAModelGenerator {
 		String modelPath = schema.getKEAModelPath();
 		String vocabularyPath = schema.getRdfPath();
 		String stopwordsPath = schema.getStopwordsPath();
+		String stemmerClass = schema.getStemmerClass();
 		
-		this.km = new KEAModelBuilder(scheme);
+		this.km = new KEAModelBuilder();
 		
 
 		this.km.setStopwords(stopwordsPath);
@@ -115,8 +119,17 @@ public class KEAModelGenerator {
 		// if you want to alterate results
 		// (We have obtained better results for Spanish and French with
 		// NoStemmer)
-		km.setStemmer(new PorterStemmer());
-
+		
+		try
+		{
+			Class cls = Class.forName(stemmerClass);
+			Stemmer stemmer = (Stemmer)cls.newInstance();
+			km.setStemmer(stemmer);
+		} catch (Exception e) {
+			logger.error("Error instantiating stemmer: " + e);
+			km.setStemmer(new PorterStemmer());
+		}
+			
 		// 8. Stopwords -- adjust if you use a different language than English!
 		km.setStopwords(new StopwordsEnglish(stopwordsPath));
 
@@ -157,5 +170,4 @@ public class KEAModelGenerator {
 			throw new HiveException ("Error creating KEA model", e);
 		}
 	}
-
 }
