@@ -27,14 +27,6 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package edu.unc.ils.mrc.hive.admin;
 
-
-
-import java.io.File;
-
-
-import kea.stemmers.PorterStemmer;
-import kea.stopwords.Stopwords;
-import kea.stopwords.StopwordsEnglish;
 import kea.vocab.VocabularyH2;
 
 import org.apache.commons.cli.BasicParser;
@@ -50,7 +42,6 @@ import org.apache.commons.logging.LogFactory;
 import edu.unc.ils.mrc.hive.HiveException;
 import edu.unc.ils.mrc.hive.api.SKOSScheme;
 import edu.unc.ils.mrc.hive.api.impl.elmo.SKOSSchemeImpl;
-import edu.unc.ils.mrc.hive.importers.ImporterFactory;
 
 /**
  * This class is used to administer HIVE vocabularies. For the specified vocabulary
@@ -128,7 +119,7 @@ public class AdminVocabularies {
 			boolean doAutocomplete = commandLine.hasOption("x");
 			
 			if (doAll)
-				doSesame = doLucene = doH2 = doKEAH2 = doTrain = true;
+				doSesame = doLucene = doH2 = doKEAH2 = doTrain = doAutocomplete =true;
 			
 			logger.info("Starting import of vocabulary " + vocabularyName);
 			try
