@@ -160,4 +160,6 @@ public interface HiveVocabulary
 	 * @throws Exception
 	 */
 	public Map<String, QName> findAllConcepts(boolean topOnly) ;
+	
+	public HiveConcept findConceptByName(String name) throws Exception ;
 }
