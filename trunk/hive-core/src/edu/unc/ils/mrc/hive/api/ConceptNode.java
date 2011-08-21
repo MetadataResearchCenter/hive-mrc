@@ -8,6 +8,7 @@ public class ConceptNode
 	private String uri;
 	private String label;
 	private List<ConceptNode> children = new ArrayList<ConceptNode>();
+	private List<String> altLabels = new ArrayList<String>();
 	
 	public String getUri() {
 		return uri;
@@ -35,6 +36,14 @@ public class ConceptNode
 	
 	public void addChild(ConceptNode child) {
 		this.children.add(child);
+	}
+	
+	public List<String> getAltLabels() {
+		return altLabels;
+	}
+	
+	public void setAltLabels(List<String> altLabels) {
+		this.altLabels = altLabels;
 	}
 	
 	public String toString() {
