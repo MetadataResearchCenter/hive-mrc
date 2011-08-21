@@ -117,6 +117,9 @@ public class SKOSSchemeImpl implements SKOSScheme {
 	/* Autocomplete index path */
 	private String autocompletePath;
 	
+	/* Stemmer class name */
+	private String stemmerClass;
+	
 	private HiveVocabulary hiveVocab;
 	
 	private String date;
@@ -241,6 +244,12 @@ public class SKOSSchemeImpl implements SKOSScheme {
 			this.autocompletePath = properties.getProperty("autocomplete");
 			if (autocompletePath == null || autocompletePath.isEmpty())
 				logger.warn("autocomplete property is empty");
+			
+			// Stemmer class
+			this.stemmerClass = properties.getProperty("stemmerClass", "kea.stemmer.PorterStemmer");
+			System.out.println("Using stemmer " + stemmerClass);
+			if (stemmerClass == null || stemmerClass.isEmpty())
+				logger.warn("stemmerClass property is empty, defaulting to kea.stemer.PorterStemmer");
 			
 			fis.close();
 			
@@ -474,5 +483,11 @@ public class SKOSSchemeImpl implements SKOSScheme {
 	@Override
 	public Map<String, QName> getTopConceptIndex() {
 		return hiveVocab.findAllConcepts(true);
+	}
+	
+	@Override
+	public String getStemmerClass()
+	{
+		return stemmerClass;
 	}
 }
