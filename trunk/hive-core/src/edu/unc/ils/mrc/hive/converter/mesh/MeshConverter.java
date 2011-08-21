@@ -120,9 +120,9 @@ public class MeshConverter extends DefaultHandler
     {
     	if (qName.equals("DescriptorRecord"))
     	{
-    		// Only support topical descriptors (DescriptorClass = 1)
+    		// Only support topical descriptors (DescriptorClass = 1) or geographic (DescriptorClass = 4)
     		String descriptorClass = attributes.getValue("DescriptorClass");
-    		if (descriptorClass.equals("1")) 
+    		if (descriptorClass.equals("1") || descriptorClass.equals("4")) 
     		{
 	    		DescriptorHandler handler = new DescriptorHandler(parser, this);
 	    		currentHandler = handler;
@@ -372,7 +372,7 @@ public class MeshConverter extends DefaultHandler
 	public static void main (String[] args) throws SAXException, IOException, ParserConfigurationException {
 		
 		String xmlFile = "/Users/cwillis/dev/hive/sources/mesh/desc2011.xml"; //args[0];   // /usr/local/hive/sources/mesh/desc2011.xml
-		String skosFile = "/Users/cwillis/dev/hive/sources/mesh/mesh_newer.rdf"; //args[1];  // /usr/local/hive/hive-data/mesh/mesh.rdf
+		String skosFile = "/Users/cwillis/dev/hive/sources/mesh/mesh_06272011.rdf"; //args[1];  // /usr/local/hive/hive-data/mesh/mesh.rdf
 	    SAXParserFactory spf = SAXParserFactory.newInstance();
 	    SAXParser saxParser = spf.newSAXParser();
 	    XMLReader xmlReader = saxParser.getXMLReader();
