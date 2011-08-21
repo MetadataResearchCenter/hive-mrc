@@ -282,11 +282,11 @@ public class VocabularyService {
 	 * @gwt.typeArgs <client.ConceptProxy>
 	 * 
 	 * */
-
 	public List<ConceptProxy> getTags(String input, List<String> openedVocabularies, int numTerms)
 	{
 		SKOSTagger tagger = this.skosServer.getSKOSTagger();
-		List<SKOSConcept> candidates = tagger.getTags(input, openedVocabularies,this.getSKOSSearcher(), numTerms);
+		List<SKOSConcept> candidates = tagger.getTags(input, openedVocabularies,
+				this.getSKOSSearcher(), numTerms);
 		List<ConceptProxy> result = new ArrayList<ConceptProxy>(); 
 		for(SKOSConcept concept : candidates)
 		{
@@ -302,6 +302,32 @@ public class VocabularyService {
 		}
 		return result;
 	}
+	
+	public List<ConceptProxy> getTags(String input, List<String> openedVocabularies, 
+			int numTerms, int minPhraseOccur)
+	{
+		SKOSTagger tagger = this.skosServer.getSKOSTagger();
+		List<SKOSConcept> candidates = tagger.getTagsFromText(input, openedVocabularies,
+				this.getSKOSSearcher(), numTerms, minPhraseOccur);
+		List<ConceptProxy> result = new ArrayList<ConceptProxy>(); 
+		for(SKOSConcept concept : candidates)
+		{
+		  String preLabel = concept.getPrefLabel();
+		  QName qname = concept.getQName();
+		  String namespace = qname.getNamespaceURI();
+		  String lp = qname.getLocalPart();
+		  String uri = namespace + " " + lp;
+		  double score = concept.getScore();
+		  String origin = skosServer.getOrigin(qname);
+		  ConceptProxy cp = new ConceptProxy(origin, preLabel, uri, score);
+		  cp.setBroader(concept.getBroaders());
+		  cp.setNarrower(concept.getNarrowers());
+		  cp.setAltLabel(concept.getAltLabels());
+		  result.add(cp);
+		}
+		return result;
+	}
+	
 	
 	public List<ConceptProxy> getTags(URL url, List<String> openedVocabularies, int maxHops, int numTerms)
 	{
