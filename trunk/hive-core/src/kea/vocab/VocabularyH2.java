@@ -38,6 +38,7 @@ import edu.unc.ils.mrc.hive2.api.impl.HiveH2IndexImpl;
 import edu.unc.ils.mrc.hive2.api.impl.HiveVocabularyImpl;
 
 import kea.stemmers.PorterStemmer;
+import kea.stemmers.Stemmer;
 import kea.stopwords.Stopwords;
 import kea.stopwords.StopwordsEnglish;
 
@@ -105,7 +106,16 @@ public class VocabularyH2 extends Vocabulary
 			h2Index = (HiveH2IndexImpl)hv.getH2Index();
 		
 		setStopwords(new StopwordsEnglish(scheme.getStopwordsPath()));
-		setStemmer(new PorterStemmer());
+		
+		try
+		{
+			Class cls = Class.forName(scheme.getStemmerClass());
+			Stemmer stemmer = (Stemmer)cls.newInstance();
+			setStemmer(stemmer);
+		} catch (Exception e) {
+			logger.error("Error instantiating stemmer: " + e);
+			setStemmer(new PorterStemmer());
+		}
 	}	
 	
 	/**
@@ -115,7 +125,7 @@ public class VocabularyH2 extends Vocabulary
 	 */
 	protected Connection getConnection() throws SQLException {
 		
-		logger.debug("getConnection()");
+		logger.trace("getConnection()");
 		return h2Index.getConnection();
 	}
 		
@@ -193,7 +203,7 @@ public class VocabularyH2 extends Vocabulary
 			vocabularyENrev = new FileWriter(fileENrev);
 			vocabularyUSE = new FileWriter(fileUSE);
 			vocabularyREL = new FileWriter(fileREL);
-			
+		
 			int count = 1;
 
 			// Iterate through all concepts in the vocabulary and write
@@ -396,7 +406,7 @@ public class VocabularyH2 extends Vocabulary
 			vocabularyUSE.write(id_non_descriptor + "|" + uri + "\n");
 		} catch (IOException e) {
 			logger.error(e);
-		}		
+		}	
 	}
 
 	@Override
