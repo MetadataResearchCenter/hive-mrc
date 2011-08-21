@@ -26,6 +26,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package edu.unc.ils.mrc.hive.ir.tagging;
 
 import java.util.Hashtable;
+
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -35,6 +36,7 @@ import org.perf4j.log4j.Log4JStopWatch;
 import edu.unc.ils.mrc.hive.api.SKOSScheme;
 import kea.main.KEAKeyphraseExtractor;
 import kea.stemmers.PorterStemmer;
+import kea.stemmers.Stemmer;
 import kea.stopwords.StopwordsEnglish;
 
 public class KEATagger implements Tagger{
@@ -49,6 +51,7 @@ public class KEATagger implements Tagger{
 		
 		this.vocabulary = schema.getLongName();
 		this.ke = new KEAKeyphraseExtractor(schema);
+
 
 		// A. required arguments (no defaults):
 
@@ -84,7 +87,18 @@ public class KEATagger implements Tagger{
 		// want to alterate results
 		// (We have obtained better results for Spanish and French with
 		// NoStemmer)
-		this.ke.setStemmer(new PorterStemmer());
+		//this.ke.setStemmer(new PorterStemmer());
+
+		String stemmerClass = schema.getStemmerClass();
+		try
+		{
+			Class cls = Class.forName(stemmerClass);
+			Stemmer stemmer = (Stemmer)cls.newInstance();
+			this.ke.setStemmer(stemmer);
+		} catch (Exception e) {
+			System.out.println("Error instantiating stemmer: " + e.getMessage());
+			this.ke.setStemmer(new PorterStemmer());
+		}
 
 		// 8. Stopwords
 		this.ke.setStopwords(new StopwordsEnglish(stopwordsPath));
