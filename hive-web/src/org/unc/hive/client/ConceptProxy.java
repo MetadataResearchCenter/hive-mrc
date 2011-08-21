@@ -4,8 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.xml.namespace.QName;
-
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class ConceptProxy implements IsSerializable{
@@ -108,34 +106,18 @@ public class ConceptProxy implements IsSerializable{
 		return URI;
 	}
 	
-	public void setNarrower(HashMap<String, String> map)
+	public void setNarrower(Map<String, String> map)
 	{
 		this.narrower = new HashMap<String, String>(map);
 	}
 	
-	public void setNarrower(Map<String, QName> map)
-	{
-		this.narrower = new HashMap<String, String>();
-		for (String key: map.keySet()) {
-			QName value = map.get(key);
-			narrower.put(key, value.getNamespaceURI()+value.getLocalPart());
-		}
-	}
 	
 	public HashMap<String, String> getNarrower()
 	{
 		return this.narrower;
 	}
 	
-	public void setBroader(Map<String, QName> map)
-	{
-		this.broader = new HashMap<String, String>();
-		for (String key: map.keySet()) {
-			QName value = map.get(key);
-			broader.put(key, value.getNamespaceURI()+value.getLocalPart());
-		}
-	}
-	public void setBroader(HashMap<String, String> map)
+	public void setBroader(Map<String, String> map)
 	{
 		this.broader = new HashMap<String, String>(map);
 	}

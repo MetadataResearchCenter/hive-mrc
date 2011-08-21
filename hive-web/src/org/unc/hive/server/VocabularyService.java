@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.Map.Entry;
@@ -320,14 +321,27 @@ public class VocabularyService {
 		  double score = concept.getScore();
 		  String origin = skosServer.getOrigin(qname);
 		  ConceptProxy cp = new ConceptProxy(origin, preLabel, uri, score);
-		  cp.setBroader(concept.getBroaders());
-		  cp.setNarrower(concept.getNarrowers());
+		  
+		  Map<String, String> broaderMap = getStringMap(concept.getBroaders());
+		  cp.setBroader(broaderMap);
+		  
+		  Map<String, String> narrowerMap = getStringMap(concept.getNarrowers());
+		  cp.setNarrower(narrowerMap);
 		  cp.setAltLabel(concept.getAltLabels());
 		  result.add(cp);
 		}
 		return result;
 	}
 	
+	public Map<String, String> getStringMap(Map<String, QName> qnameMap)
+	{
+		Map<String, String> stringMap = new HashMap<String, String>();
+		for (String key: qnameMap.keySet()) {
+			QName value = qnameMap.get(key);
+			stringMap.put(key, value.getNamespaceURI()+value.getLocalPart());
+		}
+		return stringMap;
+	}
 	
 	public List<ConceptProxy> getTags(URL url, List<String> openedVocabularies, int maxHops, int numTerms)
 	{
