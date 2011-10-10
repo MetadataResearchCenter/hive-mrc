@@ -1,0 +1,1265 @@
+@charset "UTF-8";
+/* CSS Document for HIVE Web Interface */
+
+/**** Last updated on Nov 2 2009
+
+      Created via Lina Huang
+   
+      School of Information and Library Science, UNC-CH****/
+body
+{
+	background-color: #cccccc;
+	margin:0;
+	text-align:center;
+}
+
+html, body, p, div, table
+{
+    font-family:Tahoma, Geneva, sans-serif;
+	font-size:12px;
+}
+
+.background_gray
+{
+    background-color: #ccccc;
+	margin:0;
+}
+
+p
+{
+	margin:1em;
+	font-family:Tahoma, Geneva, sans-serif;
+	font-size:12px;
+	text-align:justify;
+}
+
+a
+{
+	color:#03C;
+	text-decoration:none;
+}
+
+a:hover
+{
+	color:#acd373; 
+	text-decoration:none;   
+}
+/* jpb */
+a:active
+{
+	color:#acd373;
+	/* background-color:#FFE766;
+	   text-decoration:underline; jpb */
+	text-decoration:none;   
+}
+
+#header
+{
+	width:100%;
+	background-image:url(./img/header_bg.png);
+	height:30px;
+	background-repeat:repeat-x;
+	margin:0;
+	padding:0;
+	
+}
+
+#header table td
+{
+	margin: 0 5px;
+	color: white;
+}
+
+
+#header a
+{
+	color:#FFF;
+	font-size:12px;
+}
+
+#header a:hover
+{
+	color:#009;
+	text-decoration:underline;
+}
+
+#footer
+{
+	width:100%;
+	background-image:url(./img/footer_bg.png);
+	height:30px;
+	background-repeat:repeat-x;
+	margin:0;
+	padding:0;
+}
+
+#footer p
+{
+	margin-top: 5px;
+	text-align: center;
+	color:white;
+}
+
+#main
+{
+	background-color:#FFF;
+	width:980px;
+	margin:0 auto; 
+}
+
+#logo
+{
+	height:110px;
+}
+
+#logo .logo_img
+{
+	border-right:#CCC 1px solid;
+	margin-left:30px;
+	float:left;
+}
+
+#logo h1
+{
+	font-size:large;
+	text-align:left;
+	margin-left:20px;
+	color:#999;
+	font-weight:800;
+}
+
+#logo h1 span
+{
+	color:#efb81f;
+}
+
+
+#tab
+{
+    text-align:center;
+	width:695px;
+	float:left;
+	height:90px;
+	padding:0;
+}
+
+#tab ul
+{	
+  position:relative;
+  bottom:-28px;
+  margin-top:0;
+}
+
+#tab ul li
+{
+	display:inline;
+	list-style:none;
+	font-size:16px;
+	
+}
+
+#tab ul li a
+{ 
+  float: left;
+  display:block;
+  width:150px;
+  text-align:center;
+  margin-left: 5px;
+  background:gray;
+  height:25px;
+  padding-top:10px;
+  background-image:url(./img/tab.jpg);
+  background-repeat:no-repeat;
+  color:white;
+  font-weight:500;
+}
+
+#tab ul li a:hover
+{
+	color:#000;
+}
+
+#tab ul li a.selectedTab
+{
+	background-image:url(./img/tab_selected.png);
+	background-repeat:no-repeat;
+	position: relative;
+	bottom: -1px;
+	color:#000;
+	z-index:1;
+}
+
+
+/*IE Only*/
+
+* html #tab
+{
+	border:none;
+}
+
+* html #tab ul
+{
+  position: static;
+  margin-top:0;
+}
+
+* html #tab ul li
+{
+	float:left;
+}
+
+* html #tab ul li a
+{ 
+  display:block;
+  width:150px;
+  text-align:center;
+  margin-left: 5px;
+  background:gray;
+  height:50px;
+  pading-top:0;
+  margin-top:0;
+  background-image:url(./img/tab.jpg);
+  background-repeat:no-repeat;
+  color:white;
+  font-weight:500;
+  position:relative;
+  bottom:-19px;
+}
+
+* html #tab ul li a:hover
+{
+	color:#000;
+}
+
+
+* html #tab ul li a.selectedTab
+{
+	background-image:url(./img/tab_selected.png);
+	background-repeat:no-repeat;
+	color:#000;
+	height:50px;
+	z-index:1;
+	position:relative;
+    bottom:-20px;
+}
+
+
+
+#content
+{
+	margin:0;
+	border-top:1px solid #ccc;
+	text-align: left;
+/*	background-color:#efb81f; */
+}
+
+/*GWT Widget Element*/
+
+.gwt-Hyperlink 
+{
+  margin-left: 10px;
+}
+ 
+.gwt-HorizontalSplitPanel hsplitter 
+{
+   border: 1px solid red; 
+}
+
+.testedstyle
+{
+  border:1px solid red;
+}
+
+.menubar
+{
+  width: 200px;
+  height: 100%;
+  margin-left: 20px;
+  font-weight: normal;
+  font-size:12px;
+  border:none;
+  background-color:none;
+}
+
+.toolbar
+{
+  width: 100%;
+  height: 30px;
+  border:1px solid gray;
+  text-align: left;
+}
+
+.hyperlink
+{
+  text-align: center;
+  width: 20px;
+  text-decoration: underline;
+}
+
+.hyperlink a
+{
+  text-decoration: underline;
+  display: block;
+}
+
+.hyperlink a:hover
+{
+  background-color: #99CCFF;
+  color:white;
+}
+
+.selected 
+{
+  text-align: center;
+  width: 20px;
+  background-color: #99CCFF;
+ 
+  
+}
+
+.selected a
+{
+  dislpay:block;
+  color:white;
+  text-decoration:none;
+}
+
+
+
+.subhead
+{
+  font-size: 16px;
+  font-weight: 200;
+  padding:0;
+  margin-bottom: 10px;
+}
+
+.label
+{
+ color:black;
+ font-weight:200;
+ margin-left:5px;
+}
+
+.button
+{
+  border: 1px solid red;
+  width:30px;
+  font-size:12px;
+}
+
+.margin
+{
+  margin: 5px;
+}
+
+.grid
+{
+  margin: 5px 10px 10px 10px;
+  border: 1px #ccc solid;
+}
+
+.tabpanel
+{
+  border: 1px solid #ccc;
+  margin-left: 11px;
+  margin-right:10px;
+  margin-bottom: 20px;
+  z-index:0;
+  width:330px;
+}
+
+/* GWT tab bar */
+
+ .gwt-TabBar 
+ {
+  
+   padding-top:10px;
+   height:22px;
+   width:250px;
+  }
+  
+ .gwt-TabBar .gwt-TabBarFirst 
+  {
+    width:10px; 
+  }
+
+  .gwt-TabBar .gwt-TabBarItem 
+  {
+    background-image: url(./img/tabm.jpg);
+    background-repeat:no-repeat;
+    background-position:bottom;
+    width:80px;
+    height:25px;
+    padding:0;
+    font-size:12px;
+    font-weight:bold;
+    color:white;
+    background-color:white;
+    font-weight:normal;
+    cursor:hand;
+    cursor:pointer;
+    margin-left:1px;
+    
+  }
+  
+  .gwt-TabBar .gwt-TabBarItem a
+  {
+    color:white;
+    display:block;
+    padding-top:5px;
+    margin-right:5px;
+  }
+  
+  .gwt-TabBar .gwt-TabBarItem a:hover
+  {
+    color:black;
+  }
+  
+  .gwt-TabBar .gwt-TabBarItem-selected 
+  {
+    background-image:url(./img/tabm-selected.png); 
+    color:black;
+    position:relative;
+    margin-bottom:-1px;
+    z-index:1;
+  }
+  
+  .gwt-TabBar .gwt-TabBarItem-selected a
+  {
+    color:black;
+    display:block;
+    margin-right:5px;
+  }
+  
+  .gwt-TabBar .gwt-TabBarItem-wrapper 
+  {
+    background-color:white;
+  }
+  
+  .gwt-TabBar .gwt-TabBarItem-wrapper-selected 
+  {
+    background-color:white;
+  }
+  
+  
+  .gwt-ToggleButton-up
+  {
+    background:none;
+    border:none;
+    padding:0;
+    margin-top:2px;
+  }
+
+  .gwt-toggleButton-down
+  {
+    background:none;
+    border:none;
+    padding:0;
+    margin-top:2px;
+  }
+  
+  .gwt-toggleButton-up-hovering
+  {
+    background: none;
+    border:none;
+    padding:0;
+    margin-top:2px;
+  }
+  
+  .gwt-toggleButton-down-hovering
+  {
+    background:none;
+    border:none;
+    padding:0;
+    margin-top:2px;
+  }
+  
+  .vname
+  {
+    margin-left:none;
+    font-weight:500;
+    margin-right:20px;
+  }
+  
+  .gwt-DialogBox 
+  {
+    z-index:10;
+  }
+
+   .gwt-GlassPanel
+   {
+     z-index: 2;
+   }
+  
+ .gwt-PushButton-up
+  {
+    background:0;
+    border:none;
+    cursor:hand;
+    cursor:pointer;
+    margin-top:2px;
+    padding:0;;
+  }
+  
+  .loading-image
+ {
+    display: block;
+    position: relative;
+    top: 120px;
+    left: 80px;
+ }
+ 
+ .gwt-PushButton-down
+ {
+    background:0;
+    border:none;
+    cursor:hand;
+    cursor:pointer;
+    margin-top:2px;
+    padding:0;
+ }
+ .gwt-PushButton-up-hovering
+ {
+   background:0;
+   border:none;
+   cursor:hand;
+   cursor:pointer;
+    margin-top:2px;
+   padding:0;
+ }
+ 
+ .gwt-PushButton-down-hovering
+ {
+   background:0;
+   border:none;
+   cursor:hand;
+   cursor:pointer;
+    margin-top:2px;
+   padding:0;
+ }
+ 
+ .addlabel
+ {
+   color:#0066CC;
+   margin:0;
+   padding:0;
+ }
+ 
+ h5.customizedheader
+ {
+   font-weight:normal;
+   text-decoration:underline;
+   margin-bottom:5px;
+ }
+
+/*Home Style*/
+
+#home
+{
+	border-top:1px solid #CCC;
+	text-align:left;
+}
+
+
+#home #welcome
+{
+  border-bottom: 1px #ccc solid;
+  margin: 10px 10px 0 10px;
+}
+
+#majorPart
+{
+	width:100%;
+	margin: 10px 10px 0 10px;
+	height: 500px;
+	text-align: center;
+}
+
+#indexer
+{
+	width:100%;
+	height: 600px;
+	text-align:center;
+}
+
+#home h1
+{
+	font-size:18px;
+	font-weight:500;
+	border-bottom:#CCC 1px solid;
+	margin: 10px 10px 10px 10px;
+	padding-left:20px;
+	padding-bottom:5px;
+	padding-top:5px;
+	background-image:url(./img/hive_icon.jpg);
+	background-repeat:no-repeat;
+	background-position:left;
+}
+
+#home p
+{
+	margin: 0 20px 20px 10px;
+}
+
+#home span
+{
+	 color:#efb81f;
+	 font-weight:bold;
+}
+
+#home h5
+{
+	color:blue;
+	font-weight:normal;
+	font-size:12px;
+}
+
+.caption
+{
+	border:1px #ccc solid;
+	margin-bottom: 10px;
+	font-size: 12px;
+	padding: 5px;
+}
+
+.statTable
+{
+	margin-left: 10px;
+}
+
+.statTable tr td
+{
+	border-bottom:1px solid #ccc;
+	text-align:center;
+}
+
+.statTable tr {
+        height: 30px;
+}
+
+.statTable div a
+{
+	text-align: center;
+}
+
+.tableHead 
+{
+	padding:0;
+	color:#efb81f;
+	margin:0;
+}
+
+.gwt-Button 
+{
+	background-image: url(./img/button.png);
+	background-position:left center;
+	background-repeat:no-repeat;
+	color:white;
+	border:none;
+    width:60px; 
+	height:25px;
+	padding-bottom:5px;
+	font-size:12px;
+}
+
+
+.gwt-Button:hover {
+  color:black;
+}
+
+ .gwt-TextBox 
+ {
+   border: 1px #ccc solid; 
+ }
+ 
+.uploadBtn
+{
+	margin-top: 5px;
+	margin-left: 5px;
+}
+
+.gwt-HTML 
+{
+	margin-left:5px;
+	margin-bottom:5px;
+	margin-right:5px;
+	padding:0;
+	text-align: justify;	
+}
+
+.gwt-HTML div
+{
+	margin:0;
+}
+
+.footerByline
+{
+	margin-top:5px;
+}
+
+.configure
+{
+	background-color:#f2f2f2;
+	padding-top:7px;
+	padding-left:0px;
+	padding-bottom:7px;
+	padding-right:0;
+	text-align:left;
+	width:100%
+}
+
+.border-top
+{
+	border-top: 1px solid #ccc;
+	width:100%;
+}
+
+.logos
+{
+	text-align:center;
+}
+
+.stat
+{
+	border:1px solid red;
+}
+
+.lastupdate
+{
+	color:#ccc;
+	width:100%;
+	text-align:right;
+}
+
+.browsingLeft
+{
+	border-right:1px solid #ccc;
+}
+
+.searchConcept
+{
+	padding:8px 16px;
+	background-color:#f2f2f2;
+	border-bottom:1px solid #d9d9d9;
+	
+}
+
+.alphabetGrid
+{
+	padding:10px;
+	background-color: #f2f2f2;
+	border-bottom:1px solid #d9d9d9;
+	width:100%;
+	margin:0;
+}
+
+.alphabetGrid td
+{
+	margin:0;
+	padding:0;
+}
+.focus
+{
+	border: 2px solid #efb81f;
+}
+
+.origin-style
+{
+	color:#ccc;
+	font-size:10px;
+	text-align: right;
+	margin-bottom:2px;
+}
+
+.concept-style
+{
+	margin-bottom:2px;
+	padding:0;
+	width: 100%;
+
+}
+
+.concept-style div
+{
+	margin:0;
+	padding:0;
+	word-wrap: normal;
+}
+
+.border-default
+{
+	border:1px solid #ccc;
+}
+
+.add-margin
+{
+	margin-left:15px;
+	margin-bottom:15px;
+}
+
+.add-padding
+{
+	padding-left: 15px;
+}
+
+.border-highlight
+{
+	border:2px solid #efb81f;	
+}
+
+.background-default
+{
+	background-color:#f2f2f2;
+}
+
+.background-white
+{
+	background-color:white;
+}
+
+.resultlist-header-style
+{
+	width:625px;
+	margin:0;
+}
+
+.resultlist-header-style h4
+{
+	font-size: 14px;	
+	overflow: hidden;
+	font-weight:normal;
+	margin:0;
+	padding:5px;
+}
+
+.resultlist-header-style div
+{
+	margin:0;
+	padding:0;
+}
+
+.resultlist-header-style span
+{
+	color: #efb81f;
+	font-weight:bold;
+}
+
+.concept-table
+{
+	text-align: left;
+	vertical-align: top;
+	font-size:14px;
+	margin-top:10px;
+	margin-left:15px;
+	border: 1px solid #ccc;
+}
+
+.concept-table td
+{
+	padding: 3px;
+	margin:0;
+	border-bottom: 1px solid #ccc;
+}
+
+.table-heading
+{
+	background-color:#efb81f;
+	color: white;
+	font-weight:bold;
+	font-size:11px;
+	margin:0;
+	width:140px; 
+}
+
+.even-row td
+{
+  /*background-color:	#C2DFFF;*/
+}
+
+.uneven-row td
+{
+	
+}
+
+.concept-name-style
+{
+	font-size: 14px;
+	font-weight: bold;
+	color:#0054a5;
+	padding:0;
+	padding-bottom: 5px;
+	width: 100%;
+	 border-bottom: 1px solid #ccc;
+}
+
+.concept-header
+{
+  	margin-left:10px;
+  	margin-top:10px;
+  	margin-right: 10px;
+  	padding-bottom:0;
+}
+
+.indexing-caption
+{
+	width: 900px;
+	margin: 20px auto;
+	border:1px #ccc solid;
+	text-align:left;
+	padding: 10px;
+}
+
+.indexing-table-prompt
+{
+	width: 250px; 
+}
+
+.indexing-table-operation td
+{
+	height: 50px;
+	vertical-align:middle;
+}
+
+.upload-button
+{
+	margin-left: 10px;
+}
+
+.uploadholder td
+{
+	height: 25px;
+}
+
+.skos-btn
+{
+	background-image: url(./img/skos.png);
+	background-position:left center;
+	background-repeat:no-repeat;
+	margin-top: 5px;
+	margin-left: 5px;
+	width: 100px;
+	height: 25px;
+	color: white;
+	border: 0;
+	cursor: hand;	
+	cursor: pointer;
+	font-size: 10px;
+	font-weight: bold;
+}
+
+.skos-btn:hover
+{
+	color: #fef9ba;
+}
+
+.home-hp
+{
+	margin-bottom: 20px;
+}
+
+.gwt-DecoratedPopupPanel
+{
+	z-index: 20;
+}
+
+.close-button
+{
+	margin-bottom: 5px;
+	width: 20px;
+}
+
+.Hyperlink-trick
+{
+  width: 1px;
+  white-space: nowrap;
+}
+
+.choose-panel
+{
+	 z-index: 20;
+	 width: 400px;
+	 height: 300px;
+	 padding: 10px;
+}
+
+.z-index
+{
+	z-index: 20;
+}
+
+.tip
+{
+	font-size: 10px;
+	color: #ccc;
+}
+
+.heading
+{
+	margin-top: 0;
+	margin-bottom: 10px;
+	color: #efb81f;
+	font-weight: bold;
+}
+
+.or-label span
+{
+	font-weight: bold;
+	color: #efb81f;
+	margin-left: 15px;
+	margin-right: 12px;
+}
+
+.urlPanel td
+{
+	height: 25px;
+}
+
+.docURL
+{
+	margin-right: 15px;
+}
+
+.start-processing
+{
+	height: 70px;
+}
+
+.border-left
+{
+	border-left: 1px solid #ccc;
+	margin-left: 20px;
+}
+
+.indexing-table-control
+{
+	width: 450px;
+}
+
+.upload-popup
+{
+	z-index: 20;
+	text-align: center;
+	height: 20px;
+	width: 80px;
+	vertical-align: middle;
+}
+
+.result-Dock
+{
+	margin: 10px auto;
+	width: 100%;
+}
+
+.start-over
+{
+	text-align: right; 
+	margin-right: 35px; 
+	float: right;      /* jpb */
+}
+
+.format-label
+{
+    /* margin-left: 10px; */
+    float: left;	
+}
+.format-listbox
+{
+    margin-left: 5px; 
+    float: left;	
+}
+.close-float
+{
+    float: right;	
+}
+
+/*Below are the CSS to implement tag cloud*/
+
+.base-css
+{
+	margin: 10px;  
+	padding: 1px; /* 5px; jpb */
+	cursor: hand;
+	cursor: pointer;
+}
+
+.selectedconcept-bgcolor
+{
+	background-color: #FFEF99; 
+}
+
+.deselectedconcept-bgcolor
+{
+	background-color: #fff;  
+}
+
+.selectedConceptsButton  
+{
+    float: right;
+    margin-right: 50px; 
+    background-image: url(./img/bigbluebutton.png);
+	background-repeat:no-repeat;
+	color:white;
+	border:none;
+    width:160px; 
+	height:40px;
+	padding-bottom:5px;
+	cursor: hand;	
+	cursor: pointer;
+	font-size:10px;
+	font-weight: bold;
+	margin-left: 5px;
+}
+.selectedConceptsButton:hover {
+  color:black;
+}
+
+
+.nbii-color
+{
+	color: green;
+}
+.nbii-bgcolor
+{
+	background-color: green;
+	border: 1px solid #ccc;
+}
+.lcsh-color
+{
+	color: red;
+}
+.lcsh-bgcolor
+{
+	background-color: red;
+	border: 1px solid #ccc;
+}
+.agrovoc-color
+{
+	color: blue;
+}
+.agrovoc-bgcolor
+{
+	background-color: blue;
+	border: 1px solid #ccc;
+}
+.mesh-color
+{
+	color: orange;
+}
+.mesh-bgcolor
+{
+	background-color: orange;
+}
+.tgn-color
+{
+	color: black;
+}
+.tgn-bgcolor
+{
+	background-color: black;
+}
+.font-one
+{
+	font-size: 12px;
+}
+
+.font-two
+{
+	font-size: 14px;
+}
+
+.font-three
+{
+	font-size: 16px;
+}
+
+.font-four
+{
+	font-size: 18px;
+}
+
+.font-five
+{
+	font-size: 20px;
+}
+
+.font-six
+{
+	font-size: 22px;
+}
+
+.tag-cloud
+{
+	margin-left: 20px;
+	border-left: solid 1px #ccc;
+	text-align: center;
+	padding: 10px;
+}
+
+.concept-info
+{
+	margin-left: 80px;
+}
+
+.add-pop
+{
+	text-align: left;
+}
+
+
+.kea img
+{
+ border:none;
+}
+
+.gwt-Label
+{
+	font-size:12px;
+}
+
+.border-left-increase
+{
+	padding-left: 40px;
+	border-left: 1px solid #ccc;
+}
+
+.border-left-increase2
+{
+	padding-left: 80px;
+	border-left: 1px solid #ccc;
+}
+
+.clear
+{
+ clear:both;
+}
+
+p.error
+{
+   font-size:24px;
+   text-align:center;
+   color:#000000;
+   padding-top: 50px;
+   color:#000000;
+}
+
+.vocabulary-tags 
+{
+	margin-top: 10px;
+}
+
+.advanced-subpanel
+{
+	margin-top: 10px;
+	margin-left: 20px;
+}
+	
+.recordformat-panel
+{
+	 z-index: 20;
+	 width: 800px;
+	 height: 300px;
+	 padding: 10px;
+}
+	
+	
