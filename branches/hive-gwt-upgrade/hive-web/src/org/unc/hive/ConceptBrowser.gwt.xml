@@ -1,0 +1,20 @@
+<module rename-to='hivewebrowser'>
+	<inherits name='com.google.gwt.user.User' />
+	<inherits name='com.google.gwt.user.theme.standard.Standard' />
+	<inherits name='org.gwtmultipage.gwtmultipage' />
+	
+	<!-- Use this EntryPoint instead of your own one. -->
+    <entry-point class='org.gwtmultipage.client.EntrypointDispatcher'/>
+	
+	<define-configuration-property name="GwtMultipage.menuElementId" is-multi-valued="false"/>
+	<define-configuration-property name="GwtMultipage.javascriptTokenVariable" is-multi-valued="false"/>
+    <set-configuration-property name="GwtMultipage.javascriptTokenVariable" value="gwtMultipageToken"/>
+
+	<generate-with class='org.gwtmultipage.rebind.EntryPointFactoryImplGenerator'>
+		<when-type-assignable class='org.gwtmultipage.client.core.EntryPointFactory'/>
+	</generate-with>
+	
+	<stylesheet src="../hive.css" />
+	<stylesheet src="../Upload.css" />
+
+</module>
