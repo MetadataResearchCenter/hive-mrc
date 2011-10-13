@@ -1,5 +1,6 @@
 /**
  * Copyright (c) 2010, UNC-Chapel Hill and Nescent
+
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided 
@@ -29,6 +30,7 @@ import java.io.File;
 
 
 
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
@@ -36,6 +38,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.metadata.Metadata;
@@ -49,18 +54,34 @@ import org.xml.sax.SAXException;
 
 public class TextManager 
 {
+	private String proxyHost = null;
+	private int proxyPort = -1;
+	private List<String> ignorePrefixes = new ArrayList<String>();
 	
+	
+	public void setProxy(String host, int port) {
+		this.proxyHost = host;
+		this.proxyPort = port;
+	}
+	
+	public void setIgnorePrefixes(String[] prefixes) {
+		if (prefixes != null)
+			ignorePrefixes = Arrays.asList(prefixes);
+	}
 	/**
 	 * Returns a plain-text document representation of a website. 
 	 * @param url		URL to crawl
 	 * @param maxHops	Maximum number of hops
+	 * @param diff		Extract only differences between base page and subsequent pages
 	 * @return			Text representation of website
 	 * @throws IOException
 	 */
-	public String getPlainText(URL url, int maxHops) throws IOException
+	public String getPlainText(URL url, int maxHops, boolean diff) throws Exception
 	{
 		SimpleTextCrawler sc = new SimpleTextCrawler();
-		String text = sc.getText(url, maxHops);
+		sc.setProxy(proxyHost, proxyPort);
+		sc.setIgnorePrefixes(ignorePrefixes);
+		String text = sc.getText(url, maxHops, diff);
 		return text;
 	}
 	

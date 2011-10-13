@@ -69,8 +69,9 @@ public class SKOSServerImpl implements SKOSServer {
         String taggerAlgorithm = "dummy";
         String path = "";
         
+        Configuration config = null;
         try {
-            Configuration config = new PropertiesConfiguration(configFile);
+            config = new PropertiesConfiguration(configFile);
             taggerAlgorithm = config.getString("hive.tagger", "dummy");
             path = config.getString("hive.schemePath", "");
             if (path.isEmpty()) 
@@ -95,6 +96,7 @@ public class SKOSServerImpl implements SKOSServer {
 
         this.searcher = new SKOSSearcherImpl(this.schemes);
         this.tagger = new SKOSTaggerImpl(this.schemes, taggerAlgorithm);//kea or dummy
+        this.tagger.setConfig(config);
 	}
 
 	public SKOSTagger getSKOSTagger() {

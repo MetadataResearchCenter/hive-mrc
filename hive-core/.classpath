@@ -41,5 +41,6 @@
 	<classpathentry kind="lib" path="lib/lucene-analyzers-2.4.1.jar"/>
 	<classpathentry kind="lib" path="lib/openrdf-sesame-2.4.0-onejar.jar"/>
 	<classpathentry kind="lib" path="lib/commons-cli-1.2.jar" sourcepath="/Users/cwillis/.m2/repository/commons-cli/commons-cli/1.2/commons-cli-1.2-sources.jar"/>
+	<classpathentry kind="lib" path="lib/diffutils-1.2.1.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
