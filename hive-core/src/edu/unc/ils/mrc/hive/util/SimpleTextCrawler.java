@@ -423,42 +423,4 @@ public class SimpleTextCrawler
 		}
 		return absoluteUrl;
 	}
-	
-	public String readFile(File file) throws IOException
-	{
-		BufferedReader br = new BufferedReader(new FileReader(file));
-		String line;
-		String text ="";
-		while ((line = br.readLine()) != null)
-			text += line + "\n";
-		
-		br.close();
-		return text;
-	}
-	public static void main(String[] args) throws Exception
-	{
-		
-		SimpleTextCrawler stc = new SimpleTextCrawler();
-		List<String> ignore = new ArrayList<String>();
-		ignore.add("http://webarchive.loc.gov/lcwa[^/]*/[^/]*/");
-		ignore.add("http://loc-wm.archive.org/all/[^/]*/");
-		//stc.setProxy("wayback.archive-it.org", 9194);
-		//stc.setIgnorePrefixes(ignore);
-		
-		URL url = new URL("http://webarchive.loc.gov/lcwa0010/20050422184603/http://www.hcef.org/hcef/");
-		//URL url = new URL("http://www.ncadfp.org/");
-		String text = stc.getText(url, 1, true);
-		
-		System.out.println(text);
-		/*
-		String source = stc.readFile(new File("/Users/cwillis/Desktop/hcef1.htm"));
-		String target = stc.readFile(new File("/Users/cwillis/Desktop/hcef2.cfm"));
-		String srcTxt = stc.getTextFromHtml(source);
-		String targetTxt = stc.getTextFromHtml(target);
-		String diff = stc.getDiff(srcTxt, targetTxt);
-		diff = diff.replaceAll("\\s+", " ");
-		System.out.println(diff);
-		*/
-
-	}
 }
