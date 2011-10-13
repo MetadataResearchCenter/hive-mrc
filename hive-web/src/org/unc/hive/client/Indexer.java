@@ -22,6 +22,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CaptionPanel;
+import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.DecoratedPopupPanel;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.DisclosureHandler;
@@ -421,7 +422,9 @@ public class Indexer implements EntryPoint {
 		maxHopsPanel.setStyleName("advanced-subpanel");
 		maxHopsPanel.add(maxHops);
 		maxHopsPanel.add(maxHopsLbl);
-	
+		maxHopsPanel.setTitle("Maximum number of links to follow when indexing a website. " + 
+			"Set to 0 to index the first page only. Increasing this value will increase indexing time.");
+
 		// Create max terms listbox and panel
 		final ListBox maxTerms = new ListBox();
 		maxTerms.addItem("5");
@@ -437,10 +440,24 @@ public class Indexer implements EntryPoint {
 		maxTermsPanel.setStyleName("advanced-subpanel");
 		maxTermsPanel.add(maxTerms);
 		maxTermsPanel.add(maxTermsLbl);
+		maxTermsPanel.setTitle("Maximum number of terms to suggest.");
+		
+		final CheckBox diffCb = new CheckBox();
+		Label diffLbl = new Label();
+		diffLbl.setText(" Index differences only");
+		diffLbl.setStyleName("label");
+		HorizontalPanel diffPanel = new HorizontalPanel();
+		diffPanel.setStyleName("advanced-subpanel");
+		diffPanel.add(diffCb);
+		diffPanel.add(diffLbl);
+		diffPanel.setTitle("Check this checkbox to index only the differences between multiple pages in a multipage site. " +
+						"This will reduce the effect of repeated components such as headers and menus.");	
+		
 		
 		VerticalPanel vp = new VerticalPanel();
 		vp.add(maxHopsPanel);
 		vp.add(maxTermsPanel);
+		vp.add(diffPanel);
 		advancedPanel.add(vp);
 		advancedPanel.setStyleName("advanced-panel");
 		advancedPanel.setWidth("300px");
@@ -466,6 +483,7 @@ public class Indexer implements EntryPoint {
 				String url = docURL.getValue();
 				int hops = Integer.parseInt(maxHops.getValue(maxHops.getSelectedIndex()));
 				int terms = Integer.parseInt(maxTerms.getValue(maxTerms.getSelectedIndex()));
+				boolean diff = diffCb.getValue();
 				if(openedVocabularies.isEmpty())
 				{
 					Window.alert("Please select at least one vocabulary.");
@@ -502,7 +520,7 @@ public class Indexer implements EntryPoint {
 					processingPopup.center();
 					processingPopup.show();
 									
-					indexerService.getTags(fileToProcess, openedVocabularies, hops, terms,
+					indexerService.getTags(fileToProcess, openedVocabularies, hops, terms, diff,
 							new AsyncCallback<List<ConceptProxy>>() {
 								@Override
 								public void onFailure(Throwable caught) {
