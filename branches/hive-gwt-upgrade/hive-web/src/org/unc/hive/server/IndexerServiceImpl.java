@@ -50,14 +50,16 @@ public class IndexerServiceImpl extends RemoteServiceServlet implements
    /**
      *  @gwt.typeArgs <client.ConceptProxy>
      *  
-     *   */
-   
-	public List<ConceptProxy> getTags(String input, List<String> openedVocabularies, int maxHops, int numTerms) {
+     *   
+     */
+	public List<ConceptProxy> getTags(String input, List<String> openedVocabularies, int maxHops, 
+			int numTerms, boolean diff) 
+	{
 		if(input.startsWith("http://") || input.startsWith("https://")) {
 			try
 			{
 				URL url = new URL (input);
-				return this.service.getTags(url, openedVocabularies, maxHops, numTerms);
+				return this.service.getTags(url, openedVocabularies, maxHops, numTerms, diff);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

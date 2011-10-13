@@ -313,6 +313,8 @@ public class VocabularyService {
 		for(SKOSConcept concept : candidates)
 		{
 		  String preLabel = concept.getPrefLabel();
+		  preLabel = preLabel.replaceAll("\\(", "&#40;");
+		  preLabel = preLabel.replaceAll("\\)", "&#41;");
 		  QName qname = concept.getQName();
 		  String namespace = qname.getNamespaceURI();
 		  String lp = qname.getLocalPart();
@@ -335,6 +337,8 @@ public class VocabularyService {
 		for(SKOSConcept concept : candidates)
 		{
 		  String preLabel = concept.getPrefLabel();
+		  preLabel = preLabel.replaceAll("\\(", "&#40;");
+		  preLabel = preLabel.replaceAll("\\)", "&#41;");
 		  QName qname = concept.getQName();
 		  String namespace = qname.getNamespaceURI();
 		  String lp = qname.getLocalPart();
@@ -364,10 +368,12 @@ public class VocabularyService {
 		return stringMap;
 	}
 	
-	public List<ConceptProxy> getTags(URL url, List<String> openedVocabularies, int maxHops, int numTerms)
+	public List<ConceptProxy> getTags(URL url, List<String> openedVocabularies, int maxHops, 
+			int numTerms, boolean diff)
 	{
 		SKOSTagger tagger = this.skosServer.getSKOSTagger();
-		List<SKOSConcept> candidates = tagger.getTags(url, openedVocabularies,this.getSKOSSearcher(), maxHops, numTerms);
+		List<SKOSConcept> candidates = tagger.getTags(url, openedVocabularies,
+				this.getSKOSSearcher(), maxHops, numTerms, diff);
 		List<ConceptProxy> result = new ArrayList<ConceptProxy>(); 
 		for(SKOSConcept concept : candidates)
 		{
