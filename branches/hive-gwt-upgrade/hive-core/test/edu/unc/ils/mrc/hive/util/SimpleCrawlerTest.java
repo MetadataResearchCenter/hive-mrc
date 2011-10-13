@@ -13,7 +13,7 @@ public class SimpleCrawlerTest extends TestCase {
 		{
 			
 			URL url = new URL("http://ils.unc.edu/mrc/");
-			String text = sc.getText(url, 1);
+			String text = sc.getText(url, 1, true);
 			System.out.println(text);
 		} catch (Exception e) {
 			e.printStackTrace();
