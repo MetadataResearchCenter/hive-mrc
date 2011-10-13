@@ -54,12 +54,13 @@ import com.google.gwt.user.client.ui.TreeItem;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-@UrlPatternEntryPoint(value = "ConceptBrowser.html")
+
+@UrlPatternEntryPoint(value = "ConceptBrowser.html(\\\\#.*)?" )
 /*
  * Entry point classes define <code>onModuleLoad()</code>.
  */
 public class ConceptBrowser implements EntryPoint, ValueChangeHandler<String> {
-
+	
 	private final ConceptBrowserServiceAsync conceptBrowserService = GWT
 			.create(ConceptBrowserService.class);
 
@@ -94,7 +95,7 @@ public class ConceptBrowser implements EntryPoint, ValueChangeHandler<String> {
 	private List<String> filteringVocabularies;
 	private String queryfromhome = "";
 	private String currentViewing; // store the name of the vocabulary the user currently is browsing
-	
+
 	// private ConceptProxy randomConcept;
 
 	public ConceptBrowser() {
@@ -130,6 +131,7 @@ public class ConceptBrowser implements EntryPoint, ValueChangeHandler<String> {
 				// TODO Auto-generated method stub
 				loadingPopup.hide();
 				allVocabulary = result;
+	
 				/*Different path of initialization*/
 				if (queryfromhome.startsWith("query="))
 				{
@@ -1266,5 +1268,10 @@ public class ConceptBrowser implements EntryPoint, ValueChangeHandler<String> {
 		vp.add(conceptTable);
 		conceptInfo.add(vp);
 	}
+	
+	private static native String getParamString () /*-{ 
+     	return $wnd.location.search; 
+ 	}-*/; 
+
 
 }
