@@ -4,9 +4,13 @@ import java.io.ByteArrayInputStream;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+
+import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -21,6 +25,13 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.commons.cli.BasicParser;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
@@ -32,6 +43,10 @@ import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpParams;
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.AutoDetectParser;
@@ -67,6 +82,161 @@ public class SimpleTextCrawler
 	private int proxyPort = -1;
 	private List<Pattern> ignorePatterns = new ArrayList<Pattern>();
 	
+	/* Used to include *html files during LC test collection generation  */
+	private boolean saveHTML = false;
+	private static String htmlForURL = "";
+
+	/* Reads the following command line arguments:
+	 *    *.xls input file with URLs and associated subject headings
+	 *    output directory for generated files 
+	 *    number of hops (optional, default is 0)
+	 *    differencing enabled (default is no)
+	 *    Example: -f c:\test\testdata.xls  -o c:\testout\  -n 3 -d
+	 * Invokes the text crawler for each URL and generates associated 
+	 *   *.txt, *.key, and *.html files
+	 */
+	public static void main(String[] args) throws ParseException {
+
+		CommandLineParser parser = new BasicParser();
+		Options options = getOptions();
+		CommandLine commandLine = parser.parse(options, args);
+
+		if (commandLine.hasOption("h")) {
+			// Print the help message
+			HelpFormatter formatter = new HelpFormatter();
+			formatter.printHelp("java edu.unc.ils.mrc.hive.util.SimpleTextCrawler",
+					options);
+		} else {
+			String urlFileName = commandLine.getOptionValue("f");
+			String outputDir = commandLine.getOptionValue("o");
+			int numberOfHops = 0;
+			boolean differencingEnabled = false;
+			if (commandLine.hasOption("d"))
+				differencingEnabled = true;
+			try {
+				File fileObject = new File(outputDir);
+				if (!fileObject.exists()) {
+					fileObject.mkdirs(); 
+				}
+				if (commandLine.hasOption("n")) {
+					numberOfHops = Integer.parseInt(commandLine.getOptionValue("n"));
+				}
+				try {
+					HSSFWorkbook wb = readFile(urlFileName);
+					for (int k = 0; k < wb.getNumberOfSheets(); k++) {
+						HSSFSheet sheet = wb.getSheetAt(k);
+						int rows = sheet.getPhysicalNumberOfRows();
+						
+						System.out.println("Input file=" + urlFileName + " and has " + rows	+ " rows.");
+						System.out.println("Output directory=" + outputDir + 
+								           ", number of hops=" + numberOfHops +
+								           ", differencing " + (differencingEnabled ? "enabled" : "disabled"));
+						for (int r = 0; r < rows; r++) {
+							HSSFRow row = sheet.getRow(r);
+							if (row == null) {
+								continue;
+							}
+							int cells = row.getPhysicalNumberOfCells();
+							//System.out.println("\nROW " + row.getRowNum() + " has " + cells + " cell(s).");
+							PrintWriter outtxt = null;
+							PrintWriter outkey = null;
+							PrintWriter outhtml = null;
+							String txtFileName = null;
+							String keyFileName = null;
+							String htmlFileName = null;
+							for (int c = 0; c < cells; c++) {
+								HSSFCell cell = row.getCell(c);
+								String value = null;
+								String fileName = null;
+								value = cell.getStringCellValue();
+								try {
+									//System.out.println("CELL col=" + cell.getColumnIndex() + " VALUE="+ value);
+									SimpleTextCrawler sc = new SimpleTextCrawler();
+									if (c == 0) {
+										fileName = generateFileName(value);
+									    txtFileName = fileName + ".txt";
+                                        keyFileName = fileName + ".key";
+                                        htmlFileName = fileName + ".html";
+										System.out.println("txtFileName = "	+ txtFileName);
+										outtxt = new PrintWriter(outputDir + txtFileName);
+										outkey = new PrintWriter(outputDir + keyFileName);
+										outhtml = new PrintWriter(outputDir + htmlFileName);
+										URL url = new URL(cell.getStringCellValue());
+										String text = sc.getTextAndHTML(url,numberOfHops,differencingEnabled);
+										outtxt.print(text);
+										outtxt.close();
+										outhtml.print(htmlForURL);
+										outhtml.close();
+									}
+									if (c > 0) {
+										outkey.println(cell.getStringCellValue().toUpperCase());
+									}
+								} catch (FileNotFoundException e) {
+									logger.error("Unable to create " + fileName+".txt" + " or " + fileName+".key"); 
+									break;}
+								  catch (SAXException e) {
+									  e.printStackTrace(); }
+								  catch (TikaException e) {
+									  e.printStackTrace(); }
+							}
+							if (outkey != null) 
+								outkey.close();
+						}
+					}
+				}	 catch (IOException e) {
+					logger.error("Unable to read file " + urlFileName);
+				}
+			} catch (NumberFormatException e) {
+				logger.error("Number of hops must be an integer value. ");
+			}
+			catch (SecurityException e) {
+				logger.error("Unable to create directory " + outputDir);
+			}
+		}
+	}
+	
+	/**
+	 * Returns the CLI options
+	 * @return
+	 */
+	public static Options getOptions() {
+		Options options = new Options();
+		Option urlFile = new Option("f", true, "Input file of URLS to be crawled");
+		urlFile.setRequired(true);
+		options.addOption(urlFile);
+
+		Option outputDir = new Option("o", true, "Output directory for *.txt and *.key files");
+		outputDir.setRequired(true);
+		options.addOption(outputDir);
+
+		options.addOption("h", false, "Print this help message");
+		options.addOption("n", true,
+				"Number of hops. (Default=0, first page only)");
+		options.addOption("d", false, "Enable differencing (Default=true)");
+		return options;
+	}
+	
+	/* Generate a file name from the domain name by removing trailing slash (if present)
+	 * and replacing dots with underscores.
+	 */
+	private static String generateFileName(String urlString) {
+		String fname = urlString.trim();
+		if (fname.endsWith("/"))
+			fname = fname.substring(0,fname.length() - 1);
+		int pos = fname.lastIndexOf("/");
+		if (pos > 0)
+		    fname = fname.substring(pos+1);
+		fname = fname.replace(".","_");
+		return fname;
+	}
+
+	/**
+	 * creates a HSSFWorkbook for the specified filename.
+	 */
+	private static HSSFWorkbook readFile(String filename) throws IOException {
+		return new HSSFWorkbook(new FileInputStream(filename));
+	}
+	
 	public void setProxy(String host, int port) {
 		this.proxyHost = host;
 		this.proxyPort = port;
@@ -95,6 +265,21 @@ public class SimpleTextCrawler
 	 * @throws IOException
 	 */
 	public String getText(URL url, int maxHops, boolean diff) throws ClientProtocolException, IOException, TikaException, SAXException {
+		String baseText = null;
+		if (diff) {
+			String baseHTML = getHtml(url.toString());
+			baseText =  getTextFromHtml(baseHTML);
+		}
+		return getText(url.toString(), url.toString(), maxHops, 0, baseText);
+	}
+	
+	/* Same as getText(URL, int, boolean) above, but is used by the main method
+	 * to generate LC test collection files: *.txt, *.key, and *.html 
+	 */
+	public String getTextAndHTML(URL url, int maxHops, boolean diff) throws ClientProtocolException, IOException, TikaException, SAXException {
+		saveHTML = true;
+		htmlForURL = "";
+		
 		String baseText = null;
 		if (diff) {
 			String baseHTML = getHtml(url.toString());
@@ -254,6 +439,8 @@ public class SimpleTextCrawler
 		String html = getHtml(url);
 		String text = "";
 
+		if (saveHTML)
+		   htmlForURL = htmlForURL + html;
 
 		try
 		{
