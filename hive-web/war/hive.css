@@ -901,6 +901,14 @@ a:active
   	padding-bottom:0;
 }
 
+.indexing-steps
+{
+	width: 900px;
+	margin: 5px auto;
+	text-align:left;
+	padding: 1px;
+}
+
 .indexing-caption
 {
 	width: 900px;
