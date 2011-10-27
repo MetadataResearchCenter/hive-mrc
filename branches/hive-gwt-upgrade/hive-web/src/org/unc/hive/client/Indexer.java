@@ -57,6 +57,7 @@ import com.google.gwt.user.client.ui.FlexTable;
 public class Indexer implements EntryPoint {
 	
 	private CaptionPanel indexingCaption;
+	private FlowPanel indexingSteps;
 	private String fileName;
 	private String tempFileName;
 	private List<String> openedVocabularies;  // store the name of current loaded vocabularies in client side
@@ -74,6 +75,8 @@ public class Indexer implements EntryPoint {
 	private String fileToProcess;
 	private SimplePanel conceptInfo;
 	private DockPanel resultDock;
+	private HorizontalPanel steps;
+	
 	private final IndexerServiceAsync indexerService = GWT
 			.create(IndexerService.class);
 	private final ConceptBrowserServiceAsync conceptBrowserService = GWT.create(ConceptBrowserService.class);
@@ -241,6 +244,14 @@ public class Indexer implements EntryPoint {
 		openedVocabularies = new ArrayList<String>();
 		
 		selectedConcepts = new ArrayList<ConceptProxy>();   
+		
+		indexingSteps = new FlowPanel();
+		indexingSteps.addStyleName("indexing-steps");
+		final HTML steps = new HTML("HIVE automatically extracts concepts from a document or URL based on selected vocabularies. <br>" +
+				"<ul><li>Step 1: Select a vocabulary</li>" +
+				"<li>Step 2: Upload a document <span style = 'color: #efb81f; font-weight: bold;'>OR</span> provide the URL for a document</li>"	+
+				"<li>Step 3: Click Start Processing button</li></ul>"); 
+		indexingSteps.add(steps);
 		
 		indexingCaption = new CaptionPanel("HIVE Automatic Concepts Extractor");
 		indexingCaption.addStyleName("indexing-Caption");
@@ -551,9 +562,13 @@ public class Indexer implements EntryPoint {
 		}
 		indexingTable.addStyleName("indexing-table");
 		indexingCaption.add(indexingTable);
-		//RootPanel.get().add(indexingCaption);
-		//RootPanel.get("introduction").add(indexingCaption);
-		RootPanel.get("indexer").add(indexingCaption);
+		
+		resultDock = new DockPanel();
+		resultDock.addStyleName("result-Dock");
+		resultDock.add(indexingSteps, DockPanel.NORTH); 
+		resultDock.add(indexingCaption, DockPanel.CENTER);
+		RootPanel.get("indexer").add(resultDock);
+		//test  RootPanel.get("indexer").add(indexingCaption);
 	}
 	
 	private void displayResult(List<ConceptProxy> result)
@@ -564,11 +579,18 @@ public class Indexer implements EntryPoint {
 		indexingTable.clear();
 		resultDock = new DockPanel();
 		resultDock.addStyleName("result-Dock");
+		
+		indexingSteps.clear();  
+		final HTML steps = new HTML("You can select multiple concepts from the cloud and view in the following formats: " +
+		"SKOS RDF/XML, SKOS N triples, Dublin Core, MARC/XML, and MODS/XML.");
+		indexingSteps.add(steps);
+		
 		startover.addClickHandler(new ClickHandler()
 		{
 			@Override
 			public void onClick(ClickEvent event) {
 				// TODO Auto-generated method stub
+				indexingSteps.clear();
 				resultDock.clear();
 				resultDock.removeFromParent();
 				initialize();
