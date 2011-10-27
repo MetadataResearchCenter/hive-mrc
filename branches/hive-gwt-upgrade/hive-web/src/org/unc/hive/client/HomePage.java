@@ -33,6 +33,7 @@ public class HomePage implements EntryPoint {
 	private CaptionPanel vocabularyStatistics;
 	private CaptionPanel searchConcept;
 	private CaptionPanel indexing;
+	private CaptionPanel demoServerStmt;
 	private TextBox queryBox;
 	private Button searchBtn;
 
@@ -44,10 +45,12 @@ public class HomePage implements EntryPoint {
 		vocabularyStatistics = new CaptionPanel("Vocabulary Statistics");
 		vocabularyStatistics.setWidth("100%");
 		vocabularyStatistics.setStyleName("caption");
-		searchConcept = new CaptionPanel("Search a Concept");
+		searchConcept = new CaptionPanel("<a href = 'ConceptBrowser.html'> Search a Concept </a>", true);
 		searchConcept.setStyleName("caption");
-		indexing = new CaptionPanel("Index a Document");
+		indexing = new CaptionPanel("<a href = 'indexing.html'> Index a Document </a>", true);
 		indexing.setStyleName("caption");
+		demoServerStmt = new CaptionPanel("");
+		demoServerStmt.setStyleName("caption"); 
 		queryBox = new TextBox();
 		queryBox.setWidth("240px");
 		queryBox.addKeyPressHandler(new KeyPressHandler()
@@ -86,28 +89,21 @@ public class HomePage implements EntryPoint {
 			}
 		});
 		final HTML introCB = new HTML(
-				"HIVE <a href = 'ConceptBrowser.html'>Concept Browser</a> allows users to browse and search concepts in interdisciplinary vocabularies.",
-				true);
+				"Browse and search concepts in selected vocabularies.",	true);
 		final HorizontalPanel search = new HorizontalPanel();
 		search.setSpacing(5);
 		// 2011/1/20 craig.willis: Disabled non-functioning search box and button.
 		//search.add(queryBox);
 		//search.add(searchBtn);
-		final HTML gotoCB = new HTML(
-				"Go to<a href = 'ConceptBrowser.html'> Concept Browser </a>");
 		final VerticalPanel searchVP = new VerticalPanel();
 		searchVP.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_LEFT);
 		searchVP.add(introCB);
 		searchVP.add(search);
-		searchVP.add(gotoCB);
 		searchConcept.add(searchVP);
 		final HTML introIndex = new HTML(
-				"HIVE <a href = 'indexing.html'>Indexing</a> automatically extracts concepts from a given document to aid the cataloging and indexing practice.",
+				"Automatically extract document concepts for subject metadata creation.",
 				true);
-		final HTML gotoIndex = new HTML(
-				"Go to <a href = 'indexing.html'>Indexing</a>");
-		gotoIndex.addStyleName("footerByline");
-		
+	
 		final Button submitBtn = new Button("Upload");
 		submitBtn.addStyleName("uploadBtn");
 
@@ -120,9 +116,16 @@ public class HomePage implements EntryPoint {
 		final VerticalPanel indexVP = new VerticalPanel();
 		indexVP.add(introIndex);
 		indexVP.add(uploaderPanel);
-		indexVP.add(gotoIndex);
 		indexing.add(indexVP);
-
+		
+		final VerticalPanel demoVP = new VerticalPanel();
+		final HTML demoStmt = new HTML(
+				"<i>This HIVE system is for demo purposes and may change in response to your feedback.</i>" +
+						"<a href='mailto:hive-community@googlegroups.com'> Contact us</a>", true);
+		demoVP.add(demoStmt);
+		demoVP.add(uploaderPanel);
+		demoServerStmt.add(demoVP);
+				
 		final FlowPanel logoPanel = new FlowPanel();
 		Image mrc = new Image("./img/MRC_logo.png");
 		Image NEScent = new Image("./img/NESCentLogo.png");
@@ -134,6 +137,7 @@ public class HomePage implements EntryPoint {
 		vp.setWidth("300px");
 		vp.add(searchConcept);
 		vp.add(indexing);
+		vp.add(demoServerStmt);
 		vp.add(logoPanel);
 
 		conceptBrowserService.getAllVocabularies(new AsyncCallback<List<List<String>>>() {
