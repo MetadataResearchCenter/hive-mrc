@@ -28,6 +28,8 @@ package edu.unc.ils.mrc.hive.api;
 import java.net.URL;
 import java.util.List;
 
+import org.apache.commons.configuration.Configuration;
+
 public interface SKOSTagger {
 	
 	/**
@@ -54,10 +56,13 @@ public interface SKOSTagger {
 	 * @param searcher		Searcher implementation
 	 * @param maxHops		Maximum number of links to be traversed (hops)
 	 * @param maxTerms		Maximum number of terms
+	 * @param diff			Index only the differences between base page and subsequent pages
 	 * @return
 	 */
 	public List<SKOSConcept> getTags(URL url, List<String> vocabularies, 
-			SKOSSearcher searcher, int maxHops, int maxTerms);
+			SKOSSearcher searcher, int maxHops, int maxTerms, boolean diff);
+	
+	public void setConfig(Configuration config);
 	
 	public List<SKOSConcept> getTagsFromText(String text, List<String> vocabularies, 
 			SKOSSearcher searcher,  int maxTerms, int minOccur);
