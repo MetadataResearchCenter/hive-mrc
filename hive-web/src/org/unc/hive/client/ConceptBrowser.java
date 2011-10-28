@@ -4,7 +4,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import com.claudiushauptmann.gwt.multipage.client.MultipageEntryPoint;
+import org.gwtmultipage.client.UrlPatternEntryPoint;   
+
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.BlurEvent;
@@ -52,16 +53,14 @@ import com.google.gwt.user.client.ui.Tree;
 import com.google.gwt.user.client.ui.TreeItem;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.widgetideas.client.GlassPanel;
 
 
-@MultipageEntryPoint(urlPattern = "/ConceptBrowser.html")
-//@MultipageEntryPoint(urlPattern = "/(.*)/ConceptBrowser.html")
+@UrlPatternEntryPoint(value = "ConceptBrowser.html(\\\\#.*)?" )
 /*
  * Entry point classes define <code>onModuleLoad()</code>.
  */
 public class ConceptBrowser implements EntryPoint, ValueChangeHandler<String> {
-
+	
 	private final ConceptBrowserServiceAsync conceptBrowserService = GWT
 			.create(ConceptBrowserService.class);
 
@@ -96,7 +95,7 @@ public class ConceptBrowser implements EntryPoint, ValueChangeHandler<String> {
 	private List<String> filteringVocabularies;
 	private String queryfromhome = "";
 	private String currentViewing; // store the name of the vocabulary the user currently is browsing
-	
+
 	// private ConceptProxy randomConcept;
 
 	public ConceptBrowser() {
@@ -107,13 +106,13 @@ public class ConceptBrowser implements EntryPoint, ValueChangeHandler<String> {
 	}
 
 	public void onModuleLoad() {
-        final GlassPanel glass = new GlassPanel(false);
-        RootPanel.get().add(glass, 0, 0);
         final PopupPanel loadingPopup = new PopupPanel();
         loadingPopup.add(new Label("Loading..."));
         loadingPopup.addStyleName("z-index");
+        loadingPopup.setGlassEnabled(true);
         loadingPopup.show();
         loadingPopup.center();
+          
 		setup(); 
 		conceptBrowserService.getAllVocabulariesName(new AsyncCallback<List<String>>()
 		{
@@ -131,8 +130,8 @@ public class ConceptBrowser implements EntryPoint, ValueChangeHandler<String> {
 			{
 				// TODO Auto-generated method stub
 				loadingPopup.hide();
-				glass.removeFromParent();
 				allVocabulary = result;
+	
 				/*Different path of initialization*/
 				if (queryfromhome.startsWith("query="))
 				{
@@ -308,10 +307,9 @@ public class ConceptBrowser implements EntryPoint, ValueChangeHandler<String> {
 				}
 				else
 				{
-				   final GlassPanel glass = new GlassPanel(false);
-				   RootPanel.get().add(glass, 0, 0);
 				   openedVocabularies = new ArrayList<String>();
 				   final PopupPanel choosePanel = new PopupPanel();
+				   choosePanel.setGlassEnabled(true);   
 				   choosePanel.addStyleName("choose-panel");
 				   DockPanel dock = new DockPanel();
 				   Label lb = new Label("Please choose vocabularies to open");
@@ -354,7 +352,6 @@ public class ConceptBrowser implements EntryPoint, ValueChangeHandler<String> {
 					public void onClick(ClickEvent event) {
 						// TODO Auto-generated method stub
 						choosePanel.removeFromParent();
-						glass.removeFromParent();
 						if(openedVocabularies.isEmpty())
 						{
 							openedVocabularies.add(allVocabulary.get(0).toLowerCase()); 
@@ -392,7 +389,6 @@ public class ConceptBrowser implements EntryPoint, ValueChangeHandler<String> {
 					public void onClick(ClickEvent event) {
 						// TODO Auto-generated method stub
 						choosePanel.removeFromParent();
-						glass.removeFromParent();
 						openedVocabularies.clear();
 						openedVocabularies.add(allVocabulary.get(0).toLowerCase());	
 						currentViewing = openedVocabularies.get(0).toUpperCase();
@@ -902,10 +898,10 @@ public class ConceptBrowser implements EntryPoint, ValueChangeHandler<String> {
 		
 		public void onClick(ClickEvent event) {
 			// TODO Auto-generated method stub
-			final GlassPanel glass = new GlassPanel(false);
-			RootPanel.get().add(glass,0,0);
 			final DecoratedPopupPanel skosDlg = new DecoratedPopupPanel(false);
 			skosDlg.setAnimationEnabled(false);
+			skosDlg.setGlassEnabled(true);   
+			
 			TextArea skos = new TextArea();
 			skos.setSize("650px", "400px");
 			skos.setValue(SKOSCode);
@@ -918,7 +914,6 @@ public class ConceptBrowser implements EntryPoint, ValueChangeHandler<String> {
 				public void onClick(ClickEvent event) {
 					// TODO Auto-generated method stub
 					skosDlg.removeFromParent();
-					glass.removeFromParent();
 				}
 				
 			});
@@ -1073,7 +1068,6 @@ public class ConceptBrowser implements EntryPoint, ValueChangeHandler<String> {
 
 	private class ConfirmDialog extends DecoratedPopupPanel {
 		String associateVoc;
-		GlassPanel glassPanel;
 		int vocIndex;
 
 		public ConfirmDialog(final HorizontalPanel toBeDeleted,
@@ -1082,7 +1076,6 @@ public class ConceptBrowser implements EntryPoint, ValueChangeHandler<String> {
 			super(autohide, modal);
 			associateVoc = vocabulary;
 			vocIndex = openedVocabularies.indexOf(associateVoc.toLowerCase());
-			glassPanel = new GlassPanel(false);
 			com.google.gwt.user.client.ui.Button yesBtn = new com.google.gwt.user.client.ui.Button(
 					"Yes");
 			com.google.gwt.user.client.ui.Button cancelBtn = new com.google.gwt.user.client.ui.Button(
@@ -1130,12 +1123,10 @@ public class ConceptBrowser implements EntryPoint, ValueChangeHandler<String> {
 
 		public void show() {
 			super.show();
-			RootPanel.get().add(glassPanel, 0, 0);
 		}
 
 		public void hide() {
 			super.hide();
-			glassPanel.removeFromParent();
 		}
 
 	}
@@ -1277,5 +1268,10 @@ public class ConceptBrowser implements EntryPoint, ValueChangeHandler<String> {
 		vp.add(conceptTable);
 		conceptInfo.add(vp);
 	}
+	
+	private static native String getParamString () /*-{ 
+     	return $wnd.location.search; 
+ 	}-*/; 
+
 
 }

@@ -2,7 +2,8 @@ package org.unc.hive.client;
 
 import java.util.TreeMap;
 
-import com.claudiushauptmann.gwt.multipage.client.MultipageEntryPoint;
+//jpb import com.claudiushauptmann.gwt.multipage.client.MultipageEntryPoint;
+import org.gwtmultipage.client.MultipageEntryPoint;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.core.client.JsArrayInteger;
