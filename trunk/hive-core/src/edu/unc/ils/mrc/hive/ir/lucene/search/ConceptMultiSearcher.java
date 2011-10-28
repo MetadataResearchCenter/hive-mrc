@@ -112,7 +112,12 @@ public class ConceptMultiSearcher implements Searcher {
 
 				SKOSConcept concept = new SKOSConceptImpl(new QName(uri, lp));
 				concept.setPrefLabel(prefLabel);
-				skosConceptList.add(concept);
+				
+				// Move exact matches on pref-label to the top of the results list
+				if (prefLabel.equals(word))
+					skosConceptList.add(0, concept);
+				else	
+					skosConceptList.add(concept);
 			}
 		} catch (IOException e) {
 			logger.error(e);
