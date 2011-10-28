@@ -6,9 +6,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
-import com.claudiushauptmann.gwt.multipage.client.MultipageEntryPoint;
+import org.gwtmultipage.client.*;  
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.CloseEvent;
@@ -20,6 +22,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CaptionPanel;
+import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.DecoratedPopupPanel;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.DisclosureHandler;
@@ -47,35 +50,46 @@ import com.google.gwt.user.client.ui.ToggleButton;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
 import com.google.gwt.user.client.ui.FormPanel.SubmitEvent;
-import com.google.gwt.widgetideas.client.GlassPanel;
 import com.google.gwt.user.client.ui.FlexTable;
 
-@MultipageEntryPoint(urlPattern = "/indexing.html")
-//@MultipageEntryPoint(urlPattern = "/(.*)/indexing.html")
-public class Indexer implements EntryPoint {
+@UrlPatternEntryPoint(value = "indexing.html")
 
+public class Indexer implements EntryPoint {
+	
 	private CaptionPanel indexingCaption;
+	private FlowPanel indexingSteps;
 	private String fileName;
 	private String tempFileName;
 	private List<String> openedVocabularies;  // store the name of current loaded vocabularies in client side
 	private List<String> allVocabulary; // store the name of all vocabularies that hive have
+	
+	private List<ConceptProxy> selectedConcepts;   
+	private Button startover = new Button("Start Over");   
+	private Button selectedConceptsButton;
 	private FlowPanel addVocabularyPanel;
 	private HorizontalPanel configure;	
 	private Button openNewVocabulary; 
 	private FlexTable indexingTable;
-	private GlassPanel glass;
 	private PopupPanel uploadPopup;
 	private HorizontalPanel deleteFile; 
 	private String fileToProcess;
 	private SimplePanel conceptInfo;
 	private DockPanel resultDock;
+	private HorizontalPanel steps;
+	
 	private final IndexerServiceAsync indexerService = GWT
 			.create(IndexerService.class);
 	private final ConceptBrowserServiceAsync conceptBrowserService = GWT.create(ConceptBrowserService.class);
 	
 	private boolean isFileUploaded;
 	private boolean isURL;
-
+	
+	private Anchor clickedConcept;
+	private boolean selected;
+	private String recText = "";
+	private TextArea recs = new TextArea();
+	private RecordFormatter formatter = new RecordFormatter();
+		
 	@Override
 	public void onModuleLoad() {
 		
@@ -220,14 +234,25 @@ public class Indexer implements EntryPoint {
 		this.deleteFile = new HorizontalPanel();
 		this.isFileUploaded = false;
 		this.isURL = false;
-		glass = new GlassPanel(false);
 		uploadPopup = new PopupPanel(false);
 		uploadPopup.addStyleName("upload-popup");
+		uploadPopup.setGlassEnabled(true);   
 		Label uploading = new Label("Uploading...");
 		
 		uploading.setHeight("100%");
 		uploadPopup.add(uploading);
 		openedVocabularies = new ArrayList<String>();
+		
+		selectedConcepts = new ArrayList<ConceptProxy>();   
+		
+		indexingSteps = new FlowPanel();
+		indexingSteps.addStyleName("indexing-steps");
+		final HTML steps = new HTML("HIVE automatically extracts concepts from a document or URL based on selected vocabularies. <br>" +
+				"<ul><li>Step 1: Select a vocabulary</li>" +
+				"<li>Step 2: Upload a document <span style = 'color: #efb81f; font-weight: bold;'>OR</span> provide the URL for a document</li>"	+
+				"<li>Step 3: Click Start Processing button</li></ul>"); 
+		indexingSteps.add(steps);
+		
 		indexingCaption = new CaptionPanel("HIVE Automatic Concepts Extractor");
 		indexingCaption.addStyleName("indexing-Caption");
 		indexingTable = new FlexTable();
@@ -289,9 +314,8 @@ public class Indexer implements EntryPoint {
 				}
 				else
 				{
-				RootPanel.get().add(glass, 0, 0);
-				uploadPopup.center();
-				uploadPopup.show();
+				    uploadPopup.center();
+				    uploadPopup.show();
 				}
 			}
 		});
@@ -302,7 +326,6 @@ public class Indexer implements EntryPoint {
 				if(result.contains("success"))
 				{
 					uploadPopup.hide();
-					glass.removeFromParent();
 					if(isFileUploaded = true)
 					{
 						deleteFile.clear();
@@ -410,7 +433,9 @@ public class Indexer implements EntryPoint {
 		maxHopsPanel.setStyleName("advanced-subpanel");
 		maxHopsPanel.add(maxHops);
 		maxHopsPanel.add(maxHopsLbl);
-	
+		maxHopsPanel.setTitle("Maximum number of links to follow when indexing a website. " + 
+			"Set to 0 to index the first page only. Increasing this value will increase indexing time.");
+
 		// Create max terms listbox and panel
 		final ListBox maxTerms = new ListBox();
 		maxTerms.addItem("5");
@@ -426,17 +451,28 @@ public class Indexer implements EntryPoint {
 		maxTermsPanel.setStyleName("advanced-subpanel");
 		maxTermsPanel.add(maxTerms);
 		maxTermsPanel.add(maxTermsLbl);
+		maxTermsPanel.setTitle("Maximum number of terms to suggest.");
+		
+		final CheckBox diffCb = new CheckBox();
+		Label diffLbl = new Label();
+		diffLbl.setText(" Index differences only");
+		diffLbl.setStyleName("label");
+		HorizontalPanel diffPanel = new HorizontalPanel();
+		diffPanel.setStyleName("advanced-subpanel");
+		diffPanel.add(diffCb);
+		diffPanel.add(diffLbl);
+		diffPanel.setTitle("Check this checkbox to index only the differences between multiple pages in a multipage site. " +
+						"This will reduce the effect of repeated components such as headers and menus.");	
+		
 		
 		VerticalPanel vp = new VerticalPanel();
 		vp.add(maxHopsPanel);
 		vp.add(maxTermsPanel);
+		vp.add(diffPanel);
 		advancedPanel.add(vp);
 		advancedPanel.setStyleName("advanced-panel");
 		advancedPanel.setWidth("300px");
 		indexingTable.setWidget(3, 1, advancedPanel);
-
-
-
 
 		Button startProcessing = new Button("Start Processing");
 		startProcessing.setStyleName("start-processing");
@@ -458,6 +494,7 @@ public class Indexer implements EntryPoint {
 				String url = docURL.getValue();
 				int hops = Integer.parseInt(maxHops.getValue(maxHops.getSelectedIndex()));
 				int terms = Integer.parseInt(maxTerms.getValue(maxTerms.getSelectedIndex()));
+				boolean diff = diffCb.getValue();
 				if(openedVocabularies.isEmpty())
 				{
 					Window.alert("Please select at least one vocabulary.");
@@ -486,27 +523,26 @@ public class Indexer implements EntryPoint {
 				
 				if(isValid == true)
 				{
-					RootPanel.get().add(glass, 0, 0);
 					final PopupPanel processingPopup = new PopupPanel();
 					final Label processing = new Label("Processing...");
 					processingPopup.addStyleName("z-index");
-					processingPopup.add(processing);
+			    	processingPopup.add(processing);
+			    	processingPopup.setGlassEnabled(true);  
 					processingPopup.center();
 					processingPopup.show();
-					indexerService.getTags(fileToProcess, openedVocabularies, hops, terms,
+									
+					indexerService.getTags(fileToProcess, openedVocabularies, hops, terms, diff,
 							new AsyncCallback<List<ConceptProxy>>() {
 								@Override
 								public void onFailure(Throwable caught) {
 									Window.alert("An error has occurred. Please try again.");
 									caught.printStackTrace();
 									processingPopup.hide();
-									glass.removeFromParent();
 								}
 								@Override
 								public void onSuccess(List<ConceptProxy> result) {
 									// TODO Auto-generated method stub
 									processingPopup.hide();
-									glass.removeFromParent();
 									displayResult(result);
 								}
 							});
@@ -526,7 +562,13 @@ public class Indexer implements EntryPoint {
 		}
 		indexingTable.addStyleName("indexing-table");
 		indexingCaption.add(indexingTable);
-		RootPanel.get("indexer").add(indexingCaption);
+		
+		resultDock = new DockPanel();
+		resultDock.addStyleName("result-Dock");
+		resultDock.add(indexingSteps, DockPanel.NORTH); 
+		resultDock.add(indexingCaption, DockPanel.CENTER);
+		RootPanel.get("indexer").add(resultDock);
+		//test  RootPanel.get("indexer").add(indexingCaption);
 	}
 	
 	private void displayResult(List<ConceptProxy> result)
@@ -537,20 +579,35 @@ public class Indexer implements EntryPoint {
 		indexingTable.clear();
 		resultDock = new DockPanel();
 		resultDock.addStyleName("result-Dock");
-		Button startover = new Button("Start Over");
+		
+		indexingSteps.clear();  
+		final HTML steps = new HTML("You can select multiple concepts from the cloud and view in the following formats: " +
+		"SKOS RDF/XML, SKOS N triples, Dublin Core, MARC/XML, and MODS/XML.");
+		indexingSteps.add(steps);
+		
 		startover.addClickHandler(new ClickHandler()
 		{
 			@Override
 			public void onClick(ClickEvent event) {
 				// TODO Auto-generated method stub
+				indexingSteps.clear();
 				resultDock.clear();
 				resultDock.removeFromParent();
 				initialize();
 			}
 		});
+		selectedConceptsButton = new Button("");
+		selectedConceptsButton.setHTML("<html>Select Concepts to<br>View in multiple formats</html>");
+		selectedConceptsButton.setStyleName("selectedConceptsButton");
+		selectedConceptsButton.addClickHandler(new FormatRecordsHandler());
+ 
 		startover.setStyleName("start-over");
-		resultDock.add(startover, DockPanel.NORTH);
-		resultDock.setCellHorizontalAlignment(startover, HasHorizontalAlignment.ALIGN_RIGHT);
+		FlowPanel fp = new FlowPanel();
+		fp.setStyleName("vocabulary-tags");
+	    fp.add(startover);
+		fp.add(selectedConceptsButton);  
+		resultDock.add(fp, DockPanel.NORTH);  
+	
 		resultDock.add(indexingCaption, DockPanel.CENTER);
 		conceptInfo = new SimplePanel();
 		resultDock.add(conceptInfo,DockPanel.SOUTH);
@@ -614,6 +671,7 @@ public class Indexer implements EntryPoint {
 	    	a.addStyleName(colorCss);
 	    	a.addStyleName(fontCss);
 	    	a.addStyleName("tag-name");
+	    	a.addStyleName("deselectedconcept-bgcolor");   
 	    	a.addClickHandler(new ConceptHandler(namespace, lp));
 	    	currentPanel.add(a);
 	    }
@@ -636,14 +694,12 @@ public class Indexer implements EntryPoint {
 	private class ConfirmDialog extends DialogBox
 	{
 		String associateVoc;
-		GlassPanel glassPanel;
 		int vocIndex;
 		public ConfirmDialog(final HorizontalPanel toBeDeleted, final ToggleButton trigger, String vocabulary, boolean autohide, boolean modal)
 		{			
 			super(autohide, modal);
 			associateVoc = vocabulary;
 			vocIndex = openedVocabularies.indexOf(associateVoc.toLowerCase());
-			glassPanel = new GlassPanel(false);
 			this.setText("Confirm");
 			this.setAnimationEnabled(true);
 			com.google.gwt.user.client.ui.Button yesBtn = new com.google.gwt.user.client.ui.Button("Yes");
@@ -686,13 +742,11 @@ public class Indexer implements EntryPoint {
 		public void show()
 		{		
 			super.show();
-			RootPanel.get().add(glassPanel, 0, 0);
 		}
 
 		public void hide()
 		{
 			super.hide();
-			glassPanel.removeFromParent();
 		}
 	}
 	
@@ -707,10 +761,28 @@ public class Indexer implements EntryPoint {
 
 		@Override
 		public void onClick(ClickEvent event) {
-
+            // Toggle selected concept link, de/re-highlighting with each click
+			selected = false;
+			try {
+			    clickedConcept = (Anchor)event.getSource();
+			    String styles = clickedConcept.getStyleName();
+			    if (styles.contains("deselected")) {
+			      selected = true;
+			      clickedConcept.removeStyleName("deselectedconcept-bgcolor");	
+			      clickedConcept.addStyleName("selectedconcept-bgcolor");  
+			    }
+			   else {
+				   selected = false;
+				   clickedConcept.removeStyleName("selectedconcept-bgcolor");	
+			       clickedConcept.addStyleName("deselectedconcept-bgcolor");  
+			   }
+			}
+			catch (ClassCastException exc) {
+				Window.alert("Class Cast Exception: ClickEvent source to Anchor");
+			}
+			
 			conceptBrowserService.getConceptByURI(namespaceURI, localPart,
 					new AsyncCallback<ConceptProxy>() {
-
 						@Override
 						public void onFailure(Throwable caught) {
 							// TODO Auto-generated method stub
@@ -719,8 +791,9 @@ public class Indexer implements EntryPoint {
 
 						@Override
 						public void onSuccess(ConceptProxy result) {
-							// TODO Auto-generated method stub
+							updateSelectedConcepts(result, selected);   
 							displayConceptInfo(result);
+			
 						}
 					});
 		}
@@ -738,10 +811,9 @@ public class Indexer implements EntryPoint {
 		
 		public void onClick(ClickEvent event) {
 			// TODO Auto-generated method stub
-			final GlassPanel glass = new GlassPanel(false);
-			RootPanel.get().add(glass,0,0);
 			final DecoratedPopupPanel skosDlg = new DecoratedPopupPanel(false);
 			skosDlg.setAnimationEnabled(false);
+			skosDlg.setGlassEnabled(true);   
 			TextArea skos = new TextArea();
 			skos.setSize("650px", "400px");
 			skos.setValue(SKOSCode);
@@ -753,7 +825,6 @@ public class Indexer implements EntryPoint {
 				public void onClick(ClickEvent event) {
 					// TODO Auto-generated method stub
 					skosDlg.removeFromParent();
-					glass.removeFromParent();
 				}
 				
 			});
@@ -766,6 +837,82 @@ public class Indexer implements EntryPoint {
 			skosDlg.show();
 			skosDlg.center();
 		}	
+	}
+	
+	private class FormatRecordsHandler implements ClickHandler
+	{
+				
+		public FormatRecordsHandler()
+		{
+			super();
+		}
+		
+		public void onClick(ClickEvent event) {
+			if(selectedConcepts.isEmpty()) {
+				Window.alert("Please select at least one concept.");
+				return;
+			}
+				
+			final DecoratedPopupPanel formatRecDlg = new DecoratedPopupPanel(false);
+			formatRecDlg.setAnimationEnabled(false);
+			formatRecDlg.setGlassEnabled(true); 
+			formatRecDlg.addStyleName("recordformat-panel");
+			FlowPanel hdr = new FlowPanel();
+			Label lb = new Label("Select Format:");
+			lb.addStyleName("heading");
+			lb.addStyleName("format-label");
+		    	
+			recs.setSize("800px", "400px");
+			recs.setValue("");
+			
+			final ListBox formatList = new ListBox();
+			formatList.addItem("SKOS - RDF/XML");
+			formatList.addItem("SKOS - N Triples");
+			formatList.addItem("Dublin Core");
+			formatList.addItem("MODS/XML");
+			formatList.addItem("MARC/XML");
+			formatList.setVisibleItemCount(1);
+			formatList.setSelectedIndex(0);
+			formatList.addStyleName("format-listbox");
+			
+			formatter.init();
+			
+     		formatList.addChangeHandler(new ChangeHandler() {
+			   public void onChange(ChangeEvent event)	{
+				   recText = "";
+				   recText = formatter.format(selectedConcepts, formatList.getItemText(formatList.getSelectedIndex()));
+				   recs.setValue(recText);
+			   }
+			});
+     		
+			// default record format is SKOS RDF/XML
+     		recText = formatter.format(selectedConcepts, "SKOS - RDF/XML");
+			recs.setValue(recText);
+			
+			PushButton closeButton = new PushButton(new Image("./img/closebutton.png"));		
+			closeButton.addStyleName("close-button");
+			closeButton.addClickHandler(new ClickHandler()
+			{
+				@Override
+				public void onClick(ClickEvent event) {
+					formatRecDlg.removeFromParent();
+				}
+				
+			});
+			DockPanel dock = new DockPanel();
+			dock.add(closeButton,DockPanel.NORTH);
+			
+			hdr.add(lb);
+			hdr.add(formatList);
+			dock.add(hdr, DockPanel.NORTH);
+			dock.add(recs, DockPanel.CENTER);
+			dock.setCellHorizontalAlignment(closeButton, HasHorizontalAlignment.ALIGN_RIGHT);
+			dock.setCellWidth(closeButton, "20px");
+			formatRecDlg.add(dock);
+			formatRecDlg.show();
+			formatRecDlg.center();
+		}
+			
 	}
 	
 	private void displayConceptInfo(ConceptProxy result) {
@@ -900,5 +1047,30 @@ public class Indexer implements EntryPoint {
 		vp.add(conceptTable);
 		conceptInfo.add(vp);
 	}
-
+	
+	private void updateSelectedConcepts(ConceptProxy result, boolean selected) {
+		int numberOfSelectedConcepts = 0;
+		if (selected)
+		    selectedConcepts.add(result);  //make this a set??
+		else {
+			int indx = -1;
+			for (ConceptProxy cp : selectedConcepts) {
+				if (cp.getPreLabel().equalsIgnoreCase(result.getPreLabel()) &&
+		             cp.getURI().equalsIgnoreCase(result.getURI()))   {
+					indx = selectedConcepts.indexOf(cp);
+				    selectedConcepts.remove(indx);
+				    break;
+				}
+			}
+		}
+		String numConcepts = "Select Concepts to "; 
+		if (!selectedConcepts.isEmpty()) {
+		    numberOfSelectedConcepts = selectedConcepts.size();	
+		    numConcepts = String.valueOf(numberOfSelectedConcepts);
+			numConcepts = numConcepts + 
+					((numberOfSelectedConcepts == 1) ? " Concept Selected" : " Concepts Selected");
+		}
+		numConcepts =  "<html>" + numConcepts + "<br>" + "View in multiple formats" + "</html>";
+		selectedConceptsButton.setHTML(numConcepts);
+	}
 }

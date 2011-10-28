@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeMap;
+
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
@@ -27,6 +29,7 @@ public interface ConceptBrowserService extends RemoteService {
 	public ConceptProxy getConceptByURI(String namespaceURI, String localPart);
 	public List<ConceptProxy> searchForConcept(String keywords, List<String> openedVocabularies);
 	public List<String> getAllVocabulariesName();
-	public ConceptProxy getFirstConcept(String vocabulary);
+	public ConceptProxy getFirstConcept(String vocabulary); 
+	public HashMap<String,HashMap<String,String>> getVocabularyProperties(); 
 	
 }

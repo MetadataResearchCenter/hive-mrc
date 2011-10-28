@@ -21,8 +21,11 @@
 		<pathelement path="${build.dir}" />
 		
          <pathelement path="${gwt.sdk}/gwt-user.jar" />
-         <fileset dir="${gwt.sdk}" includes="gwt-dev*.jar"/>
+         	<fileset dir="${gwt.sdk}" includes="gwt-dev*.jar"/>
+         	<fileset dir="${gwt.sdk}" includes="gwt-servlet.jar"/>
+         	<fileset dir="${gwt.sdk}" includes="validation-*.jar"/>
 	</path>
+
 
 	<target name="usage">
 		<echo message="" />

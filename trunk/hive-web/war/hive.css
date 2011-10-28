@@ -41,8 +41,16 @@ a
 
 a:hover
 {
+	color:#acd373; 
+	text-decoration:none;   
+}
+/* jpb */
+a:active
+{
 	color:#acd373;
-	text-decoration:none;
+	/* background-color:#FFE766;
+	   text-decoration:underline; jpb */
+	text-decoration:none;   
 }
 
 #header
@@ -649,7 +657,7 @@ a:hover
 	background-repeat:no-repeat;
 	color:white;
 	border:none;
-	width:60px;
+    width:60px; 
 	height:25px;
 	padding-bottom:5px;
 	font-size:12px;
@@ -893,6 +901,14 @@ a:hover
   	padding-bottom:0;
 }
 
+.indexing-steps
+{
+	width: 900px;
+	margin: 5px auto;
+	text-align:left;
+	padding: 1px;
+}
+
 .indexing-caption
 {
 	width: 900px;
@@ -1045,19 +1061,67 @@ a:hover
 
 .start-over
 {
-	text-align: right;
-	margin-right: 35px;
+	text-align: right; 
+	margin-right: 35px; 
+	float: right;      /* jpb */
+}
+
+.format-label
+{
+    /* margin-left: 10px; */
+    float: left;	
+}
+.format-listbox
+{
+    margin-left: 5px; 
+    float: left;	
+}
+.close-float
+{
+    float: right;	
 }
 
 /*Below are the CSS to implement tag cloud*/
 
 .base-css
 {
-	margin: 10px; 
-	padding: 5px;
+	margin: 10px;  
+	padding: 1px; /* 5px; jpb */
 	cursor: hand;
 	cursor: pointer;
 }
+
+.selectedconcept-bgcolor
+{
+	background-color: #FFEF99; 
+}
+
+.deselectedconcept-bgcolor
+{
+	background-color: #fff;  
+}
+
+.selectedConceptsButton  
+{
+    float: right;
+    margin-right: 50px; 
+    background-image: url(./img/bigbluebutton.png);
+	background-repeat:no-repeat;
+	color:white;
+	border:none;
+    width:160px; 
+	height:40px;
+	padding-bottom:5px;
+	cursor: hand;	
+	cursor: pointer;
+	font-size:10px;
+	font-weight: bold;
+	margin-left: 5px;
+}
+.selectedConceptsButton:hover {
+  color:black;
+}
+
 
 .nbii-color
 {
@@ -1197,4 +1261,13 @@ p.error
 	margin-top: 10px;
 	margin-left: 20px;
 }
+	
+.recordformat-panel
+{
+	 z-index: 20;
+	 width: 800px;
+	 height: 300px;
+	 padding: 10px;
+}
+	
 	

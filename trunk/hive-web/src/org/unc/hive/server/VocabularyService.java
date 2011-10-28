@@ -1,5 +1,6 @@
 package org.unc.hive.server;
 
+import java.io.File;
 import java.net.URL;
 
 
@@ -28,18 +29,22 @@ import javax.xml.namespace.QName;
 
 import org.unc.hive.client.*;
 
-public class VocabularyService {
+//jpb
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
+
+public class VocabularyService {
+	private static final Log logger = LogFactory.getLog(VocabularyService.class); //jpb
 	private static VocabularyService instance = null;
 	private SKOSServer skosServer;
-
+	
 	protected VocabularyService(String configFile) {
 		this.skosServer = new SKOSServerImpl(configFile);
 	}
 
 	public static VocabularyService getInstance(String configFile) {
-
-		if (instance == null) {
+        if (instance == null) {
 			instance = new VocabularyService(configFile);
 		}
 		return instance;
@@ -100,9 +105,25 @@ public class VocabularyService {
 		for (String key : keys) {
 			names.add(key.toUpperCase());
 		}
+		
 		return names;
 
 	}
+	
+	public HashMap<String, HashMap<String,String>> getVocabularyProperties() {
+		HashMap<String,HashMap<String,String>> props = new HashMap<String,HashMap<String,String>>();
+		TreeMap<String, SKOSScheme> vocabularyMap = this.skosServer
+				.getSKOSSchemas();
+		Set<String> keys = vocabularyMap.keySet();
+		HashMap<String,String> propVals;
+		for (String key : keys) {
+			propVals = new HashMap<String,String>();
+			SKOSScheme vocabulary = vocabularyMap.get(key);
+			propVals.put("uri", vocabulary.getSchemaURI());
+			props.put(key,propVals);
+		}
+		return props;
+	}	
 
 	// public ConceptProxy getRandomizedConcept()
 	// {
@@ -292,6 +313,8 @@ public class VocabularyService {
 		for(SKOSConcept concept : candidates)
 		{
 		  String preLabel = concept.getPrefLabel();
+		  preLabel = preLabel.replaceAll("\\(", "&#40;");
+		  preLabel = preLabel.replaceAll("\\)", "&#41;");
 		  QName qname = concept.getQName();
 		  String namespace = qname.getNamespaceURI();
 		  String lp = qname.getLocalPart();
@@ -314,6 +337,8 @@ public class VocabularyService {
 		for(SKOSConcept concept : candidates)
 		{
 		  String preLabel = concept.getPrefLabel();
+		  preLabel = preLabel.replaceAll("\\(", "&#40;");
+		  preLabel = preLabel.replaceAll("\\)", "&#41;");
 		  QName qname = concept.getQName();
 		  String namespace = qname.getNamespaceURI();
 		  String lp = qname.getLocalPart();
@@ -343,10 +368,12 @@ public class VocabularyService {
 		return stringMap;
 	}
 	
-	public List<ConceptProxy> getTags(URL url, List<String> openedVocabularies, int maxHops, int numTerms)
+	public List<ConceptProxy> getTags(URL url, List<String> openedVocabularies, int maxHops, 
+			int numTerms, boolean diff)
 	{
 		SKOSTagger tagger = this.skosServer.getSKOSTagger();
-		List<SKOSConcept> candidates = tagger.getTags(url, openedVocabularies,this.getSKOSSearcher(), maxHops, numTerms);
+		List<SKOSConcept> candidates = tagger.getTags(url, openedVocabularies,
+				this.getSKOSSearcher(), maxHops, numTerms, diff);
 		List<ConceptProxy> result = new ArrayList<ConceptProxy>(); 
 		for(SKOSConcept concept : candidates)
 		{

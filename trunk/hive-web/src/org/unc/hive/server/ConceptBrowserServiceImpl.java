@@ -148,5 +148,9 @@ public class ConceptBrowserServiceImpl extends RemoteServiceServlet implements
 	public String openNewVocabulary(String name) {
 		return new String();
 	}/* Retrieve and open a new vocabulary from sever */
+	
+	public HashMap<String, HashMap<String,String>> getVocabularyProperties() {
+		return this.service.getVocabularyProperties();
+	}
 
 }
