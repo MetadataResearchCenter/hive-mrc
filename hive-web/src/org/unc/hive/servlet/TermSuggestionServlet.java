@@ -1,9 +1,11 @@
 package org.unc.hive.servlet;
 
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 
 
 import java.io.PrintWriter;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -143,11 +145,13 @@ public class TermSuggestionServlet extends HttpServlet
 			}
 			json += "]";
 		} catch (Exception e) {
+			e.printStackTrace();
 			errors.add("A server error has occurred.");
 		}
 			
 		response.setContentType("text/json");
-		PrintWriter writer = new PrintWriter(response.getOutputStream());
+		response.setCharacterEncoding("UTF-8");
+		PrintWriter writer = new PrintWriter(new OutputStreamWriter(response.getOutputStream(), "UTF-8"));
 		if  (errors.size() > 0) {
 			String errorMsg = "";
 			for (String error: errors) 
@@ -182,7 +186,7 @@ public class TermSuggestionServlet extends HttpServlet
 		json.append("\", \"key\": \"");
 		json.append(node.getUri());
 		json.append("\", \"url\": \"");
-		json.append(node.getUri());
+		json.append(URLEncoder.encode(node.getUri().replaceAll(" ", "")));
 		json.append("\"");
 		
 		String tooltip = "";
@@ -232,7 +236,7 @@ public class TermSuggestionServlet extends HttpServlet
 		json.append("\", \"key\": \"");
 		json.append(node.getURI());
 		json.append("\", \"url\": \"");
-		json.append(node.getURI());
+		json.append(URLEncoder.encode(node.getURI().replaceAll(" ", "")));
 		json.append("\", \"origin\": \"");
 		json.append(node.getOrigin());
 		json.append("\", \"score\": \"");
