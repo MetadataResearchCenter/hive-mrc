@@ -39,13 +39,11 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.UUID;
 
-import javax.xml.namespace.QName;
-
+import org.apache.commons.configuration.Configuration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.perf4j.StopWatch;
@@ -66,7 +64,8 @@ import edu.unc.ils.mrc.hive.util.TextManager;
  * automatic subject term extraction from one or more 
  * thesauri.
  */
-public class SKOSTaggerImpl implements SKOSTagger {
+public class SKOSTaggerImpl implements SKOSTagger 
+{
     private static final Log logger = LogFactory.getLog(SKOSTaggerImpl.class);
 	
 	private static final int LIMIT = 10;
@@ -74,6 +73,7 @@ public class SKOSTaggerImpl implements SKOSTagger {
 	private TreeMap<String, Tagger> taggers;
 	private TreeMap<String, SKOSScheme> vocabularies;
 	public String algorithm;
+	private Configuration config;
 
 	/**
 	 * Constructs a tagger based on the specified vocabularies
@@ -132,12 +132,17 @@ public class SKOSTaggerImpl implements SKOSTagger {
 	 * @return
 	 */
 	public List<SKOSConcept> getTags(URL url, List<String> vocabulary, 
-			SKOSSearcher searcher, int maxHops, int numTerms)
+			SKOSSearcher searcher, int maxHops, int numTerms, boolean diff)
 	{
 		try
 		{
+			String proxyHost = config.getString("hive.http.proxyHost", null);
+			int proxyPort = config.getInt("hive.http.proxyPort", -1);
+			String[] ignorePrefixes = config.getStringArray("hive.ignorePrefix");
 			TextManager tm = new TextManager();
-			String text = tm.getPlainText(url, maxHops);
+			tm.setProxy(proxyHost, proxyPort);
+			tm.setIgnorePrefixes(ignorePrefixes);
+			String text = tm.getPlainText(url, maxHops, diff);
 			return getTagsInternal(text, vocabulary, searcher, numTerms, 2);
 		} catch (Exception e) {
 			logger.error(e);
@@ -183,7 +188,6 @@ public class SKOSTaggerImpl implements SKOSTagger {
 		return tree.getTree();
 	}	
 	
-
 	
 	/**
 	 * Returns a list of SKOSConcept objects for the specified text
@@ -193,6 +197,7 @@ public class SKOSTaggerImpl implements SKOSTagger {
 	 * @param vocabularies	List of vocabularies
 	 * @param searcher		Searcher implementation
 	 * @param numTerms		Number of terms to be returned
+	 * @param minOccur		Minimum number of phrase occurrences
 	 * @return
 	 */
 	private List<SKOSConcept> getTagsInternal(String text, List<String> vocabularies, 
@@ -265,9 +270,9 @@ public class SKOSTaggerImpl implements SKOSTagger {
 				// If we do not delete these files, they are re-read during subsequent
 				// extractKeyphrases and cause performance degradation.
 				logger.debug("Deleting "+ keaInputFile.getAbsolutePath());
-				keaInputFile.delete();
+				//keaInputFile.delete();
 				logger.debug("Deleting "+ keaOutputFile.getAbsolutePath());
-				keaOutputFile.delete();
+				//keaOutputFile.delete();
 			}
 
 		} else if (this.algorithm.equals("dummy")) {
@@ -299,5 +304,8 @@ public class SKOSTaggerImpl implements SKOSTagger {
 		return result;
 	}
 	
-
+	public void setConfig(Configuration config)
+	{
+		this.config = config;
+	}
 }
