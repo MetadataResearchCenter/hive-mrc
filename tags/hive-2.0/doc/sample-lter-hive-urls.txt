@@ -1,0 +1,55 @@
+Sample URLs to Demonstrate the LTER HIVE API
+
+'curl' is recommended as the client program to test these URLs.
+
+
+Scheme Resources
+
+curl http://scoria.lternet.edu:8080/lter-hive/schemes/schemeNames
+curl http://scoria.lternet.edu:8080/lter-hive/schemes/lter/lastDate
+curl http://scoria.lternet.edu:8080/lter-hive/schemes/nbii/lastDate
+curl http://scoria.lternet.edu:8080/lter-hive/schemes/lter/longName
+curl http://scoria.lternet.edu:8080/lter-hive/schemes/nbii/longName
+curl http://scoria.lternet.edu:8080/lter-hive/schemes/lter/numberOfConcepts
+curl http://scoria.lternet.edu:8080/lter-hive/schemes/nbii/numberOfConcepts
+curl http://scoria.lternet.edu:8080/lter-hive/schemes/lter/numberOfRelations
+curl http://scoria.lternet.edu:8080/lter-hive/schemes/nbii/numberOfRelations
+curl http://scoria.lternet.edu:8080/lter-hive/schemes/lter/schemaURI
+curl http://scoria.lternet.edu:8080/lter-hive/schemes/nbii/schemaURI
+curl http://scoria.lternet.edu:8080/lter-hive/schemes/lter/alphaIndex
+curl http://scoria.lternet.edu:8080/lter-hive/schemes/nbii/alphaIndex
+curl http://scoria.lternet.edu:8080/lter-hive/schemes/lter/subAlphaIndex/a
+curl http://scoria.lternet.edu:8080/lter-hive/schemes/nbii/subAlphaIndex/a
+curl http://scoria.lternet.edu:8080/lter-hive/schemes/lter/topConceptIndex
+curl http://scoria.lternet.edu:8080/lter-hive/schemes/nbii/topConceptIndex
+curl http://scoria.lternet.edu:8080/lter-hive/schemes/lter/subTopConceptIndex/a
+curl http://scoria.lternet.edu:8080/lter-hive/schemes/nbii/subTopConceptIndex/a
+
+
+Concept Resources
+
+curl http://scoria.lternet.edu:8080/lter-hive/schemes/lter/concepts/prefLabels
+curl http://scoria.lternet.edu:8080/lter-hive/schemes/nbii/concepts/prefLabels
+curl http://scoria.lternet.edu:8080/lter-hive/schemes/lter/concepts/prefLabels/a
+curl http://scoria.lternet.edu:8080/lter-hive/schemes/nbii/concepts/prefLabels/a
+curl http://scoria.lternet.edu:8080/lter-hive/schemes/lter/concepts/c_7/altLabels
+curl http://scoria.lternet.edu:8080/lter-hive/schemes/nbii/concepts/285/altLabels
+curl http://scoria.lternet.edu:8080/lter-hive/schemes/nbii/concepts/285/broaders
+curl http://scoria.lternet.edu:8080/lter-hive/schemes/nbii/concepts/285/narrowers
+curl http://scoria.lternet.edu:8080/lter-hive/schemes/lter/concepts/c_7/prefLabel
+curl http://scoria.lternet.edu:8080/lter-hive/schemes/nbii/concepts/285/prefLabel
+curl http://scoria.lternet.edu:8080/lter-hive/schemes/lter/concepts/c_7/QName
+curl http://scoria.lternet.edu:8080/lter-hive/schemes/nbii/concepts/285/QName
+curl http://scoria.lternet.edu:8080/lter-hive/schemes/nbii/concepts/285/relateds
+curl http://scoria.lternet.edu:8080/lter-hive/schemes/lter/concepts/c_7/SKOSFormat
+curl http://scoria.lternet.edu:8080/lter-hive/schemes/nbii/concepts/285/SKOSFormat
+curl http://scoria.lternet.edu:8080/lter-hive/schemes/lter/concepts/c_7/children
+curl http://scoria.lternet.edu:8080/lter-hive/schemes/nbii/concepts/285/children
+
+
+Searcher Resources
+
+curl http://scoria.lternet.edu:8080/lter-hive/schemes/lter/concepts/SKOSFormat?keyword=activity
+curl http://scoria.lternet.edu:8080/lter-hive/schemes/nbii/concepts/SKOSFormat?keyword=activity
+curl http://scoria.lternet.edu:8080/lter-hive/schemes/lter/concepts/concept/SKOSFormat?prefLabel=protozoa
+curl http://scoria.lternet.edu:8080/lter-hive/schemes/nbii/concepts/concept/SKOSFormat?prefLabel=Eruptions

@@ -1,0 +1,560 @@
+I. Introduction to HIVE-RS
+
+HIVE-RS provides a web services interface to much of the HIVE Core API. 
+It is designed as a RESTful web service and implemented in Java using the
+Jersey implementation of JAX-RS.
+
+
+II. Configuration, Build, Test, and Deployment
+
+A. Configuration
+
+HIVE-RS is hosted in the 'hive-rs' sub-tree of the 'hive-mrc' repository.
+HIVE-RS assumes that 'hive-core' is checked out as a sibling directory
+to the 'hive-rs' directory. HIVE-RS uses the configuration files from
+the 'hive-mrc/hive-core/conf' directory, allowing these files can be configured 
+in 'hive-core' and re-used in 'hive-rs'. (The configuration files from
+'../hive-core/conf' are copied into './hive-rs/WebRoot/WEB-INF/conf' by the
+'ant init' target.)
+
+The only configuration file native to HIVE-RS is its 'build.properties' file.
+Edit this file to configure the home directory of the Tomcat installation
+to which HIVE-RS is to be deployed.
+
+B. Build, Test, and Deployment
+
+The 'build.xml' Ant file offers a number of build, test, and deployment
+targets that can be executed from 'ant':
+
+clean        Deletes compiled classes                               
+compile      Compiles all Java source files                         
+deploy       Deploys the web application to Tomcat (default target)
+help         Displays this help summary                             
+test-compile Compiles all JUnit test files                          
+test         Executes the basic JUnit test suite
+
+A typical build/test/deploy procedure might be:
+  $ ant clean
+  $ ant compile
+  [ Shut down Tomcat ]
+  ant test
+  ant deploy
+  [ Restart Tomcat ]
+
+Note: The 'ant test' target should only be executed while the HIVE-RS
+web application is not running in Tomcat.
+
+Note: The 'ant init' target copies a number of java archive (jar) files
+from the 'hive-core' sub-tree into the 'hive-rs' sub-tree. As with the
+configuration files discussed above, the intent was for these jar files 
+to be committed once in 'hive-core' and then re-used in 'hive-rs'.
+(The library files from '../hive-core/lib' are copied into
+'./hive-rs/WebRoot/WEB-INF/lib' by the 'ant init' target.)
+
+C. HIVE-RS Web Application in Tomcat
+
+HIVE-RS executes as a Tomcat web application. The default web application
+name is 'hive-rs'. The default web application name can easily be changed
+by editing the value of the 'webapp.name' property in the build.xml file:
+
+  <property name="webapp.name" value="hive-rs" />
+
+For example:
+
+  <property name="webapp.name" value="lter-hive" />
+
+Note: The sample URLs furnished in Part III below display the web application
+name as 'lter-hive' instead of the default value of 'hive-rs'. This is because 
+the sample URLs are based on an actual web application running at LTER where 
+the 'lter-hive' web application name is used.
+
+
+III. HIVE-RS Web Services API
+
+The tables below display classes and methods in the HIVE-CORE API, and their 
+corresponding services in the HIVE-RS Web Services API, together 
+with sample URLs that demonstrate actual calls to the HIVE-RS Restful Web 
+Service.
+
+Legend
+------
+Method:       The HIVE-CORE API method name.
+Return Type:  HIVE-CORE API method return type.
+URI Pattern:  HIVE-CORE Restful Web Service URI pattern.
+Content-Type: HTTP Content-Type returned by the web service.
+Sample URL:   HIVE-CORE Restful Web Service sample URL that demonstrates the URI pattern.
+Sample Value: A sample return value indicating the type of content returned by the service.
+
+Note: Sample URLs are best demonstrated with the 'curl' command-line utility and thus
+are documented with that utility. Many of these URLs can also be demonstrated in a web 
+browser, though it should be noted that the content returned by these services is not
+intended for direct viewing in a web browser.
+
+
+Table 1: SKOSServer Class
+-------------------------
+Method:       getSKOSSchemas()         
+Return Type:  TreeMap<String, SKOSScheme>
+URI Pattern:  GET  http://hostname:port/services-name/schemes/schemeNames
+Content-Type: text/plain
+Sample URL:   curl http://scoria.lternet.edu:8080/lter-hive/schemes/schemeNames
+Sample Value:
+  lter
+  nbii
+
+Table 2: SKOSScheme Class
+-------------------------
+Method:       getName()                
+Return Type:  String
+URI Pattern:  GET  http://hostname:port/services-name/schemes/{schemeName}/name
+Content-Type: text/plain
+Sample URL:   curl http://scoria.lternet.edu:8080/lter-hive/schemes/lter/name
+Sample URL:   curl http://scoria.lternet.edu:8080/lter-hive/schemes/nbii/name
+Sample Value:
+  NBII
+
+Method:       getLongName()            
+Return Type:  String
+URI Pattern:  GET  http://hostname:port/services-name/schemes/{schemeName}/longName
+Content-Type: text/plain
+Sample URL:   curl http://scoria.lternet.edu:8080/lter-hive/schemes/lter/longName
+Sample URL:   curl http://scoria.lternet.edu:8080/lter-hive/schemes/nbii/longName
+Sample Value:
+  CSA/NBII Biocomplexity Thesaurus
+		 
+Method:       getNumberOfConcepts()    
+Return Type:  String
+URI Pattern:  GET  http://hostname:port/services-name/schemes/{schemeName}/numberOfConcepts
+Content-Type: text/plain
+Sample URL:   curl http://scoria.lternet.edu:8080/lter-hive/schemes/lter/numberOfConcepts
+Sample URL:   curl http://scoria.lternet.edu:8080/lter-hive/schemes/nbii/numberOfConcepts
+Sample Value:
+  22142
+		 
+Method:       getNumberOfRelations()  
+Return Type:  String
+URI Pattern:  GET  http://hostname:port/services-name/schemes/{schemeName}/numberOfRelations
+Content-Type: text/plain
+Sample URL:   curl http://scoria.lternet.edu:8080/lter-hive/schemes/lter/numberOfRelations
+Sample URL:   curl http://scoria.lternet.edu:8080/lter-hive/schemes/nbii/numberOfRelations
+Sample Value:
+  22653
+		 
+Method:       getLastDate()            
+Return Type:  String
+URI Pattern:  GET  http://hostname:port/services-name/schemes/{schemeName}/lastDate
+Content-Type: text/plain
+Sample URL:   curl http://scoria.lternet.edu:8080/lter-hive/schemes/lter/lastDate
+Sample URL:   curl http://scoria.lternet.edu:8080/lter-hive/schemes/nbii/lastDate
+Sample Value:
+  Fri Jun 25 14:28:32 MDT 2010
+		 
+Method:       getSchemaURI()           
+Return Type:  String
+URI Pattern:  GET  http://hostname:port/services-name/schemes/{schemeName}/schemaURI
+Content-Type: text/plain
+Sample URL:   curl http://scoria.lternet.edu:8080/lter-hive/schemes/lter/schemaURI
+Sample URL:   curl http://scoria.lternet.edu:8080/lter-hive/schemes/nbii/schemaURI
+Sample Value:
+  http://thesaurus.nbii.gov
+
+Method:       getAlphaIndex()          
+Return Type:  TreeMap<String, QName>
+URI Pattern:  GET  http://hostname:port/services-name/schemes/{schemeName}/alphaIndex
+Content-Type: application/xml
+Sample URL:   curl http://scoria.lternet.edu:8080/lter-hive/schemes/lter/alphaIndex
+Sample URL:   curl http://scoria.lternet.edu:8080/lter-hive/schemes/nbii/alphaIndex
+Sample Value:
+  <?xml version="1.0" encoding="UTF-8" ?>
+  <concepts>
+  <concept>
+    <prefLabel>abiotic</prefLabel>
+    <QName>
+      <namespaceURI>http://www.lternet.edu/vocabulary#</namespaceURI>
+      <prefix></prefix>
+      <localPart>c_1</localPart>
+      <string>{http://www.lternet.edu/vocabulary#}c_1</string>
+    </QName>
+  </concept>
+  <concept>
+    <prefLabel>aboveground biomass</prefLabel>
+    <QName>
+      <namespaceURI>http://www.lternet.edu/vocabulary#</namespaceURI>
+      <prefix></prefix>
+      <localPart>c_2</localPart>
+      <string>{http://www.lternet.edu/vocabulary#}c_2</string>
+    </QName>
+  </concept>
+  (truncated)
+
+Method:       getTopConceptIndex()     
+Return Type:  TreeMap<String, QName>
+URI Pattern:  GET  http://hostname:port/services-name/schemes/{schemeName}/topConceptIndex
+Content-Type: application/xml
+Sample URL:   curl http://scoria.lternet.edu:8080/lter-hive/schemes/lter/topConceptIndex
+Sample URL:   curl http://scoria.lternet.edu:8080/lter-hive/schemes/nbii/topConceptIndex
+Sample Value:
+  <?xml version="1.0" encoding="UTF-8" ?>
+  <concepts>
+  <concept>
+    <prefLabel>Abundance (organisms)</prefLabel>
+    <QName>
+      <namespaceURI>http://thesaurus.nbii.gov/Concept#</namespaceURI>
+      <prefix></prefix>
+      <localPart>26</localPart>
+      <string>{http://thesaurus.nbii.gov/Concept#}26</string>
+    </QName>
+  </concept>
+  <concept>
+    <prefLabel>Accidents</prefLabel>
+    <QName>
+      <namespaceURI>http://thesaurus.nbii.gov/Concept#</namespaceURI>
+      <prefix></prefix>
+      <localPart>44</localPart>
+      <string>{http://thesaurus.nbii.gov/Concept#}44</string>
+    </QName>
+  </concept>
+  (truncated)
+		 
+Method:       getSubAlphaIndex()       
+Return Type:  TreeMap<String, QName>
+URI Pattern:  GET  http://hostname:port/services-name/schemes/{schemeName}/subAlphaIndex/{startLetters}
+Content-Type: application/xml
+Sample URL:   curl http://scoria.lternet.edu:8080/lter-hive/schemes/lter/subAlphaIndex/a
+Sample URL:   curl http://scoria.lternet.edu:8080/lter-hive/schemes/nbii/subAlphaIndex/a
+Sample Value:
+  <?xml version="1.0" encoding="UTF-8" ?>
+  <concepts>
+  <concept>
+    <prefLabel>AAS</prefLabel>
+    <QName>
+      <namespaceURI>http://thesaurus.nbii.gov/Concept#</namespaceURI>
+      <prefix></prefix>
+      <localPart>5</localPart>
+      <string>{http://thesaurus.nbii.gov/Concept#}5</string>
+    </QName>
+  </concept>
+  <concept>
+    <prefLabel>ABO system</prefLabel>
+    <QName>
+      <namespaceURI>http://thesaurus.nbii.gov/Concept#</namespaceURI>
+      <prefix></prefix>
+      <localPart>12</localPart>
+      <string>{http://thesaurus.nbii.gov/Concept#}12</string>
+    </QName>
+  </concept>
+  (truncated)
+
+Method:       getSubTopConceptIndex()  
+Return Type:  TreeMap<String, QName>
+URI Pattern:  GET  http://hostname:port/services-name/schemes/{schemeName}/subTopConceptIndex/{startLetters}
+Content-Type: application/xml
+Sample URL:   curl http://scoria.lternet.edu:8080/lter-hive/schemes/lter/subTopConceptIndex/a
+Sample URL:   curl http://scoria.lternet.edu:8080/lter-hive/schemes/nbii/subTopConceptIndex/a
+Sample Value:
+  <?xml version="1.0" encoding="UTF-8" ?>
+  <concepts>
+  <concept>
+    <prefLabel>Abundance (organisms)</prefLabel>
+    <QName>
+      <namespaceURI>http://thesaurus.nbii.gov/Concept#</namespaceURI>
+      <prefix></prefix>
+      <localPart>26</localPart>
+      <string>{http://thesaurus.nbii.gov/Concept#}26</string>
+    </QName>
+  </concept>
+  <concept>
+    <prefLabel>Accidents</prefLabel>
+    <QName>
+      <namespaceURI>http://thesaurus.nbii.gov/Concept#</namespaceURI>
+      <prefix></prefix>
+      <localPart>44</localPart>
+      <string>{http://thesaurus.nbii.gov/Concept#}44</string>
+    </QName>
+  </concept>
+  (truncated)
+
+Method:       No direct match in HIVE API       
+Return Type:  Not applicable
+URI Pattern:  GET  http://hostname:port/services-name/schemes/{schemeName}/concepts/prefLabels
+Content-Type: text/plain
+Sample URL:   curl http://scoria.lternet.edu:8080/lter-hive/schemes/lter/concepts/prefLabels
+Sample URL:   curl http://scoria.lternet.edu:8080/lter-hive/schemes/nbii/concepts/prefLabels
+Sample Value:
+  abiotic
+  aboveground biomass
+  aboveground production
+  abundance
+  accretion
+  accumulation
+  (truncated)
+		 
+Method:       No direct match in HIVE API       
+Return Type:  Not applicable
+URI Pattern:  GET  http://hostname:port/services-name/schemes/{schemeName}/concepts/prefLabels/{startLetters}
+Content-Type: text/plain
+Sample URL:   curl http://scoria.lternet.edu:8080/lter-hive/schemes/lter/concepts/prefLabels/b
+Sample URL:   curl http://scoria.lternet.edu:8080/lter-hive/schemes/nbii/concepts/prefLabels/b
+Sample Value:
+  bacteria
+  bacterial abundance
+  bacterial production
+  bark
+  barometric pressure
+  basal area
+  basidiomycetes
+  basins
+  bathymetry
+  (truncated)
+
+
+Table 3: SKOSConcept Class
+--------------------------
+Method:       getAltLabels()           
+Return Type:  List<String>
+URI Pattern:  GET  http://hostname:port/services-name/schemes/{schemeName}/concepts/{localPart}/altLabels
+Content-Type: text/plain
+Sample URL:   curl http://scoria.lternet.edu:8080/lter-hive/schemes/lter/concepts/c_7/altLabels
+Sample URL:   curl http://scoria.lternet.edu:8080/lter-hive/schemes/nbii/concepts/285/altLabels
+Sample Value:
+  Air contamination
+  Air poisoning
+  Atmospheric pollution
+		 
+Method:       getBroaders()            
+Return Type:  TreeMap<String, QName>
+URI Pattern:  GET  http://hostname:port/services-name/schemes/{schemeName}/concepts/{localPart}/broaders
+Content-Type: application/xml
+Sample URL:   curl http://scoria.lternet.edu:8080/lter-hive/schemes/nbii/concepts/285/broaders
+Sample Value:
+  <?xml version="1.0" encoding="UTF-8" ?>
+  <concepts>
+  <concept>
+    <prefLabel>Pollution</prefLabel>
+    <QName>
+      <namespaceURI>http://thesaurus.nbii.gov/Concept/</namespaceURI>
+      <prefix></prefix>
+      <localPart>7860</localPart>
+      <string>{http://thesaurus.nbii.gov/Concept/}7860</string>
+    </QName>
+  </concept>
+  </concepts>
+		 
+Method:       getNarrowers()           
+Return Type:  TreeMap<String, QName>
+URI Pattern:  GET  http://hostname:port/services-name/schemes/{schemeName}/concepts/{localPart}/narrowers
+Content-Type: application/xml
+Sample URL:   curl http://scoria.lternet.edu:8080/lter-hive/schemes/nbii/concepts/285/narrowers
+Sample Value:
+  <?xml version="1.0" encoding="UTF-8" ?>
+  <concepts>
+  <concept>
+    <prefLabel>Acid deposition</prefLabel>
+    <QName>
+      <namespaceURI>http://thesaurus.nbii.gov/Concept/</namespaceURI>
+      <prefix></prefix>
+      <localPart>56</localPart>
+      <string>{http://thesaurus.nbii.gov/Concept/}56</string>
+    </QName>
+  </concept>
+  <concept>
+    <prefLabel>Fumes</prefLabel>
+    <QName>
+      <namespaceURI>http://thesaurus.nbii.gov/Concept/</namespaceURI>
+      <prefix></prefix>
+      <localPart>4120</localPart>
+      <string>{http://thesaurus.nbii.gov/Concept/}4120</string>
+    </QName>
+  </concept>
+  (truncated)
+                
+Method:       getPrefLabel()           
+Return Type:  String
+URI Pattern:  GET  http://hostname:port/services-name/schemes/{schemeName}/concepts/{localPart}/prefLabel
+Content-Type: text/plain
+Sample URL:   curl http://scoria.lternet.edu:8080/lter-hive/schemes/lter/concepts/c_7/prefLabel
+Sample URL:   curl http://scoria.lternet.edu:8080/lter-hive/schemes/nbii/concepts/285/prefLabel
+Sample Value:
+  Air pollution
+		 
+Method:       getQName()              
+Return Type:  QName
+URI Pattern:  GET  http://hostname:port/services-name/schemes/{schemeName}/concepts/{localPart}/QName
+Content-Type: application/xml
+Sample URL:   curl http://scoria.lternet.edu:8080/lter-hive/schemes/lter/concepts/c_7/QName
+Sample URL:   curl http://scoria.lternet.edu:8080/lter-hive/schemes/nbii/concepts/285/QName
+Sample Value:
+  <?xml version="1.0" encoding="UTF-8" ?>
+  <QName>
+    <namespaceURI>http://thesaurus.nbii.gov/Concept/</namespaceURI>
+    <prefix></prefix>
+    <localPart>285</localPart>
+    <string>{http://thesaurus.nbii.gov/Concept/}285</string>
+  </QName>
+	 
+Method:       getRelateds()            
+Return Type:  TreeMap<String, QName>
+URI Pattern:  GET  http://hostname:port/services-name/schemes/{schemeName}/concepts/{localPart}/relateds
+Content-Type: application/xml
+Sample URL:   curl http://scoria.lternet.edu:8080/lter-hive/schemes/nbii/concepts/285/relateds
+Sample Value:
+  <?xml version="1.0" encoding="UTF-8" ?>
+  <concepts>
+  <concept>
+    <prefLabel>Aerosols</prefLabel>
+    <QName>
+      <namespaceURI>http://thesaurus.nbii.gov/Concept/</namespaceURI>
+      <prefix></prefix>
+      <localPart>195</localPart>
+      <string>{http://thesaurus.nbii.gov/Concept/}195</string>
+    </QName>
+  </concept>
+  <concept>
+    <prefLabel>Air</prefLabel>
+    <QName>
+      <namespaceURI>http://thesaurus.nbii.gov/Concept/</namespaceURI>
+      <prefix></prefix>
+      <localPart>269</localPart>
+      <string>{http://thesaurus.nbii.gov/Concept/}269</string>
+    </QName>
+  </concept>
+  (truncated)
+		 
+Method:       getSKOSFormat()          
+Return Type:  String (XML)
+URI Pattern:  GET  http://hostname:port/services-name/schemes/{schemeName}/concepts/{localPart}/SKOSFormat
+Content-Type: application/xml
+Sample URL:   curl http://scoria.lternet.edu:8080/lter-hive/schemes/lter/concepts/c_7/SKOSFormat
+Sample URL:   curl http://scoria.lternet.edu:8080/lter-hive/schemes/nbii/concepts/285/SKOSFormat
+Sample Value:
+  <?xml version="1.0" encoding="UTF-8" ?>
+  <rdf:RDF>
+        <rdf:Description rdf:about="http://www.lternet.edu/vocabulary#c_7">
+        <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+        <skos:prefLabel>acid neutralizing capacity</skos:prefLabel>
+        <skos:altLabel>anc</skos:altLabel>
+        <skos:inScheme rdf:resource="http://www.lternet.edu/vocabulary#"/>
+  </rdf:RDF>
+
+
+Table 4: SKOSSearcher Class
+---------------------------
+Method:       searchConceptByKeyword() 
+Return Type:  List<SKOSConcept>
+URI Pattern:  GET  http://hostname:port/services-name/schemes/{schemeName}/concepts/SKOSFormat?keyword={keyword}
+Content-Type: application/xml
+Sample URL:   curl http://scoria.lternet.edu:8080/lter-hive/schemes/lter/concepts/SKOSFormat?keyword=activity
+Sample URL:   curl http://scoria.lternet.edu:8080/lter-hive/schemes/nbii/concepts/SKOSFormat?keyword=activity
+Sample Value:
+  <?xml version="1.0" encoding="UTF-8" ?>
+  <SKOSConcepts>
+  <SKOSConcept>
+  <rdf:RDF>
+        <rdf:Description rdf:about="http://www.lternet.edu/vocabulary#c_336">
+        <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+        <skos:prefLabel>microbial activity</skos:prefLabel>
+        <skos:altLabel>Microbial activity</skos:altLabel>
+        <skos:inScheme rdf:resource="http://www.lternet.edu/vocabulary#"/>
+  </rdf:RDF>
+  </SKOSConcept>
+  <SKOSConcept>
+  <rdf:RDF>
+        <rdf:Description rdf:about="http://www.lternet.edu/vocabulary#c_11">
+        <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+        <skos:prefLabel>activity</skos:prefLabel>
+        <skos:altLabel>activities</skos:altLabel>
+        <skos:inScheme rdf:resource="http://www.lternet.edu/vocabulary#"/>
+  </rdf:RDF>
+  </SKOSConcept>
+  </SKOSConcepts>
+
+
+Method:       searchChildrenByURI()
+Return Type:  TreeMap<String, QName>
+URI Pattern:  GET  http://hostname:port/services-name/schemes/{schemeName}/concepts/{localPart}/children
+Content-Type: application/xml
+Sample URL:   curl http://scoria.lternet.edu:8080/lter-hive/schemes/lter/concepts/c_7/children
+Sample URL:   curl http://scoria.lternet.edu:8080/lter-hive/schemes/nbii/concepts/285/children
+Sample Value:
+  <?xml version="1.0" encoding="UTF-8" ?>
+  <concepts>
+  <concept>
+    <prefLabel>Acid deposition</prefLabel>
+    <QName>
+      <namespaceURI>http://thesaurus.nbii.gov/Concept/</namespaceURI>
+      <prefix></prefix>
+      <localPart>56</localPart>
+      <string>{http://thesaurus.nbii.gov/Concept/}56</string>
+    </QName>
+  </concept>
+  <concept>
+    <prefLabel>Fumes</prefLabel>
+    <QName>
+      <namespaceURI>http://thesaurus.nbii.gov/Concept/</namespaceURI>
+      <prefix></prefix>
+      <localPart>4120</localPart>
+      <string>{http://thesaurus.nbii.gov/Concept/}4120</string>
+    </QName>
+  </concept>
+  (truncated)
+
+Method:       No direct match in HIVE API       
+Return Type:  Not applicable
+URI Pattern:  GET  http://hostname:port/services-name/schemes/{schemeName}/concepts/concept/SKOSFormat?prefLabel={prefLabel}
+Content-Type: application/xml
+Sample URL:   curl http://scoria.lternet.edu:8080/lter-hive/schemes/lter/concepts/concept/SKOSFormat?prefLabel=protozoa
+Sample URL:   curl http://scoria.lternet.edu:8080/lter-hive/schemes/nbii/concepts/concept/SKOSFormat?prefLabel=Eruptions
+Sample Value:
+  <?xml version="1.0" encoding="UTF-8" ?>
+  <rdf:RDF>
+        <rdf:Description rdf:about="http://thesaurus.nbii.gov/Concept/3303">
+        <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+        <skos:prefLabel>Eruptions</skos:prefLabel>
+        <skos:altLabel>Volcanic activity</skos:altLabel>
+        <skos:altLabel>Volcanic eruptions</skos:altLabel>
+        <skos:altLabel>Volcanicity</skos:altLabel>
+        <skos:altLabel>Volcanism</skos:altLabel>
+        <skos:altLabel>Vulcanism</skos:altLabel>
+        <skos:broader rdf:resource="http://thesaurus.nbii.gov/Concept/4311/>
+        <skos:related rdf:resource="http://thesaurus.nbii.gov/Concept/2646/>
+        <skos:related rdf:resource="http://thesaurus.nbii.gov/Concept/4844/>
+        <skos:related rdf:resource="http://thesaurus.nbii.gov/Concept/5418/>
+        <skos:related rdf:resource="http://thesaurus.nbii.gov/Concept/7770/>
+        <skos:related rdf:resource="http://thesaurus.nbii.gov/Concept/10391/>
+        <skos:related rdf:resource="http://thesaurus.nbii.gov/Concept/10702/>
+        <skos:related rdf:resource="http://thesaurus.nbii.gov/Concept/10703/>
+        <skos:related rdf:resource="http://thesaurus.nbii.gov/Concept/10707/>
+        <skos:inScheme rdf:resource="http://thesaurus.nbii.gov/Concept/"/>
+  </rdf:RDF>
+
+
+Table 5: SKOSTagger Class
+-------------------------
+Method:       getTags()                
+Return Type:  List<SKOSConcept>
+Content-Type: application/xml
+URI Pattern:  PUT <source-file> http://hostname:port/services-name/schemes/{schemeName}/concepts/tags/SKOSFormat
+                (where <source-file> is the local file to be transfered to the server for tagging)
+Sample URL:   curl -T nin_lter_spartina_census.xml http://scoria.lternet.edu:8080/lter-hive/schemes/lter/concepts/tags/SKOSFormat
+Sample Value: 
+  <?xml version="1.0" encoding="UTF-8" ?>
+  <SKOSConcepts>
+  <SKOSConcept>
+  <rdf:RDF>
+        <rdf:Description rdf:about="http://www.lternet.edu/vocabulary#c_489">
+        <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+        <skos:prefLabel>sediment elevation table</skos:prefLabel>
+        <skos:altLabel>set</skos:altLabel>
+        <skos:inScheme rdf:resource="http://www.lternet.edu/vocabulary#"/>
+  </rdf:RDF>
+  </SKOSConcept>
+  <SKOSConcept>
+  <rdf:RDF>
+        <rdf:Description rdf:about="http://www.lternet.edu/vocabulary#c_324">
+        <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+        <skos:prefLabel>marshes</skos:prefLabel>
+        <skos:altLabel>marsh</skos:altLabel>
+        <skos:inScheme rdf:resource="http://www.lternet.edu/vocabulary#"/>
+  </rdf:RDF>
+  </SKOSConcept>
+  (truncated)

@@ -1,0 +1,9 @@
+Currently, Jose compiles within Eclipse -- this needs to be moved into
+ant/maven.
+
+When running SkosServerImpl, the name of the config file must be passed as a
+parameter.
+
+
+To run:
+java -Xmx512m -cp target/hive-core.jar;lib/log4j-1.2.13.jar %1
