@@ -105,6 +105,9 @@ public class SKOSSchemeImpl implements SKOSScheme {
 	/* KEA+ model path */
 	private String KEAModelPath;
 	
+	/* Maui model path */
+	private String MauiModelPath;	
+	
 	/* Lingpipe model path */
 	private String lingpipeModel;
 	
@@ -201,6 +204,11 @@ public class SKOSSchemeImpl implements SKOSScheme {
 			this.KEAModelPath = properties.getProperty("kea_model");
 			if (KEAModelPath.isEmpty())
 				logger.warn("kea_model property is empty");
+			
+			// Maui model path
+			this.MauiModelPath = properties.getProperty("maui_model");
+			if (MauiModelPath.isEmpty())
+				logger.warn("maui_model property is empty");			
 
 			// KEA+ test set path
 			this.KEAtestSetDir = properties.getProperty("kea_test_set");
@@ -288,6 +296,11 @@ public class SKOSSchemeImpl implements SKOSScheme {
 	@Override
 	public String getKEAModelPath() {
 		return KEAModelPath;
+	}
+	
+	@Override
+	public String getMauiModelPath() {
+		return MauiModelPath;
 	}
 	
 	public String getAtomFeedURL() {
