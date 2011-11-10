@@ -15,6 +15,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.unc.hive.client.*;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
@@ -25,6 +27,8 @@ public class IndexerServiceImpl extends RemoteServiceServlet implements
 	private VocabularyService service;
 	private String path;
 
+	private static final Log logger = LogFactory.getLog(IndexerServiceImpl.class);
+	
 	public IndexerServiceImpl() {
 		
 	}
@@ -53,13 +57,14 @@ public class IndexerServiceImpl extends RemoteServiceServlet implements
      *   
      */
 	public List<ConceptProxy> getTags(String input, List<String> openedVocabularies, int maxHops, 
-			int numTerms, boolean diff) 
+			int numTerms, boolean diff, String algorithm) 
 	{
+		logger.debug("getTags for " + input);
 		if(input.startsWith("http://") || input.startsWith("https://")) {
 			try
 			{
 				URL url = new URL (input);
-				return this.service.getTags(url, openedVocabularies, maxHops, numTerms, diff);
+				return this.service.getTags(url, openedVocabularies, maxHops, numTerms, diff, algorithm);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -70,7 +75,7 @@ public class IndexerServiceImpl extends RemoteServiceServlet implements
 			String filePath = this.path + "/WEB-INF/tmp/" + input;
 			
 			List<ConceptProxy> concepts = new ArrayList<ConceptProxy>();
-			concepts = this.service.getTags(filePath, openedVocabularies, numTerms);
+			concepts = this.service.getTags(filePath, openedVocabularies, numTerms, algorithm);
 			
 			// Delete the temporary file
 			File file = new File(filePath);
