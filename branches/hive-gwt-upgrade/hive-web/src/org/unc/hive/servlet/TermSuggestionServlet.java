@@ -70,6 +70,9 @@ public class TermSuggestionServlet extends HttpServlet
 			errors.add("No input text specified");
 		}
 		
+		String algorithm = "maui";
+		
+		
 		// Get the minimum phrase occurrences, if specified. Otherwise default to 1.
 		String mp = request.getParameter(PARAM_MIN_PHRASE_OCCURRENCES);
 		int minPhraseOccur = 1;
@@ -99,7 +102,7 @@ public class TermSuggestionServlet extends HttpServlet
 			{
 				List<ConceptNode> tree =null;
 	
-				tree = service.getTagsAsTree(text, vocabs, 15, minPhraseOccur);
+				tree = service.getTagsAsTree(text, vocabs, 15, minPhraseOccur, algorithm);
 				if (tree.size() > 0)
 				{
 					int i =0;
@@ -122,7 +125,7 @@ public class TermSuggestionServlet extends HttpServlet
 			else
 			{
 				List<ConceptProxy> list =null;
-				list = service.getTags(text, vocabs, 15, minPhraseOccur);
+				list = service.getTags(text, vocabs, 15, minPhraseOccur, algorithm);
 				if (list.size() > 0)
 				{
 					int i =0;
