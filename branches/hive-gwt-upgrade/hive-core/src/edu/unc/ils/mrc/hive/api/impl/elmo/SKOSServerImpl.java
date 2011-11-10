@@ -60,7 +60,12 @@ public class SKOSServerImpl implements SKOSServer {
     private static final Log logger = LogFactory.getLog(SKOSServerImpl.class);
 
 	private SKOSSearcher searcher;
-	private SKOSTagger tagger;
+//	private SKOSTagger tagger;
+	
+	private SKOSTagger mauiTagger;
+	private SKOSTagger keaTagger;
+	private SKOSTagger dummyTagger;
+	
 	private TreeMap<String, SKOSScheme> schemes;
 
 	public SKOSServerImpl(String configFile) {
@@ -95,14 +100,32 @@ public class SKOSServerImpl implements SKOSServer {
         }
 
         this.searcher = new SKOSSearcherImpl(this.schemes);
-        this.tagger = new SKOSTaggerImpl(this.schemes, taggerAlgorithm);//kea or dummy
-        this.tagger.setConfig(config);
+        
+        this.mauiTagger = new SKOSTaggerImpl(this.schemes, "maui");
+        this.keaTagger = new SKOSTaggerImpl(this.schemes, "kea");
+        this.dummyTagger = new SKOSTaggerImpl(this.schemes, "dummy");
+        this.mauiTagger.setConfig(config);
+        this.keaTagger.setConfig(config);
+        this.dummyTagger.setConfig(config);
+        
+//        this.tagger = new SKOSTaggerImpl(this.schemes, taggerAlgorithm);//kea or dummy
+//        this.tagger.setConfig(config);
 	}
 
+	public SKOSTagger getSKOSTagger(String algorithm) { 
+		logger.debug("Using " + algorithm + "  tagger");
+		if (algorithm.toLowerCase().equals("maui"))
+			return this.mauiTagger;
+		else if (algorithm.toLowerCase().equals("kea"))
+			return this.keaTagger;
+		else
+			return this.dummyTagger;
+	}
+/*	
 	public SKOSTagger getSKOSTagger() {
 		return this.tagger;
 	}
-
+*/
 	@Override
 	public TreeMap<String, SKOSScheme> getSKOSSchemas() {
 		return this.schemes;
