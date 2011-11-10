@@ -38,6 +38,7 @@ public class TaggerFactory {
 	private static Logger log = Logger.getLogger(TaggerFactory.class);
 	public static final String DUMMYTAGGER = "dummy";
 	public static final String KEATAGGER = "KEA";
+	public static final String MAUITAGGER = "Maui";
 	
 	private static String tagger = "dummy";
 
@@ -51,6 +52,9 @@ public class TaggerFactory {
 			return new DummyTagger(dirName, modelName, stopwordsPath, schema);
 		else if(tagger == KEATAGGER) {
 			return new KEATagger(dirName, modelName, stopwordsPath, schema);
+		}
+		else if(tagger == MAUITAGGER) {
+			return new MauiTagger(dirName, modelName, stopwordsPath, schema);
 		}
 		else
 			return null;
