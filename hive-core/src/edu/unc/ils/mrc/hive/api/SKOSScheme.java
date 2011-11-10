@@ -61,6 +61,7 @@ public interface SKOSScheme {
 	public String getKEAtrainSetDir();
 	public String getKEAtestSetDir();
 	public String getKEAModelPath();
+	public String getMauiModelPath();
 	public String getRdfPath();
 	public String getAutoCompletePath();
 
