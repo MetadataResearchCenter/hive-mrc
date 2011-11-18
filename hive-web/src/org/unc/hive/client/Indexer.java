@@ -641,13 +641,20 @@ public class Indexer implements EntryPoint {
 		String current = null;
 		FlowPanel currentPanel = new FlowPanel();
 		currentPanel.setStyleName("vocabulary-tags");
-
+        double minScore = 99999;
+        double maxScore = 0.0;
 		for (ConceptProxy cp : result) {
 			String cporigin = cp.getOrigin();
 			if ((openedVocabularies.contains(cporigin.toLowerCase()))
-					&& (!oriList.contains(cporigin)))
+					&& (!oriList.contains(cporigin))) {
 				oriList.add(cporigin);
+				if (cp.getScore() < minScore) minScore = cp.getScore();
+				if (cp.getScore() > maxScore) maxScore = cp.getScore();
+			}
 		}
+		minScore = minScore * 10000;
+		maxScore = maxScore * 10000;
+		int r = (int)((maxScore - minScore) / 4);
 
 		for (String cporigin : oriList) {
 			currentPanel = new FlowPanel();
@@ -669,19 +676,15 @@ public class Indexer implements EntryPoint {
 					/* Decide the font-size based on the score */
 					double rate = (score * 10000);
 					String fontCss = "";
-					if (rate >= 0 && rate < 30)
-						fontCss = "font-one";
-					else if (rate >= 30 && rate < 60)
-						fontCss = "font-two";
-					else if (rate >= 60 && rate < 90)
+					if (rate >= 0 && rate < (minScore + r))
 						fontCss = "font-three";
-					else if (rate >= 90 && rate < 120)
+					else if (rate >= (minScore + r) && rate < (minScore + 2*r))
 						fontCss = "font-four";
-					else if (rate >= 120 && rate < 150)
+					else if (rate >= (minScore + 2*r) && rate < (minScore + 3*r))
 						fontCss = "font-five";
 					else
 						fontCss = "font-six";
-					final Anchor a = new Anchor(term, true);
+			        final Anchor a = new Anchor(term, true);
 					a.setStyleName("base-css");
 					a.addStyleName(colorCss);
 					a.addStyleName(fontCss);
