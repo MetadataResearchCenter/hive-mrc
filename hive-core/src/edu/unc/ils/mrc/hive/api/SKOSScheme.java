@@ -64,6 +64,7 @@ public interface SKOSScheme {
 	public String getMauiModelPath();
 	public String getRdfPath();
 	public String getAutoCompletePath();
+	public String getH2Path();
 
 	public String getAtomFeedURL();
 	
