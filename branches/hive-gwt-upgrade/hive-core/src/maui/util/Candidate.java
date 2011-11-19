@@ -276,7 +276,7 @@ public class Candidate {
 
 	/**
 	 * Retrieves all recorded info about a candidate
-	 * @return
+	 * @return info about a candidate formatted as a string  
 	 */
 	public String getInfo() {
 		

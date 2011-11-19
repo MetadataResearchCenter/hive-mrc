@@ -31,11 +31,14 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/*
 import org.wikipedia.miner.model.Anchor;
 import org.wikipedia.miner.model.Article;
 import org.wikipedia.miner.model.Wikipedia;
@@ -44,7 +47,7 @@ import org.wikipedia.miner.util.ProgressNotifier;
 import org.wikipedia.miner.util.SortedVector;
 import org.wikipedia.miner.util.text.CaseFolder;
 import org.wikipedia.miner.util.text.TextProcessor;
-
+*/
 import maui.stemmers.PorterStemmer;
 import maui.stemmers.Stemmer;
 import maui.stopwords.Stopwords;
@@ -52,9 +55,6 @@ import maui.stopwords.StopwordsEnglish;
 import maui.util.Candidate;
 import maui.util.Counter;
 import maui.vocab.Vocabulary;
-import maui.vocab.VocabularyFactory;
-import maui.vocab.VocabularyJena;
-import maui.vocab.store.VocabularyStore;
 import weka.core.Attribute;
 import weka.core.Capabilities;
 import weka.core.FastVector;
@@ -121,7 +121,7 @@ public class MauiFilter extends Filter {
 	private int contextSize = 5;
 
 	
-	transient TextProcessor textProcessor = new CaseFolder();
+//	transient TextProcessor textProcessor = new CaseFolder();
 
 	/** Number of human indexers (times a keyphrase appears in the keyphrase set) */
 	private int numIndexers = 1;
@@ -227,20 +227,20 @@ public class MauiFilter extends Filter {
 	private Stemmer stemmer = new PorterStemmer();
 
 	/** List of stop words to be used */
-	private Stopwords stopwords = new StopwordsEnglish();
+	private Stopwords stopwords = new StopwordsEnglish("data/stopwords/stopwords_en.txt");
 
 	/** Default language to be used */
 	private String documentLanguage = "en";
 
 	/** Vocabulary object */
-	public Vocabulary vocabulary;
+	transient Vocabulary vocabulary;
 
 	/** Vocabulary name */
 	private String vocabularyName = "agrovoc";
 
 	/** Vocabulary format */
 	private String vocabularyFormat = "skos";
-
+/*
 	transient Wikipedia wikipedia = null;
 
 	public void setWikipedia(Wikipedia wikipedia) {
@@ -297,7 +297,7 @@ public class MauiFilter extends Filter {
 			e.printStackTrace();
 		}
 	}
-
+*/
 	/**
 	 * Returns the total number of manually assigned topics in a given document
 	 * 
@@ -334,7 +334,7 @@ public class MauiFilter extends Filter {
 	public void setLengthFeature(boolean useLengthFeature) {
 		this.useLengthFeature = useLengthFeature;
 	}
-
+/*
 	public void setBasicWikipediaFeatures(boolean useBasicWikipediaFeatures) {
 		this.useBasicWikipediaFeatures = useBasicWikipediaFeatures;
 		if (useBasicWikipediaFeatures && wikipedia == null) {
@@ -355,7 +355,7 @@ public class MauiFilter extends Filter {
 		}
 
 	}
-
+*/
 	public void setContextSize(int contextSize) {
 		this.contextSize = contextSize;
 	}
@@ -459,28 +459,9 @@ public class MauiFilter extends Filter {
 		this.keyphrasesAtt = keyphrasesAtt;
 	}
 
-	public void loadThesaurus(Stemmer st, Stopwords sw, VocabularyStore store) {
-		if (vocabulary != null)
-			return;
-
-		try {
-
-			if (debugMode) {
-				System.err.println("--- Loading the vocabulary...");
-			}
-			VocabularyFactory.selectVocabulary(VocabularyFactory.JENA);//TODO
-			vocabulary = VocabularyFactory.getVocabulary(store);
-			vocabulary.setStemmer(stemmer);
-			vocabulary.setStopwords(stopwords);
-			vocabulary.setDebug(debugMode);
-			vocabulary.setLanguage(documentLanguage);
-			vocabulary.initialize();
-			
-		} catch (Exception e) {
-			System.err.println("Failed to load thesaurus!");
-			e.printStackTrace();
-		}
-
+	public void setVocabulary(Vocabulary vocabulary)
+	{
+		this.vocabulary = vocabulary;
 	}
 
 	/**
@@ -667,6 +648,7 @@ public class MauiFilter extends Filter {
 				System.err.println("---- " + candidateList.size() + " candidates");
 			}
 			allCandidates.put(current, candidateList);
+			
 		}
 
 	}
@@ -853,13 +835,6 @@ public class MauiFilter extends Filter {
 
 		}
 		}
-		FileOutputStream out =  new FileOutputStream(new File("19docs.arff"));
-		PrintWriter printer = new PrintWriter(out);
-		
-		printer.write(classifierData.toString());
-
-		printer.close();
-		out.close();
 		
 		classifier.buildClassifier(classifierData);
 
@@ -878,7 +853,7 @@ public class MauiFilter extends Filter {
 			boolean training, HashMap<String, Counter> hashKeyphrases,
 			HashMap<String, Candidate> candidates) {
 
-		Article candidateArticle = candidate.getArticle();
+//		Article candidateArticle = candidate.getArticle();
 
 		// Compute feature values
 		double[] newInst = new double[numFeatures + 1];
@@ -949,7 +924,7 @@ public class MauiFilter extends Filter {
 
 		if (useNodeDegreeFeature) {
 			int nodeDegree = 0;
-			if (vocabularyName.equals("wikipedia")) {
+/*			if (vocabularyName.equals("wikipedia")) {
 				try {
 					for (int relatedID : candidateArticle.getLinksInIds()) {
 						if (candidates.containsKey(relatedID + "")) {
@@ -964,7 +939,8 @@ public class MauiFilter extends Filter {
 				} catch (SQLException e) {
 					System.err.println("Error retrieving ids for candidate "+ candidate);
 				}
-			} else if (vocabulary != null) {
+			} else  */
+				if (vocabulary != null) {
 
 				Vector<String> relatedTerms = vocabulary.getRelated(id);
 
@@ -981,7 +957,7 @@ public class MauiFilter extends Filter {
 			}
 			newInst[nodeDegreeIndex] = (double) nodeDegree;
 		}
-
+/*
 		Anchor anchor = null;
 		if (useBasicWikipediaFeatures && wikipedia != null) {
 			
@@ -1038,7 +1014,8 @@ public class MauiFilter extends Filter {
 		//	System.out.println(candidate + "\t wikip Keyphr " + newInst[wikipKeyphrIndex] + "\t total wikip Keyphr " + newInst[totalWikipKeyphrIndex]);
 
 		}
-
+*/
+/*		
 		if (useAllWikipediaFeatures) {
 			//		System.out.println(candidate.getBestFullForm() + "\t" + original + "\t" + candidateArticle);
 					if (candidateArticle == null) {
@@ -1105,7 +1082,7 @@ public class MauiFilter extends Filter {
 					 //                                                   + "\t inv wikip freq  " + newInst[invWikipFreqIndex] + " general " + newInst[generalityIndex] );//
 
 				}
-
+*/
 		// Compute class value
 		String checkManual = name;
 		if (!vocabularyName.equals("none")) {
@@ -1517,7 +1494,7 @@ public class MauiFilter extends Filter {
 							totalFrequency++;
 						//	System.err.println(form + ", ");
 
-						} else if (vocabularyName.equals("wikipedia")) {
+						} /*else if (vocabularyName.equals("wikipedia")) {
 
 							// check if it's a number & ignore if it is
 							String patternStr = "[0-9\\s]+";
@@ -1529,7 +1506,8 @@ public class MauiFilter extends Filter {
 								candidateNames.add(form);
 							}
 
-						} else {
+						}
+*/						 else {
 						//	System.err.println("...retrieving senses for form " + form);
 							// if a controlled vocabulary is used
 							// retrieve its senses
@@ -1553,7 +1531,7 @@ public class MauiFilter extends Filter {
 									// this is the first occurrence of this
 									// candidate
 									// create a candidate object
-
+/*
 									if (vocabularyName.equals("wikipedia")) {
 										Anchor anchor;
 										try {
@@ -1581,7 +1559,7 @@ public class MauiFilter extends Filter {
 
 									} else {
 
-										firstWord = pos - i;
+*/										firstWord = pos - i;
 										candidate = new Candidate(name, form,
 												firstWord);
 										totalFrequency++;
@@ -1594,7 +1572,7 @@ public class MauiFilter extends Filter {
 													.getTerm(name));
 										}
 
-									}
+					//				}
 
 								} else {
 
@@ -1617,14 +1595,21 @@ public class MauiFilter extends Filter {
 			}
 		}
 		
-
+/*
 		if (vocabularyName.equals("wikipedia")) {
 			candidatesTable = disambiguateCandidates(candidatesTable.values());
 		}
+*/		
+		Set<String> keys = new HashSet<String>();
+		keys.addAll(candidatesTable.keySet());
+		for (String key : keys) {
+			Candidate candidate = candidatesTable.get(key);
+			if (candidate.getFrequency() < minOccurFrequency)
+				candidatesTable.remove(key);
+			else
+				candidate.normalize(totalFrequency, pos);
+		}	
 		
-		for (Candidate candidate : candidatesTable.values()) {
-			candidate.normalize(totalFrequency, pos);
-		}
 		return candidatesTable;
 	}
 
@@ -1636,6 +1621,7 @@ public class MauiFilter extends Filter {
 	 * @param candidates
 	 * @return vector of context articles
 	 */
+/*	
 	private Vector<Article> collectContextTerms(Collection<Candidate> candidates) {
 
 		// vector to store unambiguous context articles
@@ -1710,7 +1696,7 @@ public class MauiFilter extends Filter {
 		}
 		return context;
 	}
-
+*/
 	/**
 	 * Given a collection of candidate terms, each term is disambiguated to its
 	 * most likely meaning, given the mappings for other terms (context)
@@ -1718,6 +1704,7 @@ public class MauiFilter extends Filter {
 	 * @param candidates
 	 * @return hashmap of Wikipedia articles candidates
 	 */
+/*	
 	private HashMap<String, Candidate> disambiguateCandidates(
 			Collection<Candidate> candidates) {
 
@@ -1845,7 +1832,7 @@ public class MauiFilter extends Filter {
 		}
 		return disambiguatedTopics;
 	}
-
+*/
 	/**
 	 * Given a Wikipedia article and a set of context article collected from the
 	 * same text, this method computes the article's average semantic
@@ -1855,6 +1842,7 @@ public class MauiFilter extends Filter {
 	 * @param contextArticles
 	 * @return double -- semantic relatedness
 	 */
+/*	
 	private double getRelatednessTo(Article article,
 			Vector<Article> contextArticles) {
 
@@ -1879,7 +1867,7 @@ public class MauiFilter extends Filter {
 		}
 		return totalRelatedness / totalComparisons;
 	}
-
+*/
 	/**
 	 * Collects all the topics assigned manually and puts them into the
 	 * hashtable. Also stores the counts for each topic, if they are available

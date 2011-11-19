@@ -192,9 +192,9 @@ public class FrenchStemmer extends Stemmer {
 		deleteFromIfTestVowelBeforeIn( R1, new String[] { "issements", "issement" }, false, R0 );
 		deleteFrom( RV, new String[] { "ements", "ement" } );
 
-		deleteButSuffixFromElseReplace( R2, new String[] { "ités", "ité" }, "abil", false, R0, "abl" );
-		deleteButSuffixFromElseReplace( R2, new String[] { "ités", "ité" }, "ic", false, R0, "iqU" );
-		deleteButSuffixFrom( R2, new String[] { "ités", "ité" }, "iv", true );
+		deleteButSuffixFromElseReplace( R2, new String[] { "itÈs", "itÈ" }, "abil", false, R0, "abl" );
+		deleteButSuffixFromElseReplace( R2, new String[] { "itÈs", "itÈ" }, "ic", false, R0, "iqU" );
+		deleteButSuffixFrom( R2, new String[] { "itÈs", "itÈ" }, "iv", true );
 
 		String[] autre = { "ifs", "ives", "if", "ive" };
 		deleteButSuffixFromElseReplace( R2, autre, "icat", false, R0, "iqU" );
@@ -231,11 +231,11 @@ public class FrenchStemmer extends Stemmer {
 	 * @return boolean - true if something changed in the StringBuffer
 	 */
 	private boolean step2a() {
-		String[] search = { "îmes", "îtes", "iraIent", "irait", "irais", "irai", "iras", "ira",
+		String[] search = { "Ómes", "Ótes", "iraIent", "irait", "irais", "irai", "iras", "ira",
 							"irent", "iriez", "irez", "irions", "irons", "iront",
 							"issaIent", "issais", "issantes", "issante", "issants", "issant",
 							"issait", "issais", "issions", "issons", "issiez", "issez", "issent",
-							"isses", "isse", "ir", "is", "ît", "it", "ies", "ie", "i" };
+							"isses", "isse", "ir", "is", "Ót", "it", "ies", "ie", "i" };
 		return deleteFromIfTestVowelBeforeIn( RV, search, false, RV );
 	}
 
@@ -246,13 +246,13 @@ public class FrenchStemmer extends Stemmer {
 	 */
 	private void step2b() {
 		String[] suffix = { "eraIent", "erais", "erait", "erai", "eras", "erions", "eriez",
-							"erons", "eront","erez", "èrent", "era", "ées", "iez",
-							"ée", "és", "er", "ez", "é" };
+							"erons", "eront","erez", "Ërent", "era", "Èes", "iez",
+							"Èe", "Ès", "er", "ez", "È" };
 		deleteFrom( RV, suffix );
 
 		String[] search = { "assions", "assiez", "assent", "asses", "asse", "aIent",
-							"antes", "aIent", "Aient", "ante", "âmes", "âtes", "ants", "ant",
-							"ait", "aît", "ais", "Ait", "Aît", "Ais", "ât", "as", "ai", "Ai", "a" };
+							"antes", "aIent", "Aient", "ante", "‚mes", "‚tes", "ants", "ant",
+							"ait", "aÓt", "ais", "Ait", "AÓt", "Ais", "‚t", "as", "ai", "Ai", "a" };
 		deleteButSuffixFrom( RV, search, "e", true );
 
 		deleteFrom( R2, new String[] { "ions" } );
@@ -271,7 +271,7 @@ public class FrenchStemmer extends Stemmer {
 				sb.setCharAt( sb.length()-1, 'i' );
 				setStrings();
 			}
-			else if (ch == 'ç')
+			else if (ch == 'Á')
 			{
 				sb.setCharAt( sb.length()-1, 'c' );
 				setStrings();
@@ -290,7 +290,7 @@ public class FrenchStemmer extends Stemmer {
 			if (ch == 's')
 			{
 				char b = sb.charAt( sb.length()-2 );
-				if (b != 'a' && b != 'i' && b != 'o' && b != 'u' && b != 'è' && b != 's')
+				if (b != 'a' && b != 'i' && b != 'o' && b != 'u' && b != 'Ë' && b != 's')
 				{
 					sb.delete( sb.length() - 1, sb.length());
 					setStrings();
@@ -301,9 +301,9 @@ public class FrenchStemmer extends Stemmer {
 		if (!found)
 		found = deleteFromIfPrecededIn( R2, new String[] { "ion" }, RV, "t" );
 
-		replaceFrom( RV, new String[] { "Ière", "ière", "Ier", "ier" }, "i" );
+		replaceFrom( RV, new String[] { "IËre", "iËre", "Ier", "ier" }, "i" );
 		deleteFrom( RV, new String[] { "e" } );
-		deleteFromIfPrecededIn( RV, new String[] { "ë" }, R0, "gu" );
+		deleteFromIfPrecededIn( RV, new String[] { "Î" }, R0, "gu" );
 	}
 
 	/**
@@ -338,7 +338,7 @@ public class FrenchStemmer extends Stemmer {
 				{
 					if (!seenVowel)
 					{
-						if (ch == 'é' || ch == 'è')
+						if (ch == 'È' || ch == 'Ë')
 						{
 							pos = i;
 							break;
@@ -552,18 +552,18 @@ public class FrenchStemmer extends Stemmer {
 			case 'o':
 			case 'u':
 			case 'y':
-			case 'â':
-			case 'à':
-			case 'ë':
-			case 'é':
-			case 'ê':
-			case 'è':
-			case 'ï':
-			case 'î':
-			case 'ô':
-			case 'ü':
-			case 'ù':
-			case 'û':
+			case '‚':
+			case '‡':
+			case 'Î':
+			case 'È':
+			case 'Í':
+			case 'Ë':
+			case 'Ô':
+			case 'Ó':
+			case 'Ù':
+			case '¸':
+			case '˘':
+			case '˚':
 				return true;
 			default:
 				return false;

@@ -18,16 +18,21 @@ import java.util.*;
  */
 public class StopwordsGerman extends Stopwords {
   
-  /**
-	 * 
-	 */
+
 	private static final long serialVersionUID = 1L;
 	
+	/** The location of the stopwords file **/
+	private static String filePath;
 	
 /** The hashtable containing the list of stopwords */
   private static Hashtable<String,Double> m_Stopwords = null;
 
-  static {
+	public StopwordsGerman(String filePath) {
+		super(filePath);
+		loadStopwords();
+	}
+	
+  private void loadStopwords() {
    
     if (m_Stopwords == null) {
       m_Stopwords = new Hashtable<String,Double>();

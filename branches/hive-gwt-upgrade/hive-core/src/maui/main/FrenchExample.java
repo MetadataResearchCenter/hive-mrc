@@ -6,8 +6,6 @@ import maui.stemmers.FrenchStemmer;
 import maui.stemmers.Stemmer;
 import maui.stopwords.Stopwords;
 import maui.stopwords.StopwordsFrench;
-import maui.vocab.store.VocabularyStore;
-import maui.vocab.store.VocabularyStoreImpl;
 
 import org.wikipedia.miner.model.Wikipedia;
 
@@ -28,7 +26,7 @@ public class FrenchExample {
 		
 		// language specific settings
 		Stemmer stemmer = new FrenchStemmer();
-		Stopwords stopwords = new StopwordsFrench();
+		Stopwords stopwords = new StopwordsFrench("data/stopwords/stopwords_fr.txt");
 		String language = "fr";
 		String encoding = "UTF-8";
 		
@@ -45,16 +43,16 @@ public class FrenchExample {
 		Wikipedia wikipedia = new Wikipedia("localhost", "enwiki_20090306", "root", null);
 		
 		// Settings for the model builder
-		modelBuilder.setDirName(trainDir);
-		modelBuilder.setModelName(modelName);
-		modelBuilder.setVocabularyFormat(format);
-		modelBuilder.setVocabularyName(vocabulary);
-		modelBuilder.setStemmer(stemmer);
-		modelBuilder.setStopwords(stopwords);
-		modelBuilder.setDocumentLanguage(language);
-		modelBuilder.setEncoding(encoding);
-		modelBuilder.setDebug(true);
-		modelBuilder.setWikipedia(wikipedia);
+		modelBuilder.inputDirectoryName = trainDir;
+		modelBuilder.modelName = modelName;
+		modelBuilder.vocabularyFormat = format;
+		modelBuilder.vocabularyName = vocabulary;
+		modelBuilder.stemmer = stemmer;
+		modelBuilder.stopwords = stopwords;
+		modelBuilder.documentLanguage = language;
+		modelBuilder.documentEncoding = encoding;
+		modelBuilder.debugMode = true;
+		modelBuilder.wikipedia = wikipedia;
 		
 		// Which features to use?
 		modelBuilder.setBasicFeatures(true);
@@ -67,25 +65,24 @@ public class FrenchExample {
 		modelBuilder.setAllWikipediaFeatures(false);
 		
 		// Run model builder
-		VocabularyStore store = new VocabularyStoreImpl("/home/hive/maui.properties");
-		modelBuilder.buildModel(modelBuilder.collectStems(), store);
+		modelBuilder.buildModel(modelBuilder.collectStems());
 		modelBuilder.saveModel();
 		
 		// Settings for the topic extractor
-		topicExtractor.setDirName(testDir);
-		topicExtractor.setModelName(modelName);
-		topicExtractor.setVocabularyName(vocabulary);
-		topicExtractor.setVocabularyFormat(format);
-		topicExtractor.setStemmer(stemmer);
-		topicExtractor.setStopwords(stopwords);
-		topicExtractor.setDocumentLanguage(language);
-		topicExtractor.setDebug(true);
-		topicExtractor.setNumTopics(numTopicsToExtract); 
-		topicExtractor.setWikipedia(wikipedia);
+		topicExtractor.inputDirectoryName = testDir;
+		topicExtractor.modelName = modelName;
+		topicExtractor.vocabularyName = vocabulary;
+		topicExtractor.vocabularyFormat = format;
+		topicExtractor.stemmer = stemmer;
+		topicExtractor.stopwords = stopwords;
+		topicExtractor.documentLanguage = language;
+		topicExtractor.debugMode = true;
+		topicExtractor.topicsPerDocument = numTopicsToExtract; 
+//		topicExtractor.wikipedia = wikipedia;
 		
 		// Run topic extractor
 		topicExtractor.loadModel();
-		topicExtractor.extractKeyphrases(topicExtractor.collectStems(), store);
+		topicExtractor.extractKeyphrases(topicExtractor.collectStems());
 	}
 
 }
