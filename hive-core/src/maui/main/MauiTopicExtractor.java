@@ -22,7 +22,6 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
@@ -30,11 +29,14 @@ import java.sql.SQLException;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Vector;
 
-import org.wikipedia.miner.model.Article;
-import org.wikipedia.miner.model.Wikipedia;
-import org.wikipedia.miner.util.text.CaseFolder;
+//import org.wikipedia.miner.model.Article;
+//import org.wikipedia.miner.model.Wikipedia;
+//import org.wikipedia.miner.util.text.CaseFolder;
+
+import org.apache.commons.io.FileUtils;
 
 import weka.core.Attribute;
 import weka.core.FastVector;
@@ -47,8 +49,9 @@ import weka.core.Utils;
 import maui.filters.MauiFilter;
 import maui.stemmers.*;
 import maui.stopwords.*;
-import maui.vocab.store.VocabularyStore;
-import maui.vocab.store.VocabularyStoreImpl;
+import maui.vocab.Vocabulary;
+import maui.vocab.VocabularyH2;
+import maui.vocab.VocabularyJena;
 
 
 /**
@@ -109,32 +112,32 @@ import maui.vocab.store.VocabularyStoreImpl;
 public class MauiTopicExtractor implements OptionHandler {
 	
 	/** Name of directory */
-	String inputDirectoryName = null;
+	public String inputDirectoryName = null;
 	
 	/** Name of model */
-	String modelName = null;
+	public String modelName = null;
 	
 	/** Vocabulary name */
-	String vocabularyName = "none";
+	public String vocabularyName = "none";
 	
 	/** Format of the vocabulary */
-	String vocabularyFormat = null;
+	public String vocabularyFormat = null;
 	
 	/** Document language */
-	String documentLanguage = "en";
+	public String documentLanguage = "en";
 	
 	/** Document encoding */
-	String documentEncoding = "default";
+	public String documentEncoding = "default";
 	
 	/** Debugging mode? */
-	boolean debugMode = false;
+	public boolean debugMode = false;
 	
 	
 	/** Maui filter object */
 	private MauiFilter mauiFilter = null;
 	
 	/** Wikipedia object */
-	private Wikipedia wikipedia = null;
+//	public Wikipedia wikipedia = null;
 	
 	/** Name of the server with the mysql Wikipedia data */ 
 	private String wikipediaServer = "localhost"; 
@@ -151,11 +154,22 @@ public class MauiTopicExtractor implements OptionHandler {
 	/** The number of phrases to extract. */
 	int topicsPerDocument = 10;
 	
+
+	/** Directory where vocabularies are stored **/
+	public String vocabularyDirectory = "data/vocabularies";
+	
 	/** Stemmer to be used */
-	private Stemmer stemmer = new PorterStemmer();
+	public Stemmer stemmer = new PorterStemmer();
 	
 	/** Llist of stopwords to be used */
-	private Stopwords stopwords = new StopwordsEnglish();
+	//public Stopwords stopwords = new StopwordsEnglish("data/stopwords/stopwords_en.txt");
+	public Stopwords stopwords;
+	
+	/** Minimum number of occurrences for a phrase to be considered a candidate **/
+	private int minNumOccur;
+	
+	
+	private Vocabulary vocabulary = null;
 	
 	
 	/** Also write stemmed phrase and score into .key file. */
@@ -169,143 +183,9 @@ public class MauiTopicExtractor implements OptionHandler {
 	/** Build global dictionaries from the test set. */
 	boolean buildGlobalDictionary = false;
 	
-	public void setWikipedia(Wikipedia wikipedia) {
-		this.wikipedia = wikipedia;
-	}
-	
-	public void setWikipediaDatabase(String wikipediaDatabase) {
-		this.wikipediaDatabase = wikipediaDatabase;
-	}
-
-	public void setWikipediaServer(String wikipediaServer) {
-		this.wikipediaServer = wikipediaServer;
-	}
-	
-
-	public void setWikipediaDataDirectory(String wikipediaDataDirectory) {
-		this.wikipediaDataDirectory = wikipediaDataDirectory;
-	}
-	
-	public boolean getCachWikipediaData() {
-		return cacheWikipediaData;
-	}
-
-	public void setCachWikipediaData(boolean cacheWikipediaData) {
-		this.cacheWikipediaData = cacheWikipediaData;
-	}
-	
-	public boolean getAdditionalInfo() {
-		return additionalInfo;
-	}
-	
-	public void setAdditionalInfo(boolean additionalInfo) {
-		this.additionalInfo = additionalInfo;
-	}
-	
-	public boolean getBuildGlobal() {		
-		return buildGlobalDictionary;
-	}
-	
-	public void setBuildGlobal(boolean buildGlobalDictionary) {	
-		this.buildGlobalDictionary = buildGlobalDictionary;
-	}
-	
-	
-	
-	public boolean getPrintGraph() {		
-		return printGraph;
-	}
-	
-	public void setPrintGraph(boolean printGraph) {	
-		this.printGraph = printGraph;
-	}
-	
-
-	public int getNumTopics() {
-		return topicsPerDocument;
-	}
-	
-	public void setNumTopics(int topicsPerDocument) {
-		this.topicsPerDocument = topicsPerDocument;
-	}
-	
-	public Stopwords getStopwords() {
-		return stopwords;
-	}
-	
-	public void setStopwords(Stopwords stopwords) {
-		this.stopwords = stopwords;
-	}
-	
-	public Stemmer getStemmer() {
-		return stemmer;
-	}
-	
-	public void setStemmer(Stemmer stemmer) {
-		this.stemmer = stemmer;
-	}
 	
 	public boolean getDebug() {
 		return debugMode;
-	}
-
-	public void setDebug(boolean debugMode) {		
-		this.debugMode = debugMode;
-	}
-	
-	public String getEncoding() {
-		return documentEncoding;
-	}
-	
-	public void setEncoding(String documentEncoding) {
-		this.documentEncoding = documentEncoding;
-	}
-	
-	public void setWikipedia(String wikipediaConnection) {
-		int at = wikipediaConnection.indexOf("@");
-		setWikipediaDatabase(wikipediaConnection.substring(0,at));
-		setWikipediaServer(wikipediaConnection.substring(at+1));
-	}
-	
-	
-	public String getVocabularyName() {
-		return vocabularyName;
-	}
-	
-	public void setVocabularyName(String vocabularyName) {
-		this.vocabularyName = vocabularyName;
-	}
-	
-	public String getDocumentLanguage() {
-		return documentLanguage;
-	}
-	
-	public void setDocumentLanguage(String documentLanguage) {
-		this.documentLanguage = documentLanguage;
-	}
-	
-	public String getVocabularyFormat() {
-		return vocabularyFormat;
-	}
-	
-	public void setVocabularyFormat(String vocabularyFormat) {
-		this.vocabularyFormat = vocabularyFormat;
-	}
-	
-	public String getModelName() {
-		return modelName;
-	}
-	
-	public void setModelName(String modelName) {
-		this.modelName = modelName;
-	}
-	
-	public String getDirName() {
-		return inputDirectoryName;
-	}
-	
-	public void setDirName(String inputDirectoryName) {
-		this.inputDirectoryName = inputDirectoryName;
 	}
 	
 	/**
@@ -352,87 +232,81 @@ public class MauiTopicExtractor implements OptionHandler {
 		
 		String dirName = Utils.getOption('l', options);
 		if (dirName.length() > 0) {
-			setDirName(dirName);
+			inputDirectoryName = dirName;
 		} else {
-			setDirName(null);
+			inputDirectoryName = null;
 			throw new Exception("Name of directory required argument.");
 		}
+
 		String modelName = Utils.getOption('m', options);
 		if (modelName.length() > 0) {
-			setModelName(modelName);
+			this.modelName = modelName;
 		} else {
-			setModelName(null);
+			this.modelName = null;
 			throw new Exception("Name of model required argument.");
 		}
-		
+
 		String vocabularyName = Utils.getOption('v', options);
 		if (vocabularyName.length() > 0) {
-			setVocabularyName(vocabularyName);
+			this.vocabularyName = vocabularyName;
 		} 
-		
+
 		String vocabularyFormat = Utils.getOption('f', options);
-		
-		if (!getVocabularyName().equals("none") && !getVocabularyName().equals("wikipedia")) {
+
+		if (!vocabularyName.equals("none") && !vocabularyName.equals("wikipedia")) {
 			if (vocabularyFormat.length() > 0) {
-				if (vocabularyFormat.equals("skos") || vocabularyFormat.equals("text")) {
-					setVocabularyFormat(vocabularyFormat);
+				if (vocabularyFormat.equals("skos")
+						|| vocabularyFormat.equals("text")) {
+					this.vocabularyFormat = vocabularyFormat;
 				} else {
-					throw new Exception("Unsupported format of vocabulary. It should be either \"skos\" or \"text\".");
+					throw new Exception(
+							"Unsupported format of vocabulary. It should be either \"skos\" or \"text\".");
 				}
 			} else {
-				setVocabularyFormat(null);
-				throw new Exception("If a controlled vocabulary is used, format of vocabulary required argument (skos or text).");
+				throw new Exception(
+						"If a controlled vocabulary is used, format of vocabulary required argument (skos or text).");
 			}
-		} else {
-			setVocabularyFormat(null);
 		}
-		
 		
 		String encoding = Utils.getOption('e', options);
-		if (encoding.length() > 0) {
-			setEncoding(encoding);
-		} else {
-			setEncoding("default");
-		}
+		if (encoding.length() > 0) 
+			this.documentEncoding = encoding;
 		
 		String wikipediaConnection = Utils.getOption('w', options);
 		if (wikipediaConnection.length() > 0) {
-			setWikipedia(wikipediaConnection);
+			int at = wikipediaConnection.indexOf("@");
+			wikipediaDatabase = wikipediaConnection.substring(0,at);
+			wikipediaServer = wikipediaConnection.substring(at+1);
 		} 
 		
+
 		String documentLanguage = Utils.getOption('i', options);
-		if (documentLanguage.length() > 0) {
-			setDocumentLanguage(documentLanguage);
-		} else {
-			setDocumentLanguage("en");
-		}
-		
+		if (documentLanguage.length() > 0) 
+			this.documentLanguage = documentLanguage;
 		
 		String numPhrases = Utils.getOption('n', options);
 		if (numPhrases.length() > 0) {
-			setNumTopics(Integer.parseInt(numPhrases));
-		} else {
-			setNumTopics(5);
-		}
+			this.topicsPerDocument = Integer.parseInt(numPhrases);
+		} 
 		
-		
-		String stemmerString = Utils.getOption('t', options);
-		if (stemmerString.length() > 0) {
-			stemmerString = "maui.stemmers.".concat(stemmerString);
-			setStemmer((Stemmer)Class.forName(stemmerString).newInstance());
-		}
 		
 		String stopwordsString = Utils.getOption('s', options);
 		if (stopwordsString.length() > 0) {
 			stopwordsString = "maui.stopwords.".concat(stopwordsString);
-			setStopwords((Stopwords)Class.forName(stopwordsString).newInstance());
+			this.stopwords = (Stopwords) Class.forName(stopwordsString)
+					.newInstance();
 		}
 
-		
-		setDebug(Utils.getFlag('d', options));
-		setBuildGlobal(Utils.getFlag('b', options));
-		setPrintGraph(Utils.getFlag('p', options));
-		setAdditionalInfo(Utils.getFlag('a', options));
+		String stemmerString = Utils.getOption('t', options);
+		if (stemmerString.length() > 0) {
+			stemmerString = "maui.stemmers.".concat(stemmerString);
+			this.stemmer = (Stemmer) Class.forName(stemmerString).newInstance();
+		}
+
+		debugMode = Utils.getFlag('d', options);
+		this.buildGlobalDictionary = Utils.getFlag('b', options);
+		this.printGraph = Utils.getFlag('p', options);
+		this.additionalInfo = Utils.getFlag('a', options);
 		Utils.checkForRemainingOptions(options);
 	}
 	
@@ -447,38 +321,38 @@ public class MauiTopicExtractor implements OptionHandler {
 		int current = 0;
 		
 		options[current++] = "-l"; 
-		options[current++] = "" + (getDirName());
+		options[current++] = "" + (this.inputDirectoryName);
 		options[current++] = "-m"; 
-		options[current++] = "" + (getModelName());
+		options[current++] = "" + (this.modelName);
 		options[current++] = "-v"; 
-		options[current++] = "" + (getVocabularyName());
+		options[current++] = "" + (this.vocabularyName);
 		options[current++] = "-f"; 
-		options[current++] = "" + (getVocabularyFormat());
+		options[current++] = "" + (this.vocabularyFormat);
 		options[current++] = "-e"; 
-		options[current++] = "" + (getEncoding());
+		options[current++] = "" + (this.documentEncoding);
 		options[current++] = "-i"; 
-		options[current++] = "" + (getDocumentLanguage());
+		options[current++] = "" + (this.documentLanguage);
 		options[current++] = "-n"; 
-		options[current++] = "" + (getNumTopics());
+		options[current++] = "" + (this.topicsPerDocument);
 		options[current++] = "-t"; 
-		options[current++] = "" + (getStemmer().getClass().getName());		
+		options[current++] = "" + (stemmer.getClass().getName());		
 		options[current++] = "-s"; 
-		options[current++] = "" + (getStopwords().getClass().getName());
+		options[current++] = "" + (stopwords.getClass().getName());
 
 		if (getDebug()) {
 			options[current++] = "-d";
 		}
 		
 
-		if (getPrintGraph()) {
+		if (printGraph) {
 			options[current++] = "-p";
 		}
 		
-		if (getBuildGlobal()) {
+		if (this.buildGlobalDictionary) {
 			options[current++] = "-b";
 		}
 		
-		if (getAdditionalInfo()) {
+		if (additionalInfo) {
 			options[current++] = "-a";
 		}
 		
@@ -542,6 +416,29 @@ public class MauiTopicExtractor implements OptionHandler {
 		return newVector.elements();
 	}
 	
+	public void loadThesaurus(Stemmer st, Stopwords sw, String vocabularyDirectory) {
+		if (vocabulary != null)
+			return;
+
+		try {
+
+			if (debugMode) {
+				System.err.println("--- Loading the vocabulary...");
+			}
+			vocabulary = new VocabularyH2(vocabularyName, vocabularyFormat, vocabularyDirectory);
+			vocabulary.setStemmer(st);
+			vocabulary.setStopwords(sw);
+			vocabulary.setDebug(debugMode);
+			vocabulary.setLanguage(documentLanguage);
+			vocabulary.initialize();
+			
+		} catch (Exception e) {
+			System.err.println("Failed to load thesaurus!");
+			e.printStackTrace();
+		}
+
+	}
+	
 	/**
 	 * Collects the file names
 	 */
@@ -570,18 +467,19 @@ public class MauiTopicExtractor implements OptionHandler {
 	/**
 	 * Builds the model from the files
 	 */
-	public void extractKeyphrases(HashSet<String> fileNames, VocabularyStore store) throws Exception {
+	public void extractKeyphrases(HashSet<String> fileNames) throws Exception {
 		
 		// Check whether there is actually any data
 		if (fileNames.size() == 0) {
 			throw new Exception("Couldn't find any data in " + inputDirectoryName);
 		}
 		
-		mauiFilter.setVocabularyName(getVocabularyName());
-		mauiFilter.setVocabularyFormat(getVocabularyFormat());
-		mauiFilter.setDocumentLanguage(getDocumentLanguage());
-		mauiFilter.setStemmer(getStemmer());
-		mauiFilter.setStopwords(getStopwords());
+		mauiFilter.setVocabularyName(vocabularyName);
+		mauiFilter.setVocabularyFormat(vocabularyFormat);
+		mauiFilter.setDocumentLanguage(documentLanguage);
+		mauiFilter.setStemmer(stemmer);
+		mauiFilter.setStopwords(stopwords);
+/*		
 		if (wikipedia != null) {
 			mauiFilter.setWikipedia(wikipedia);
 		} else if (wikipediaServer.equals("localhost") && wikipediaDatabase.equals("database")) {
@@ -589,8 +487,10 @@ public class MauiTopicExtractor implements OptionHandler {
 		} else {
 			mauiFilter.setWikipedia(wikipediaServer, wikipediaDatabase, cacheWikipediaData, wikipediaDataDirectory);
 		}
-		if (!vocabularyName.equals("none") && !vocabularyName.equals("wikipedia")) {
-			mauiFilter.loadThesaurus(getStemmer(),getStopwords(), store);
+*/		
+		if (!vocabularyName.equals("none") && !vocabularyName.equals("wikipedia") ) {
+			loadThesaurus(stemmer, stopwords, vocabularyDirectory);
+			mauiFilter.setVocabulary(vocabulary);
 		}
 		
 		FastVector atts = new FastVector(3);
@@ -616,23 +516,15 @@ public class MauiTopicExtractor implements OptionHandler {
 			
 			try {
 
-				InputStreamReader is;
+				String documentText;
 				if (!documentEncoding.equals("default")) {
-					is = new InputStreamReader(new FileInputStream(documentTextFile), documentEncoding);
+					documentText = FileUtils.readFileToString(documentTextFile, documentEncoding);
 				} else {
-					is = new InputStreamReader(new FileInputStream(documentTextFile));
+					documentText = FileUtils.readFileToString(documentTextFile);
 				}
-				
-				// Reading the file content
-				StringBuffer txtStr = new StringBuffer();
-				int c;
-				while ((c = is.read()) != -1) {
-					txtStr.append((char)c);
-				}
-				is.close();
-				
+	
 				// Adding the text of the document to the instance
-				newInst[1] = (double)data.attribute(1).addStringValue(txtStr.toString());
+				newInst[1] = (double) data.attribute(1).addStringValue(documentText);
 				
 			} catch (Exception e) {
 				System.err.println("Problem with reading " + documentTextFile);
@@ -643,22 +535,15 @@ public class MauiTopicExtractor implements OptionHandler {
 			
 			try {
 				
-				InputStreamReader is; 
+				String documentTopics;
 				if (!documentEncoding.equals("default")) {
-					is = new InputStreamReader(new FileInputStream(documentTopicsFile), documentEncoding);
+					documentTopics = FileUtils.readFileToString(documentTopicsFile, documentEncoding);
 				} else {
-					is = new InputStreamReader(new FileInputStream(documentTopicsFile));
+					documentTopics = FileUtils.readFileToString(documentTopicsFile);
 				}
 				
-				// Reading the content of the keyphrase file
-				StringBuffer keyStr = new StringBuffer();
-				int c;
-				while ((c = is.read()) != -1) {
-					keyStr.append((char)c);
-				}      
-				
 				// Adding the topics to the file
-				newInst[2] = (double)data.attribute(2).addStringValue(keyStr.toString());
+				newInst[2] = (double) data.attribute(2).addStringValue(documentTopics);
 				
 			} catch (Exception e) {
 				if (debugMode) {
@@ -706,14 +591,14 @@ public class MauiTopicExtractor implements OptionHandler {
 			}
 			
 			double numExtracted = 0, numCorrect = 0;
-			wikipedia = mauiFilter.getWikipedia();
+/*			wikipedia = mauiFilter.getWikipedia();
 			
 			HashMap<Article, Integer> topics = null;
 			
 			if (printGraph) {
 				topics = new HashMap<Article, Integer>();
 			}
-			
+*/			
 			int p = 0;
 			String root = "";
 			for (int i = 0; i < topicsPerDocument; i++) {
@@ -731,7 +616,7 @@ public class MauiTopicExtractor implements OptionHandler {
 						stringValue(mauiFilter.getOutputFormIndex());
 						printer.print(topic);
 						
-						if (printGraph) {
+/*						if (printGraph) {
 							
 							Article article = wikipedia.getArticleByTitle(topic);
 							if (article == null) {
@@ -750,8 +635,19 @@ public class MauiTopicExtractor implements OptionHandler {
 							}
 							p++;
 						}
+*/						
 						if (additionalInfo) {
 							printer.print("\t");
+							
+							String term = topRankedInstances[i].
+									stringValue(mauiFilter.getNormalizedFormIndex());
+							/*
+							List<SKOSConcept> concepts = searcher.searchConceptByKeyword(term);
+							if (concepts.size() > 0) {
+								term = concepts.get(0).getQName();
+								printer.print(term);
+							}
+							*/
 							printer.print(topRankedInstances[i].
 									stringValue(mauiFilter.getNormalizedFormIndex()));
 							printer.print("\t");
@@ -767,11 +663,12 @@ public class MauiTopicExtractor implements OptionHandler {
 					}
 				}
 			}
-			
+/*			
 			if (printGraph) {
 				String graphFile = documentTopicsFile.getAbsolutePath().replace(".key",".gv");
 				computeGraph(topics, root, graphFile);
 			}
+*/			
 			if (numExtracted > 0) {
 				if (debugMode) {
 					System.err.println("-- " + numCorrect + " correct");
@@ -849,6 +746,7 @@ public class MauiTopicExtractor implements OptionHandler {
 	 * @param root
 	 * @param outputFile
 	 */
+/*	
 	public  void computeGraph(HashMap<Article, Integer> topics,
 			String root, String outputFile) {
 		FileOutputStream out;
@@ -924,7 +822,7 @@ public class MauiTopicExtractor implements OptionHandler {
 			e1.printStackTrace();
 		}
 	}
-	
+*/	
 	
 	/** 
 	 * Loads the extraction model from the file.
@@ -969,8 +867,7 @@ public class MauiTopicExtractor implements OptionHandler {
 			topicExtractor.loadModel();
 			
 			// Extracting Keyphrases from all files in the selected directory
-			VocabularyStore store = new VocabularyStoreImpl("/home/hive/maui.properties");
-			topicExtractor.extractKeyphrases(topicExtractor.collectStems(),store);
+			topicExtractor.extractKeyphrases(topicExtractor.collectStems());
 			
 		} catch (Exception e) {
 			
@@ -985,5 +882,118 @@ public class MauiTopicExtractor implements OptionHandler {
 				System.err.println(option.description());
 			}
 		}
+	}
+
+	public String getInputDirectoryName() {
+		return inputDirectoryName;
+	}
+
+	public void setInputDirectoryName(String inputDirectoryName) {
+		this.inputDirectoryName = inputDirectoryName;
+	}
+
+	public String getModelName() {
+		return modelName;
+	}
+
+	public void setModelName(String modelName) {
+		this.modelName = modelName;
+	}
+
+	public String getVocabularyFormat() {
+		return vocabularyFormat;
+	}
+
+	public void setVocabularyFormat(String vocabularyFormat) {
+		this.vocabularyFormat = vocabularyFormat;
+	}
+
+	public String getDocumentLanguage() {
+		return documentLanguage;
+	}
+
+	public void setDocumentLanguage(String documentLanguage) {
+		this.documentLanguage = documentLanguage;
+	}
+
+	public String getDocumentEncoding() {
+		return documentEncoding;
+	}
+
+	public void setDocumentEncoding(String documentEncoding) {
+		this.documentEncoding = documentEncoding;
+	}
+
+	public Stemmer getStemmer() {
+		return stemmer;
+	}
+
+	public void setStemmer(Stemmer stemmer) {
+		this.stemmer = stemmer;
+	}
+
+	public Stopwords getStopwords() {
+		return stopwords;
+	}
+
+	public void setStopwords(Stopwords stopwords) {
+		this.stopwords = stopwords;
+	}
+
+	public Vocabulary getVocabulary() {
+		return vocabulary;
+	}
+
+	public void setVocabulary(Vocabulary vocabulary) {
+		this.vocabulary = vocabulary;
+	}
+
+	public boolean isAdditionalInfo() {
+		return additionalInfo;
+	}
+
+	public void setAdditionalInfo(boolean additionalInfo) {
+		this.additionalInfo = additionalInfo;
+	}
+
+	public boolean isBuildGlobalDictionary() {
+		return buildGlobalDictionary;
+	}
+
+	public void setBuildGlobalDictionary(boolean buildGlobalDictionary) {
+		this.buildGlobalDictionary = buildGlobalDictionary;
+	}
+
+	public String getVocabularyName() {
+		return vocabularyName;
+	}
+
+	public void setVocabularyName(String vocabularyName) {
+		this.vocabularyName = vocabularyName;
+	}
+
+	public String getVocabularyDirectory() {
+		return vocabularyDirectory;
+	}
+
+	public void setVocabularyDirectory(String vocabularyDirectory) {
+		this.vocabularyDirectory = vocabularyDirectory;
+	}
+	
+	public int getTopicsPerDocument() {
+		return topicsPerDocument;
+	}
+
+	public void setTopicsPerDocument(int topicsPerDocument) {
+		this.topicsPerDocument = topicsPerDocument;
+	}
+
+	public int getMinNumOccur() {
+		return minNumOccur;
+	}
+
+	public void setMinNumOccur(int minNumOccur) {
+		this.minNumOccur = minNumOccur;
+		this.mauiFilter.setMinNumOccur(minNumOccur);
 	}
 }
