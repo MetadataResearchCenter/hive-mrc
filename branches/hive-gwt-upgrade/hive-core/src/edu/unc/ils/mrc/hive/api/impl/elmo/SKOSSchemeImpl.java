@@ -348,6 +348,11 @@ public class SKOSSchemeImpl implements SKOSScheme {
 		}
 		return terms;
 	}
+	
+	@Override
+	public String getH2Path() {
+		return this.h2Directory;
+	}
 
 	@Override
 	public String getLastDate() {
