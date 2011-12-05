@@ -1,12 +1,15 @@
 package maui.vocab;
 
 import java.io.File;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Vector;
 
 import org.apache.commons.dbcp.ConnectionFactory;
@@ -193,7 +196,7 @@ public class VocabularyH2 implements Vocabulary
     {
         Vector<String> ids = new Vector<String>();
 
-        String id = null;
+        
         if (normalized != null) {
             Connection con = null;
             PreparedStatement ps = null;
@@ -205,21 +208,29 @@ public class VocabularyH2 implements Vocabulary
                 ps = con.prepareStatement(sql);
                 ps.setString(1, normalized);
                 ResultSet rs = ps.executeQuery();
+                List<String> tmp = new ArrayList<String>();
                 while (rs.next()) {
-                    id = rs.getString(1);
-                    ids.add(id);
+                    String id = rs.getString(1);
+                    tmp.add(id);
                 }
                 
                 String sql2 = "select value from vocabulary_use where id = ?";
-
                 ps2 = con.prepareStatement(sql2);
-                ps2.setString(1, normalized);
-                ResultSet rs2 = ps2.executeQuery();
-                while (rs2.next())
+                for (String id: tmp)
                 {
-                    id = rs2.getString(1);
-                    ids.add(id);
+                    ps2.setString(1, id);
+                    ResultSet rs2 = ps2.executeQuery();
+                    if (rs2.next())
+                    {
+                        String id2 = rs2.getString(1);
+                        ids.add(id2);
+                    }
+                    else
+                    {
+                    	ids.add(id);
+                    }
                 }
+
 
             } catch (SQLException e) {
                 e.printStackTrace();
