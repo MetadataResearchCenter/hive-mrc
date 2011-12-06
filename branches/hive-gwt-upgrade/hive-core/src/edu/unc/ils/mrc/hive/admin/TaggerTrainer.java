@@ -39,7 +39,7 @@ import org.openrdf.sail.nativerdf.NativeStore;
 
 import edu.unc.ils.mrc.hive.HiveException;
 import edu.unc.ils.mrc.hive.api.SKOSScheme;
-import edu.unc.ils.mrc.hive.ir.tagging.KEAModelGenerator;
+import edu.unc.ils.mrc.hive.ir.tagging.*;
 
 /**
  * This class train the tagger from a SKOS/RDF file and some domain oriented 
@@ -57,13 +57,17 @@ public class TaggerTrainer {
 
 	}
 
-	public void trainAutomaticIndexingModule() throws HiveException {
-		logger.trace("trainAutomaticIndexingModule");
-		
+	public void trainKEAAutomaticIndexingModule() throws HiveException {
+		logger.trace("trainKEAAutomaticIndexingModule");
 		KEAModelGenerator generator = new KEAModelGenerator(this.schema);
 		generator.createModel(this.schema.getStopwordsPath());
-
 	}
+	
+	public void trainMauiAutomaticIndexingModule() throws HiveException {
+		logger.trace("trainMauiAutomaticIndexingModule");
+		MauiModelGenerator generator = new MauiModelGenerator(this.schema);
+		generator.createModel(this.schema.getStopwordsPath());
+	}	
 
 	/**
 	 * @param args
