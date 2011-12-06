@@ -111,8 +111,8 @@ public class MauiModelBuilder implements OptionHandler {
 	/** Format of the vocabulary {skos,text} */
 	public String vocabularyFormat = null;
 	
-	/** Directory where vocabularies are stored **/
-	public String vocabularyDirectory = "data/vocabularies";
+	/** Directory where H2 vocabulary is stored **/
+	public String vocabularyDirectory = null;
 
 	/** Document language {en,es,de,fr,...} */
 	public String documentLanguage = "en";
@@ -226,6 +226,55 @@ public class MauiModelBuilder implements OptionHandler {
 
 	public boolean getDebug()	{
 		return debugMode;
+	}
+	
+	public void setInputDirectoryName(String trainingDirName) {
+		this.inputDirectoryName = trainingDirName;
+	}
+	
+	public void setStopwords(String stopwordsPath) {
+		this.stopwords = new StopwordsEnglish(stopwordsPath);
+	}
+	
+    // Set model path and name from voc properties file
+	public void setModelName(String modelName) {
+		this.modelName = modelName;
+	}
+	
+	public void setVocabularyName(String vocName) {
+		this.vocabularyName = vocName;
+	}
+
+	public void setVocabularyDirectory(String vocDir) {
+		this.vocabularyDirectory = vocDir;
+	}
+	
+	public void setVocabularyFormat(String vocFormat) {
+		this.vocabularyFormat = vocFormat;
+	}
+
+	public void setDocumentEncoding(String encoding) {
+		this.documentEncoding = encoding;
+	}
+	
+	public void setDocumentLanguage(String lang) {
+		this.documentLanguage = lang;
+	}
+
+	public void setStemmer(Stemmer stem) {
+		this.stemmer = stem;
+	}
+	
+	public void setMaxPhraseLength(int len) {
+		this.maxPhraseLength = len;
+	}
+	
+	public void setMinPhraseLength(int len) {
+		this.minPhraseLength = len;
+	}
+	
+	public void setMinNumOccur(int occ) {
+		this.minNumOccur = occ;
 	}
 	
 	public void setBasicFeatures(boolean useBasicFeatures) {
@@ -590,8 +639,6 @@ public class MauiModelBuilder implements OptionHandler {
 			loadThesaurus(stemmer, stopwords, vocabularyDirectory);
 			mauiFilter.setVocabulary(vocabulary);
 		}
-
-		
 
 		System.err.println("-- Reading the input documents... ");
 
