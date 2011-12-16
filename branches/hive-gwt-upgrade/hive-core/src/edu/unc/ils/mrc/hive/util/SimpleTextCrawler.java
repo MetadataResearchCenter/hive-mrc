@@ -6,9 +6,12 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -23,6 +26,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.cli.BasicParser;
@@ -158,9 +162,10 @@ public class SimpleTextCrawler
                                         keyFileName = fileName + ".key";
                                         htmlFileName = fileName + ".html";
 										System.out.println("txtFileName = "	+ txtFileName);
-										outtxt = new PrintWriter(outputDir + txtFileName);
-										outkey = new PrintWriter(outputDir + keyFileName);
-										outhtml = new PrintWriter(outputDir + htmlFileName);
+										outtxt = new PrintWriter(new OutputStreamWriter(new FileOutputStream(outputDir + File.separator + txtFileName), "UTF-8"));
+										outkey = new PrintWriter(new OutputStreamWriter(new FileOutputStream(outputDir + File.separator + keyFileName), "UTF-8"));
+										outhtml = new PrintWriter(new OutputStreamWriter(new FileOutputStream(outputDir + File.separator + htmlFileName), "UTF-8"));
+										System.out.println(cell.getStringCellValue());
 										URL url = new URL(cell.getStringCellValue());
 										String text = sc.getTextAndHTML(url,numberOfHops,differencingEnabled);
 										outtxt.print(text);
@@ -184,10 +189,10 @@ public class SimpleTextCrawler
 						}
 					}
 				}	 catch (IOException e) {
-					logger.error("Unable to read file " + urlFileName);
+					logger.error("Unable to read file " + urlFileName, e);
 				}
 			} catch (NumberFormatException e) {
-				logger.error("Number of hops must be an integer value. ");
+				logger.error("Number of hops must be an integer value.");
 			}
 			catch (SecurityException e) {
 				logger.error("Unable to create directory " + outputDir);
@@ -227,6 +232,9 @@ public class SimpleTextCrawler
 		if (pos > 0)
 		    fname = fname.substring(pos+1);
 		fname = fname.replace(".","_");
+		fname = fname.replace(" ", "_");
+		fname = fname.replace(":", "_");
+		fname = fname.replace("?", "_");
 		return fname;
 	}
 
@@ -383,7 +391,6 @@ public class SimpleTextCrawler
 			
 			Header contentType = entity.getContentType();
 			
-			
 			try
 			{
 				// Only process links of type text/html
@@ -395,9 +402,10 @@ public class SimpleTextCrawler
 			
 			// Read the response
 			InputStream is = entity.getContent();	
+			BufferedReader in = new BufferedReader(new InputStreamReader(is, "UTF-8"));
 			StringWriter sw = new StringWriter();
 			int c;
-			while ((c = is.read()) != -1)
+			while ((c = in.read()) != -1)
 				sw.write(c);
 			is.close();
 			sw.close();
@@ -453,7 +461,7 @@ public class SimpleTextCrawler
 			{
 				diffText = getDiff(tmpText, baseText);
 			
-				diffText = diffText.replaceAll("\\s+", " ");
+				//diffText = diffText.replaceAll("\\s+", " ");
 				diffText = diffText.replaceAll(tmpUrl.toLowerCase(), "");
 				text += diffText;
 			}
@@ -501,7 +509,7 @@ public class SimpleTextCrawler
 	 */
 	protected String getTextFromHtml(String html) throws IOException, SAXException, TikaException 
 	{
-		InputStream is = new ByteArrayInputStream(html.getBytes());
+		InputStream is = new ByteArrayInputStream(html.getBytes("UTF-8"));
 		Metadata metadata = new Metadata();
 		Parser parser = new AutoDetectParser();
 		ContentHandler handler = new BodyContentHandler(-1);
@@ -530,7 +538,9 @@ public class SimpleTextCrawler
 		String name = path.substring(slash + 1);
 		if (name.length() > 0) {
 			metadata.set(Metadata.RESOURCE_NAME_KEY, name);
-		}		
+			
+		}	
+		metadata.set(Metadata.CONTENT_ENCODING, "UTF-8");
 		Parser parser = new AutoDetectParser();
 		ContentHandler handler = new BodyContentHandler(-1);
 		parser.parse(is, handler, metadata);
@@ -553,7 +563,9 @@ public class SimpleTextCrawler
 		{
 			String link = tagmatch.group(1);
 			if (valid(link)) {
-				links.add(makeAbsolute(baseUrl, link));
+				String absoluteUrl = makeAbsolute(baseUrl, link);
+				if (!StringUtils.isEmpty(absoluteUrl))
+					links.add(absoluteUrl);
 			}
 		}	
 		
@@ -571,7 +583,7 @@ public class SimpleTextCrawler
 			Chunk c= delta.getOriginal();
 			List<String> lines = (List<String>) c.getLines();
 			for (String line : lines)
-				diff += line;
+				diff += line + "\n";
 		}
 		return diff;
 	}
@@ -604,6 +616,7 @@ public class SimpleTextCrawler
 			URI base = new URI(baseUrl);
 			absoluteUrl = base.resolve(relativeUrl).toString();
 		} catch (IllegalArgumentException e) {
+			absoluteUrl = "";
 			logger.warn(e);
 		} catch (URISyntaxException e) {
 			logger.warn(e);
