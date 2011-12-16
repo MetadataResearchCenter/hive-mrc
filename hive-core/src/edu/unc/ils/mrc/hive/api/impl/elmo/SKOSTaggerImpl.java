@@ -330,7 +330,15 @@ public class SKOSTaggerImpl implements SKOSTagger
 					String line = br.readLine();
 					while (line != null) {
 						String[] elements = line.split("\t");
-						String concept = elements[1];
+						String uri = elements[1];
+						String[] uri_elements = uri.split("#");
+						SKOSConcept concept = searcher.searchConceptByURI(
+								uri_elements[0] + "#", uri_elements[1]);
+						concept.setScore(new Double(elements[2]));
+						result.add(concept);
+						line = br.readLine();
+						
+						/*
 						List<SKOSConcept> concepts = searcher
 								.searchConceptByKeyword(concept);
 						if (concepts.size() > 0) {
@@ -338,7 +346,7 @@ public class SKOSTaggerImpl implements SKOSTagger
 					        result.add(concepts.get(0));
 					        //logger.debug("concept QName = " + concepts.get(0).getQName());
 						}
-				        line = br.readLine();
+				        */
 					}
 					br.close();
 					isr.close();
