@@ -649,8 +649,9 @@ public class MauiTopicExtractor implements OptionHandler {
 								printer.print(term);
 							}
 							*/
-							printer.print(topRankedInstances[i].
-									stringValue(mauiFilter.getNormalizedFormIndex()));
+							printer.print(vocabulary.getIDFromPrefLabel(term));
+							//printer.print(topRankedInstances[i].
+							//		stringValue(mauiFilter.getNormalizedFormIndex()));
 							printer.print("\t");
 							printer.print(Utils.
 									doubleToString(topRankedInstances[i].
