@@ -425,6 +425,7 @@ public class MauiTopicExtractor implements OptionHandler {
 			if (debugMode) {
 				System.err.println("--- Loading the vocabulary...");
 			}
+			//vocabulary = new VocabularyJena(vocabularyName, vocabularyFormat, vocabularyDirectory);
 			vocabulary = new VocabularyH2(vocabularyName, vocabularyFormat, vocabularyDirectory);
 			vocabulary.setStemmer(st);
 			vocabulary.setStopwords(sw);

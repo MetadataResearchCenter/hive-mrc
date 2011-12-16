@@ -120,8 +120,11 @@ public class SKOSSchemeImpl implements SKOSScheme {
 	/* Autocomplete index path */
 	private String autocompletePath;
 	
-	/* Stemmer class name */
-	private String stemmerClass;
+	/* KEA stemmer class name */
+	private String keaStemmerClass;
+	
+	/* Maui stemmer class name */
+	private String mauiStemmerClass;
 	
 	private HiveVocabulary hiveVocab;
 	
@@ -253,11 +256,17 @@ public class SKOSSchemeImpl implements SKOSScheme {
 			if (autocompletePath == null || autocompletePath.isEmpty())
 				logger.warn("autocomplete property is empty");
 			
-			// Stemmer class
-			this.stemmerClass = properties.getProperty("stemmerClass", "kea.stemmer.PorterStemmer");
-			System.out.println("Using stemmer " + stemmerClass);
-			if (stemmerClass == null || stemmerClass.isEmpty())
-				logger.warn("stemmerClass property is empty, defaulting to kea.stemer.PorterStemmer");
+			// kea stemmer class
+			this.keaStemmerClass = properties.getProperty("keaStemmerClass", "kea.stemmer.PorterStemmer");
+			System.out.println("Using kea stemmer " + keaStemmerClass);
+			if (keaStemmerClass == null || keaStemmerClass.isEmpty())
+				logger.warn("keaStemmerClass property is empty, defaulting to kea.stemer.PorterStemmer");
+			
+			// maui stemmer class
+			this.mauiStemmerClass = properties.getProperty("mauiStemmerClass", "maui.stemmer.PorterStemmer");
+			System.out.println("Using maui stemmer " + mauiStemmerClass);
+			if (mauiStemmerClass == null || mauiStemmerClass.isEmpty())
+				logger.warn("mauiStemmerClass property is empty, defaulting to maui.stemer.PorterStemmer");
 			
 			fis.close();
 			
@@ -504,8 +513,15 @@ public class SKOSSchemeImpl implements SKOSScheme {
 	}
 	
 	@Override
-	public String getStemmerClass()
+	public String getKeaStemmerClass()
 	{
-		return stemmerClass;
+		return keaStemmerClass;
+	}
+	
+	
+	@Override
+	public String getMauiStemmerClass()
+	{
+		return mauiStemmerClass;
 	}
 }
