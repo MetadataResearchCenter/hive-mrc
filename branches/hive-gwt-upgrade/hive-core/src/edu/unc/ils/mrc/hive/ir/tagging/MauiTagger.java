@@ -57,7 +57,7 @@ public class MauiTagger implements Tagger{
 		this.te.setVocabularyFormat("skos");
 		this.te.setDocumentEncoding("UTF-8");
 		this.te.setDocumentLanguage("en"); // es for Spanish, fr for French
-		String stemmerClass = schema.getStemmerClass();
+		String stemmerClass = schema.getMauiStemmerClass();
 		try
 		{
 			Class cls = Class.forName(stemmerClass);
@@ -78,6 +78,7 @@ public class MauiTagger implements Tagger{
 		}
 
 		this.te.loadThesaurus(this.te.getStemmer(), this.te.getStopwords(), schema.getH2Path());   
+		//this.te.loadThesaurus(this.te.getStemmer(), this.te.getStopwords(), schema.getRdfPath());   
 	}
 
 	/**

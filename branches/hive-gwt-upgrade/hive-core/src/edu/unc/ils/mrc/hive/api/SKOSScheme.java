@@ -87,6 +87,7 @@ public interface SKOSScheme {
 	public void close() throws Exception;
 	public List<AutocompleteTerm> suggestTermsFor(String str, int numTerms) throws Exception;
 	public HiveVocabulary getHiveVocabulary();
-	public String getStemmerClass();
+	public String getKeaStemmerClass();
+	public String getMauiStemmerClass();
 	
 }

@@ -109,7 +109,7 @@ public class VocabularyH2 extends Vocabulary
 		
 		try
 		{
-			Class cls = Class.forName(scheme.getStemmerClass());
+			Class cls = Class.forName(scheme.getKeaStemmerClass());
 			Stemmer stemmer = (Stemmer)cls.newInstance();
 			setStemmer(stemmer);
 		} catch (Exception e) {

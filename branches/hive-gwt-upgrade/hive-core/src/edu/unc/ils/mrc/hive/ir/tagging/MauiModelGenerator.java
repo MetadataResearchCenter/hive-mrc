@@ -76,7 +76,7 @@ public class MauiModelGenerator {
 		String modelPath = schema.getMauiModelPath();
 //		String vocabularyPath = schema.getRdfPath();
 		String stopwordsPath = schema.getStopwordsPath();
-		String stemmerClass = schema.getStemmerClass();
+		String stemmerClass = schema.getMauiStemmerClass();
 	
 		
 		this.mm = new MauiModelBuilder();
