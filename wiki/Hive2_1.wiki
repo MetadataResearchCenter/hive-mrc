@@ -8,7 +8,7 @@ The HIVE 2.1 release includes the following major features:
  * Issue [http://code.google.com/p/hive-mrc/issues/detail?id=13&can=1 #13]: Upgrade to GWT 2.3
  * Issue [http://code.google.com/p/hive-mrc/issues/detail?id=38 #38]: Add differencing support for website indexing
  * Issue [http://code.google.com/p/hive-mrc/issues/detail?id=39 #39]: Add support for proxy server configuration when indexing websites
-
+ * Issue [http://code.google.com/p/hive-mrc/issues/detail?id=40 #40]: Add command line support to {{{SimpleTextCrawler}}}
 
 The HIVE 2.1 release includes the following minor features and bug fixes:
  * Fixed minor UI bugs on home and indexing pages.
