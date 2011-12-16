@@ -638,4 +638,9 @@ public class VocabularyJena implements Serializable, Vocabulary {
 		return result.trim();
 	}
 
+	@Override
+	public String getIDFromPrefLabel(String prefLabel) {
+		return termIdIndex.get(prefLabel);
+	}
+
 }

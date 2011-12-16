@@ -69,5 +69,7 @@ public interface Vocabulary {
      * @return a vector with ids related to the input id by a specified relation
      */
     public abstract Vector<String> getRelated(String id, String relation);
+    
+    public abstract String getIDFromPrefLabel(String prefLabel);
 
 }
