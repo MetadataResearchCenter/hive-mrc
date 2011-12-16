@@ -1,5 +1,5 @@
 #summary Release notes
 
-
-* [Hive2_1 HIVE 2.1]
-* [AboutHive2 HIVE 2.0]
+ 
+ * [Hive2_1 HIVE 2.1]
+ * [AboutHive2 HIVE 2.0]
