@@ -186,6 +186,42 @@ public class VocabularyH2 implements Vocabulary
         }
         return id;
     }
+    
+    public String getIDFromPrefLabel(String prefLabel) 
+    {
+        String id = null;
+        if (prefLabel != null) {
+            Connection con = null;
+            PreparedStatement ps = null;
+            PreparedStatement ps2 = null;
+            try {
+            	String sql = "select id from vocabulary_enrev where value = ?";
+                
+                con = getConnection();
+                ps = con.prepareStatement(sql);
+                ps.setString(1, prefLabel);
+                ResultSet rs = ps.executeQuery();
+                while (rs.next())
+                    id = rs.getString(1);
+        
+            } catch (SQLException e) {
+                e.printStackTrace();
+            } finally {
+                try
+                {
+                    if (con != null) 
+                        con.close();
+                    if (ps != null)
+                        ps.close();
+                    if (ps2 != null)
+                        ps2.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return id;
+    }
 
     /**
      * Returns the id of the given term
