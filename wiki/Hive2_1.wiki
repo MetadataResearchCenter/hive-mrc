@@ -3,11 +3,11 @@
 = Release Notes =
 
 The HIVE 2.1 release includes the following major features:
- * Ability to select terms from the indexing results page and export in multiple formats (e.g., SKOS/XML, Dublin Core, MARCXML, MODS) http://code.google.com/p/hive-mrc/issues/detail?id=33
- * Add Maui indexing algorithm support (http://code.google.com/p/hive-mrc/issues/detail?id=37)
- * Upgrade to GWT 2.3 (http://code.google.com/p/hive-mrc/issues/detail?id=13&can=1)
- * Add differencing support for website indexing (http://code.google.com/p/hive-mrc/issues/detail?id=38)
- * [http://code.google.com/p/hive-mrc/issues/detail?id=39 Issue 39] Add support for proxy server configuration when indexing websites
+ * Issue [http://code.google.com/p/hive-mrc/issues/detail?id=33 #33]: Ability to select terms from the indexing results page and export in multiple formats (e.g., SKOS/XML, Dublin Core, MARCXML, MODS) 
+ * Issue [http://code.google.com/p/hive-mrc/issues/detail?id=37 #37]: Add Maui indexing algorithm support
+ * Issue [http://code.google.com/p/hive-mrc/issues/detail?id=13&can=1 #13]: Upgrade to GWT 2.3
+ * Issue [http://code.google.com/p/hive-mrc/issues/detail?id=38 #38]: Add differencing support for website indexing
+ * Issue [http://code.google.com/p/hive-mrc/issues/detail?id=39 #39]: Add support for proxy server configuration when indexing websites
 
 
 The HIVE 2.1 release includes the following minor features and bug fixes:
