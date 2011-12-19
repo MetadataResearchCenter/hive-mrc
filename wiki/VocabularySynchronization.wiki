@@ -13,17 +13,17 @@ Two new optional properties have been added to the {{{lcsh.properties}}} file:
   * {{{creationDate}}}:  Creation date of the SKOS/RDF file. This is used to determine the last update date during the initial synchronization.
   * {{{atomFeedURL}}}: URL of the atom feed used for synchronization.
 
-== H2 Database Chances ==
+== Database Schema Changes ==
 
-The HIVE 2.0 API introduces a new SETTINGS table in the H2 database for each vocabulary. The SETTINGS table includes a new column LAST_UPDATE that is updated during each import or add/update/remove of a concept. The last update date is used during sychronization.
+The HIVE 2.0 release introduces a new SETTINGS table in the H2 database for each vocabulary. The SETTINGS table includes a new column LAST_UPDATE that is updated during each import or add/update/remove of a concept. The last update date is used during sychronization.
 
 
-== HIVE-Core ==
+== HIVE Core ==
 
 A new class {{{edu.unc.ils.mrc.hive.sync.lcsh.AtomSynchronizer}}} has been added to the {{{hive-core.jar}}}. This class implements the actual synchronization process -- reading updated concepts from the atom feed and acting on the HIVE data store. Adds, updates, and removes are applied across each of the HIVE indexes (Sesame, Lucene, H2).
 
 
-== HIVE-Web ==
+== HIVE Web ==
 
 Automatic synchronization has been implemented using the [http://www.quartz-scheduler.org/ Quartz] scheduler in the {{{hiveweb}}} web application.
 
