@@ -23,7 +23,7 @@
  * Download and install Apache Ant (http://ant.apache.org/)
    * apache-ant-1.8.2 used for this documentation
 
- * Download and install GWT 1.7.1 
+ * Download and install GWT 2.3.0 
    * http://code.google.com/webtoolkit/versions.html
    * TODO: Upgrade to latest GWT
 
@@ -36,7 +36,6 @@
    * Site: http://subclipse.tigris.org/update_1.6.x
 
  * Install Google Eclipse Plugin
-   * Note: HIVE Web currently uses GWT 1.7. Do not install the latest SDK.
    * Using the Eclipse Update Manager
    * Site: http://dl.google.com/eclipse/plugin/3.6
    * Select "Plugin" only
