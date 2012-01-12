@@ -25,7 +25,6 @@
 
  * Download and install GWT 2.3.0 
    * http://code.google.com/webtoolkit/versions.html
-   * TODO: Upgrade to latest GWT
 
  * Download and install Eclipse IDE for Java EE Developers
    * http://www.eclipse.org/downloads/
