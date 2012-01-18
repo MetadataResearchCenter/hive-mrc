@@ -64,7 +64,7 @@
    * Project > Properties > Google > Web Toolkit 
      * Check "Use Web Toolkit"
      * Select "Configure SDKs..."
-     * Web Toolkit > Add > Path to gwt 1.7.1
+     * Web Toolkit > Add > Path to gwt 2.3.0
    * Project > Properties > Java Build Path > Order and Export 
      * Move GWT SDK to the top of the order
 
