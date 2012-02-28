@@ -18,17 +18,17 @@
 
  * Download and install Tomcat 
    * http://tomcat.apache.org/download-60.cgi 
-   * apache-tomcat-6.0.30 used for this documentation
+   * apache-tomcat-6.0.35 used for this documentation
 
  * Download and install Apache Ant (http://ant.apache.org/)
    * apache-ant-1.8.2 used for this documentation
 
- * Download and install GWT 2.3.0 
+ * Download and install GWT 2.4.0 
    * http://code.google.com/webtoolkit/versions.html
 
  * Download and install Eclipse IDE for Java EE Developers
    * http://www.eclipse.org/downloads/
-   * Eclipse Helios (3.6) used for this documentation
+   * Eclipse Helios (3.7) used for this documentation
 
  * Install Subclipse Eclipse Plugin
    * Using the Eclipse Update Manager
@@ -36,18 +36,17 @@
 
  * Install Google Eclipse Plugin
    * Using the Eclipse Update Manager
-   * Site: http://dl.google.com/eclipse/plugin/3.6
+   * Site: http://dl.google.com/eclipse/plugin/3.7
    * Select "Plugin" only
 
  * Configure Tomcat Server in Eclipse
-   * Window > Preferences > Server > Runtime Environment
+   * Window > Preferences > Server > Runtime Environment (Note for Mac Users: Preferences are under Eclipse, not Window)
    * Add "Apache Tomcat v 6.0"
 
 = Checkout the Projects = 
 
  * Window > Preferences > General > Workspace 
-   * Text File Encoding: ISO-8859-1
-   * TODO: Convert to UTF-8
+   * Text File Encoding: UTF-8
  * Window > Show View > Other > SVN Repositories
   * Add SVN Repository 
    * Location: https://hive-mrc.googlecode.com/svn/trunk
@@ -64,7 +63,7 @@
    * Project > Properties > Google > Web Toolkit 
      * Check "Use Web Toolkit"
      * Select "Configure SDKs..."
-     * Web Toolkit > Add > Path to gwt 2.3.0
+     * Web Toolkit > Add > Path to gwt 2.4.0
    * Project > Properties > Java Build Path > Order and Export 
      * Move GWT SDK to the top of the order
 
