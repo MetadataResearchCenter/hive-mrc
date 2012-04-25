@@ -126,6 +126,9 @@ public class SKOSSchemeImpl implements SKOSScheme {
 	/* Maui stemmer class name */
 	private String mauiStemmerClass;
 	
+	/* RDF Format */
+	private String rdfFormat;
+	
 	private HiveVocabulary hiveVocab;
 	
 	private String date;
@@ -187,6 +190,11 @@ public class SKOSSchemeImpl implements SKOSScheme {
 			this.schemaURI = properties.getProperty("uri");
 			if (schemaURI.isEmpty())
 				logger.warn("uri property is empty");
+			
+			// 
+			this.rdfFormat = properties.getProperty("rdfFormat", "rdfxml");
+			if (rdfFormat.isEmpty())
+				logger.warn("rdfFormat property is empty");
 			
 			// Lucene index path
 			this.indexDirectory = properties.getProperty("index");
@@ -461,13 +469,13 @@ public class SKOSSchemeImpl implements SKOSScheme {
 
 	@Override
 	public void importConcepts(String path) throws Exception {
-		hiveVocab.importConcepts(path);
+		hiveVocab.importConcepts(path, rdfFormat);
 	}
 	
 	@Override
 	public void importConcepts(String path, boolean doSesame, boolean doLucene,
 			boolean doH2, boolean doH2KEA, boolean doAutocomplete) throws Exception {
-		hiveVocab.importConcepts(path, doSesame, doLucene, doH2, doH2KEA, doAutocomplete);
+		hiveVocab.importConcepts(path, doSesame, doLucene, doH2, doH2KEA, doAutocomplete, rdfFormat);
 	}
 
 	@Override
