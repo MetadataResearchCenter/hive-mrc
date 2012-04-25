@@ -53,9 +53,10 @@ public interface HiveVocabulary
 	/**
 	 * Import concepts from the specified path to this Hive vocabulary
 	 * @param path
+	 * @param format
 	 * @throws Exception
 	 */
-	public void importConcepts(String path) throws Exception;
+	public void importConcepts(String path, String format) throws Exception;
 	
 	/**
 	 * Import concepts from the specified path to this Hive vocabulary,
@@ -66,10 +67,11 @@ public interface HiveVocabulary
 	 * @param doH2
 	 * @param doKEAH2
 	 * @param doAutocomplete
+	 * @param format
 	 * @throws Exception
 	 */
 	public void importConcepts(String path, boolean doSesame, boolean doLucene, boolean doH2, 
-			boolean doKEAH2, boolean doAutocomplete) throws Exception;
+			boolean doKEAH2, boolean doAutocomplete, String format) throws Exception;
 	
 	/**
 	 * Import a single concept from the specified path into this Hive vocabulary

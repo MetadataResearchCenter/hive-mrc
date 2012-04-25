@@ -403,9 +403,9 @@ public class HiveVocabularyImpl implements HiveVocabulary
 	}
 
 	@Override
-	public void importConcepts(String path) throws Exception 
+	public void importConcepts(String path, String format) throws Exception 
 	{
-		importConcepts(path, true, true, true, true, true);
+		importConcepts(path, true, true, true, true, true, format);
 	}
 	/**
 	 * Imports all concepts from the specified RDF/XML formatted file. 
@@ -414,15 +414,26 @@ public class HiveVocabularyImpl implements HiveVocabulary
 	 */
 	@Override
 	public void importConcepts(String path, boolean doSesame, boolean doLucene, 
-			boolean doH2, boolean doKEAH2, boolean doAutocomplete) throws Exception 
+			boolean doH2, boolean doKEAH2, boolean doAutocomplete, String format) throws Exception 
 	{
 		logger.info("importConcepts " + path);
+		
+		RDFFormat rdfformat = RDFFormat.RDFXML;
+		if (format.equals("rdfxml")) {
+			rdfformat = RDFFormat.RDFXML;
+		} else if (format.equals("n3")) {
+			rdfformat = RDFFormat.N3;
+		} else if (format.equals("ntriples")) {
+			rdfformat = RDFFormat.NTRIPLES;
+		} else if (format.equals("turtle")) {
+			rdfformat = RDFFormat.TURTLE;
+		}		
 		
 		// Import RDF/XML directly to Sesame
 		if (doSesame)
 		{
 			logger.info("Importing " + path + " to Sesame store");
-			manager.getConnection().add(new File(path), "", RDFFormat.RDFXML);
+			manager.getConnection().add(new File(path), "", rdfformat);
 			manager.flush();
 			logger.info("Import to Sesame store complete");
 		}
