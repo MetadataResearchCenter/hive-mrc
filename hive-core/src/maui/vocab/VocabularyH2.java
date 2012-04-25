@@ -203,6 +203,17 @@ public class VocabularyH2 implements Vocabulary
                 ResultSet rs = ps.executeQuery();
                 while (rs.next())
                     id = rs.getString(1);
+                rs.close();
+                
+            	String sql2 = "select value from vocabulary_use where id = ?";
+
+                ps2 = con.prepareStatement(sql2);
+                ps2.setString(1, id);
+                ResultSet rs2 = ps2.executeQuery();
+                while (rs2.next())
+                    id = rs2.getString(1);
+                rs2.close();
+                
         
             } catch (SQLException e) {
                 e.printStackTrace();
