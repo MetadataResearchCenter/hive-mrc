@@ -265,16 +265,16 @@ public class SKOSSchemeImpl implements SKOSScheme {
 				logger.warn("autocomplete property is empty");
 			
 			// kea stemmer class
-			this.keaStemmerClass = properties.getProperty("keaStemmerClass", "kea.stemmer.PorterStemmer");
+			this.keaStemmerClass = properties.getProperty("keaStemmerClass", "kea.stemmers.PorterStemmer");
 			System.out.println("Using kea stemmer " + keaStemmerClass);
 			if (keaStemmerClass == null || keaStemmerClass.isEmpty())
-				logger.warn("keaStemmerClass property is empty, defaulting to kea.stemer.PorterStemmer");
+				logger.warn("keaStemmerClass property is empty, defaulting to kea.stemers.PorterStemmer");
 			
 			// maui stemmer class
-			this.mauiStemmerClass = properties.getProperty("mauiStemmerClass", "maui.stemmer.PorterStemmer");
+			this.mauiStemmerClass = properties.getProperty("mauiStemmerClass", "maui.stemmers.PorterStemmer");
 			System.out.println("Using maui stemmer " + mauiStemmerClass);
 			if (mauiStemmerClass == null || mauiStemmerClass.isEmpty())
-				logger.warn("mauiStemmerClass property is empty, defaulting to maui.stemer.PorterStemmer");
+				logger.warn("mauiStemmerClass property is empty, defaulting to maui.stemers.PorterStemmer");
 			
 			fis.close();
 			
