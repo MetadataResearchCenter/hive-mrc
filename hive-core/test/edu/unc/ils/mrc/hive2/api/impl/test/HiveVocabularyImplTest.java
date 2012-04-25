@@ -33,7 +33,7 @@ public class HiveVocabularyImplTest extends TestCase {
 		HiveH2IndexImpl h2Index = (HiveH2IndexImpl) ((HiveVocabularyImpl)vocabulary).getH2Index();
 		
 		// Import the test thesaurus
-		vocabulary.importConcepts("/Users/cwillis/dev/hive/hive-data/chocolate/chocolate.rdf");
+		vocabulary.importConcepts("/Users/cwillis/dev/hive/hive-data/chocolate/chocolate.rdf", "rdfxml");
 		
 		List<HiveConcept> hcs = h2Index.findConceptsByName("m%", false);
 		Assert.assertEquals(hcs.size(), 3);
@@ -46,7 +46,7 @@ public class HiveVocabularyImplTest extends TestCase {
 		HiveIndex luceneIndex = ((HiveVocabularyImpl)vocabulary).getLuceneIndex();
 		
 		// Import the test thesaurus
-		vocabulary.importConcepts("/Users/cwillis/dev/hive/hive-data/chocolate/chocolate.rdf");
+		vocabulary.importConcepts("/Users/cwillis/dev/hive/hive-data/chocolate/chocolate.rdf", "rdfxml");
 		
 		//System.out.println("=====");
 		//((HiveVocabularyImpl)vocabulary).dumpStatements();
