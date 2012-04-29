@@ -33,9 +33,11 @@ public class TermSuggestionServlet extends HttpServlet
 	static final String PARAM_MIN_PHRASE_OCCURRENCES = "mp";
 	static final String PARAM_EXISTING_TERMS = "ex";
 	static final String PARAM_FORMAT = "fmt";
+	static final String PARAM_CALLBACK = "callback";
 	
 	static final String FORMAT_TREE = "tree";
 	static final String FORMAT_LIST = "list";
+
 	
 	public TermSuggestionServlet() {
 		super();
@@ -93,6 +95,11 @@ public class TermSuggestionServlet extends HttpServlet
 		if (StringUtils.isEmpty(format))
 			format = FORMAT_TREE;
 		
+		// Get the callback
+		String callback = request.getParameter(PARAM_CALLBACK);
+		if (StringUtils.isEmpty(callback))
+			callback = null;
+		
 		String json = "";
 		try
 		{
@@ -149,6 +156,10 @@ public class TermSuggestionServlet extends HttpServlet
 			errors.add("A server error has occurred.");
 		}
 			
+		if (callback != null)
+		{
+			json = callback + "(" + json + ");";
+		}
 		response.setContentType("text/json");
 		PrintWriter writer = new PrintWriter(response.getOutputStream());
 		if  (errors.size() > 0) {
