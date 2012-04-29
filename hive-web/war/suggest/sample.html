@@ -48,14 +48,12 @@ a:hover {
 }
 
 .close {
-	background: url(http://static.summon.serialssolutions.com/stylesheets/themes/classic/2.3/assets.png) repeat-x;
 	width: 16px; height: 16px;
 	background-position: 0 -180px;
 	float:right;
 }
 
 .widget-header {
-	background: url(http://static.summon.serialssolutions.com/stylesheets/themes/classic/2.3/hbackgrounds.png) repeat-x;
 	height: 23px;
 	background-position: 0 -180px;
 	background-color: #F3F3F3;
@@ -118,6 +116,7 @@ ul.dynatree-container
 	      selectMode: 2,
 	      minExpandLevel: 10,
 	      initAjax: {
+	    	  dataType: "jsonp",
 	          url: "/suggest?cv=" + cv + "&format=" + fmt + "&tx=" + text.value + "&mp=" + mp + "&ex=" + ignore.value
 	      },
 	      onSelect: function(select, node) {
