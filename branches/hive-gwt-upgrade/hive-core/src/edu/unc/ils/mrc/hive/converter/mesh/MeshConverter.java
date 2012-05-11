@@ -371,8 +371,8 @@ public class MeshConverter extends DefaultHandler
 	
 	public static void main (String[] args) throws SAXException, IOException, ParserConfigurationException {
 		
-		String xmlFile = "/Users/cwillis/dev/hive/sources/mesh/desc2011.xml"; //args[0];   // /usr/local/hive/sources/mesh/desc2011.xml
-		String skosFile = "/Users/cwillis/dev/hive/sources/mesh/mesh_06272011.rdf"; //args[1];  // /usr/local/hive/hive-data/mesh/mesh.rdf
+		String xmlFile = args[0];   // /usr/local/hive/sources/mesh/desc2011.xml
+		String skosFile = args[1];  // /usr/local/hive/hive-data/mesh/mesh.rdf
 	    SAXParserFactory spf = SAXParserFactory.newInstance();
 	    SAXParser saxParser = spf.newSAXParser();
 	    XMLReader xmlReader = saxParser.getXMLReader();
