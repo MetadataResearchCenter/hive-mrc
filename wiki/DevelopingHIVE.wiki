@@ -59,6 +59,7 @@
  * Checkout hive-web
    * Select "Checkout as a project configured using the New Project Wizard"
    * Select "Web > Dynamic Web Project"
+   * Select "Target Runtime" (Tomcat 6 requires Dynamic Web module version 2.5)
    * Content directory: war
    * Project > Properties > Google > Web Toolkit 
      * Check "Use Web Toolkit"
