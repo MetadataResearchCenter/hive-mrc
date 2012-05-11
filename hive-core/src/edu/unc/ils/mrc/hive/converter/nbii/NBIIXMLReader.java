@@ -125,7 +125,7 @@ public class NBIIXMLReader extends DefaultHandler
 			IOException, SAXException {
 		NBIIXMLReader lector = new NBIIXMLReader();
 		// lector.leer("/home/jose/Desktop/qual2009.xml");
-		lector.readThesaurus("/Users/cwillis/dev/hive/sources/nbii/repgen.xml");
+		lector.readThesaurus("/usr/local/hive/sources/nbii/repgen.xml");
 		System.out.println("Thesaurus Size: " + lector.thesaurus.getSize());
 		lector.thesaurus.printThesaurus("/tmp/nbii.rdf");
 

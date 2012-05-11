@@ -33,7 +33,7 @@ public class HiveVocabularyImplTest extends TestCase {
 		HiveH2IndexImpl h2Index = (HiveH2IndexImpl) ((HiveVocabularyImpl)vocabulary).getH2Index();
 		
 		// Import the test thesaurus
-		vocabulary.importConcepts("/Users/cwillis/dev/hive/hive-data/chocolate/chocolate.rdf", "rdfxml");
+		vocabulary.importConcepts("/usr/local/hive/hive-data/chocolate/chocolate.rdf", "rdfxml");
 		
 		List<HiveConcept> hcs = h2Index.findConceptsByName("m%", false);
 		Assert.assertEquals(hcs.size(), 3);
@@ -46,7 +46,7 @@ public class HiveVocabularyImplTest extends TestCase {
 		HiveIndex luceneIndex = ((HiveVocabularyImpl)vocabulary).getLuceneIndex();
 		
 		// Import the test thesaurus
-		vocabulary.importConcepts("/Users/cwillis/dev/hive/hive-data/chocolate/chocolate.rdf", "rdfxml");
+		vocabulary.importConcepts("/usr/local/hive/hive-data/chocolate/chocolate.rdf", "rdfxml");
 		
 		//System.out.println("=====");
 		//((HiveVocabularyImpl)vocabulary).dumpStatements();
@@ -106,7 +106,7 @@ public class HiveVocabularyImplTest extends TestCase {
 		// Import updated concept. This update removes broader relationship between 1550 and 217
 		vocabulary.importConcept(
 				new QName("http://www.godiva.com/product/godiva-dark-chocolate-bars-24-pc-/id/1550.gdv?#", 
-						"concept"),  "/Users/cwillis/dev/hive/hive-data/chocolate/chocolate_update2.rdf");
+						"concept"),  "/usr/local/hive/hive-data/chocolate/chocolate_update2.rdf");
 		
 		// Get the broader concept (217)
 		hc = vocabulary.findConcept(
@@ -204,92 +204,4 @@ public class HiveVocabularyImplTest extends TestCase {
 				hc.getRelatedConcepts().contains("http://www.godiva.com/product/godiva-dark-chocolate-bars-24-pc-/id/1550.gdv?#concept"));
 		
 	}
-	
-	
-	/*
-
-	
-	public void testImport() throws Exception 
-	{
-
-		// Import main RDF file
-		vocabulary.importConcepts("/Users/cwillis/dev/hive/hive-data/test/test.rdf");
-		int numConcepts = vocabulary.getNumConcepts();
-		Assert.assertEquals(numConcepts, 6);
-		try
-		{
-			vocabulary.importConcept(new QName("http://hive.nescent.org/test/test04#", "concept"), "/Users/cwillis/dev/hive/hive-data/test/remove_broader.rdf");
-			numConcepts = vocabulary.getNumConcepts();
-			HiveConcept hc = vocabulary.findConcept(new QName("http://hive.nescent.org/test/test04#", "concept"));
-			Assert.assertEquals(hc.getBroaderConcepts().size(), 0);
-		} catch (Exception e ) {
-			e.printStackTrace();
-		}
-	}
-	
-	public void testCreate() throws Exception 
-	{
-		HiveConcept concept = new HiveConcept();
-		concept.setPrefLabel("test");
-		concept.setQName(new QName("http://www.test.com", "123"));
-		
-		vocabulary.addConcept(concept);
-		
-		int numConcepts = vocabulary.getNumConcepts();
-		Assert.assertEquals(numConcepts, 1);
-		vocabulary.addConcept(concept);
-		
-		numConcepts = vocabulary.getNumConcepts();
-		Assert.assertEquals(numConcepts, 1);
-		
-		concept.setPrefLabel("test2");
-		vocabulary.updateConcept(concept);
-		numConcepts = vocabulary.getNumConcepts();
-		Assert.assertEquals(numConcepts, 1);
-		
-		vocabulary.removeConcept(concept);
-		
-		 numConcepts = vocabulary.getNumConcepts();
-		Assert.assertEquals(numConcepts, 0);
-	}
-	
-	public void testAddConcept() throws Exception 
-	{
-		
-		// Add a concept to an empty store
-		HiveConcept concept = new HiveConcept();
-		concept.setPrefLabel("Test Concept");
-		concept.setQName(new QName("http://hive.nescent.org/test/testConcept#", "concept"));
-		concept.addBroaderConcept("http://hive.nescent.org/test/testBroader1#concept");
-		concept.addBroaderConcept("http://hive.nescent.org/test/testBroader2#concept");
-		concept.addNarrowerConcept("http://hive.nescent.org/test/testNarrower1#concept");
-		concept.addRelatedConcept("http://hive.nescent.org/test/testRelated1#concept");
-		vocabulary.addConcept(concept);
-		
-		// Placeholder concepts are created for all relations
-		int numConcepts = vocabulary.getNumConcepts();
-		Assert.assertEquals(numConcepts, 5);
-		
-		// Confirm that the 
-		HiveConcept tmp = vocabulary.findConcept(new QName("http://hive.nescent.org/test/testConcept#", "concept"));
-		Assert.assertEquals(tmp.getPrefLabel(), "Test Concept");
-		Assert.assertEquals(tmp.getBroaderConcepts().get(0), "http://hive.nescent.org/test/testBroader1#concept");
-		Assert.assertEquals(tmp.getBroaderConcepts().get(1), "http://hive.nescent.org/test/testBroader2#concept");
-		Assert.assertEquals(tmp.getNarrowerConcepts().get(0), "http://hive.nescent.org/test/testNarrower1#concept");
-		Assert.assertEquals(tmp.getRelatedConcepts().get(0), "http://hive.nescent.org/test/testRelated1#concept");
-		
-		HiveConcept tmp2 = new HiveConcept();
-		tmp2.setPrefLabel("Broader Concept");
-		tmp2.setQName(new QName("http://hive.nescent.org/test/testBroader1#", "concept"));
-		vocabulary.updateConcept(tmp2);
-		
-		numConcepts = vocabulary.getNumConcepts();
-		Assert.assertEquals(numConcepts, 5);
-		
-		HiveConcept tmp3 = vocabulary.findConcept(new QName("http://hive.nescent.org/test/testBroader1#", "concept"));
-		Assert.assertEquals(tmp3.getPrefLabel(), "Broader Concept");
-
-	}
-	*/
-
 }
