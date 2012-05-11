@@ -1,0 +1,18 @@
+#summary HIVE 2.2 Release Notes
+
+= Release Notes =
+
+
+The HIVE 2.2 release includes the following minor features and bug fixes:
+ * Issue [http://code.google.com/p/hive-mrc/issues/detail?id=48 #48]: Add support for JSONP 
+ * Issue [http://code.google.com/p/hive-mrc/issues/detail?id=47 #47]: Add support for NCBI SKOS conversion 
+ * Issue [http://code.google.com/p/hive-mrc/issues/detail?id=46 #46]: Add EMBNE SKOS Converter 
+ * Issue [http://code.google.com/p/hive-mrc/issues/detail?id=45 #45]: MeshConverter patch
+ * Issue [http://code.google.com/p/hive-mrc/issues/detail?id=43 #43]: Add support for N3 import 
+ * Issue [http://code.google.com/p/hive-mrc/issues/detail?id=42 #42]: UTF-8 encoding issues 
+ * Issue [http://code.google.com/p/hive-mrc/issues/detail?id=41 #41]: Provide Links to the HIVE Wiki and HIVE googlecode from the demo 
+ * Issue [http://code.google.com/p/hive-mrc/issues/detail?id=18 #18]: skos view after search 
+ * Issue [http://code.google.com/p/hive-mrc/issues/detail?id=17 #17]:  * Issue [http://code.google.com/p/hive-mrc/issues/detail?id=18 #18]: skos view after search 
+
+
+
