@@ -13,7 +13,7 @@ public class TaggerTest extends TestCase {
 	public static void testKEAGetTagsForURI() throws MalformedURLException 
 	{
 		// Path to hive.properties
-		String confPath = "/Users/cwillis/dev/hive/conf/hive.properties";
+		String confPath = "/usr/local/hive/test/conf/hive.properties";
 
 		// Vocabulary name
 		String vocabulary = "agrovoc";

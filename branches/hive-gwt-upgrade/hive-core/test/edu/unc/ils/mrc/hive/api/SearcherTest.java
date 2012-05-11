@@ -27,10 +27,10 @@ public class SearcherTest
 	public static void main(String[] args) 
 	{
 		// Path to hive.properties
-		String confPath = "/Users/cwillis/dev/hive/conf/hive.properties"; // args[0];
+		String confPath = args[0];
 
 		// Vocabulary name
-		String vocabulary = "lcsh"; //args[2];
+		String vocabulary = args[2];
 
 		List<String> vocabularies = new ArrayList<String>();
 		vocabularies.add(vocabulary);
