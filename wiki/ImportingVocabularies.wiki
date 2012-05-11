@@ -18,6 +18,7 @@ Each vocabulary has its own configuration file, with the following format:
 name = NBII
 longName = CSA/NBII Biocomplexity Thesaurus 
 uri = http://thesaurus.nbii.gov 
+rdf_file = /usr/local/hive/hive-data/nbii/nbii3.rdf
 
 #Sesame Store
 store = /usr/local/hive/hive-data/nbii/store
@@ -25,18 +26,22 @@ store = /usr/local/hive/hive-data/nbii/store
 #Lucene Inverted Index 
 index = /usr/local/hive/hive-data/nbii/index
 
-#Alphabetical Index
-alpha_file = /usr/local/hive/hive-data/nbii/alphaIndex
+#Autocomplete index
+autocomplete = /usr/local/hive/hive-data/nbii/autocomplete
 
-#Top Concept Index       
-top_concept_file = /usr/local/hive/hive-data/nbii/topConceptIndex
+#H2 index
+h2 = /usr/local/hive/hive-data/nbii/nbiiH2
 
-#KEA data files          
+#Dummy tagger data files
+lingpipe_model = /usr/local/hive/hive-data/lingpipe/postagger/models/medtagModel
+
+
+#KEA and Maui data files          
 stopwords = /usr/local/hive/hive-data/nbii/KEA/data/stopwords/stopwords_en.txt
 kea_training_set = /usr/local/hive/hive-data/nbii/KEA/train
 kea_test_set = /usr/local/hive/hive-data/nbii/KEA/test
-rdf_file = /usr/local/hive/hive-data/nbii/nbii3.rdf
 kea_model = /usr/local/hive/hive-data/nbii/KEA/nbii
+maui_model = /usr/local/hive/hive-data/nbii/KEA/maui
 }}}
                                                                                    
 Place the configuration file in the same directory as the "hive.properties" file. The "hive.properties" file is used by SKOSServer identify which vocabularies will be opened.
@@ -65,33 +70,35 @@ AdminVocabularies takes these parameters:
 
 For example (with training): 
 {{{
-java  -Djava.ext.dirs=/path/to/tomcat6/webapps/ROOT/WEB-INF/lib  edu.unc.ils.mrc.hive.admin.AdminVocabularies /path/to/tomcat6/webapps/WEB-INF/conf/ lter train
+java  -Djava.ext.dirs=/path/to/tomcat6/webapps/ROOT/WEB-INF/lib  edu.unc.ils.mrc.hive.admin.AdminVocabularies -c <path to directory with hive.properties> -v <vocabulary name> [-a | -sldktmx]
 }}}
 
-To load the vocabulary without training, omit the parameter "train".
+Flags:
+{{{
+ -c <path>  Path to directory that contains hive.properties
+ -v <name>  Name of vocabulary to be initialized (e.g., agrovoc)
+ -s  Initialize Sesame index
+ -l  Initialize Lucene index
+ -d  Initialize H2 database
+ -k  Initialize KEA database
+ -t  Train KEA
+ -m  Train Maui
+ -x  Initialize autocomplete
+ -a  Initialize everything (equivalent of -sldktmxa)
+}}}
+
 
 Once the vocabulary has been loaded, you may start Tomcat and test to make sure the vocabulary is working properly.
-
-=== Reindexing in Lucene ===
-
-With the HIVE 1.1 release it is now possible to re-create the Lucene index for a vocabulary from an existing Sesame store. This process will skip the RDF import, KEA model generation and training.
-
-For example
-{{{
-java  -Djava.ext.dirs=/path/to/tomcat6/webapps/ROOT/WEB-INF/lib  edu.unc.ils.mrc.hive.admin.AdminVocabularies /path/to/tomcat6/webapps/WEB-INF/conf/ lcsh lucene-only
-}}}
 
 
 == Effects of AdminVocabularies ==
 
-The AdminVocabularies class uses a SKOSScheme that represents a SKOS vocabulary and an Importer which implements the import process. Importer is implemented as a Factory, although at this moment there is only one importer, for SKOS. Once an importer has been selected, the appropriate methods are called to store the thesaurus in appropriately indexed formats:
+AdminVocabularies creates the following directories:
+  * H2 database containing administrative tables for the HIVE service. If the -k flag is specified, tables are also created to support the KEA++ indexing algorithm.
+  * Lucene inverted index for searching. HIVE uses a document-centric approach to representing concepts in the inverted index. Each concept is represented as a document with multiple fields (e.g., preferred term, alternate terms, scope notes, etc).
+  * Sesame database to store SKOS/RDF. HIVE uses a NativeStore, so vocabularies will be stored on the file system.
+  * Lucene autocomplete index (if the -x flag is specified) 
+  * KEA++ (-t) and Maui (-m) statistical models used for automatic indexing.
 
-  * importThesaurustoDB(): adds data to the Sesame database. HIVE uses NativeStore, so vocabularies will be stored on the file system.
-  * importThesaurustoInvertedIndex(): creates a Lucene index to store concepts. We are following a document-oriented approach to represent concepts in the inverted index, so each concept is represented as a document with multiple fields. Each field represent the elements in the vocabulary: preferred term, broader terms, scope notes, etc.
-
-The Importer creates two additional indexes for every vocabulary, in order to optimize the access to different representations of the same vocabulary:
-
-  * Alphabetical index: an alphabetically ordered list which makes it easier to represent concepts alphabetically
-  * Hierarchical index: a hierarchical representation of the data in order to implement representations based on the hierarchical structure of the vocabularies.
 
 All indexes and databases can be stored wherever you need in your file system. The location of each database and index is defined in the properties file for the vocabulary in the conf directory.
