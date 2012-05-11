@@ -48,7 +48,9 @@ public class ConfigurationListener implements ServletContextListener {
   
   private static SKOSSearcher skosSearcher = null;
   private static SKOSServer skosServer = null;
-  private static SKOSTagger skosTagger = null;
+  private static SKOSTagger mauiTagger = null;
+  private static SKOSTagger keaTagger = null;
+  private static SKOSTagger dummyTagger = null;
   
   
   /*
@@ -82,8 +84,14 @@ public class ConfigurationListener implements ServletContextListener {
    * Getter for the skosTagger class field.
    * @return   the skosTagger class field
    */
-  public static SKOSTagger getSKOSTagger() {
-    return skosTagger;
+  public static SKOSTagger getSKOSTagger(String algorithm) {
+	  if (algorithm.equals("maui")) {
+		  return mauiTagger;
+	  } else if (algorithm.equals("kea")) {
+		  return keaTagger;
+	  } else {
+		  return dummyTagger;
+	  }
   }
 
 
@@ -132,7 +140,9 @@ public class ConfigurationListener implements ServletContextListener {
     if (skosServer != null) {
       skosSearcher = skosServer.getSKOSSearcher();
       logger.info("skosSearcher initialized");
-      skosTagger = skosServer.getSKOSTagger();
+      keaTagger = skosServer.getSKOSTagger("kea");
+      mauiTagger = skosServer.getSKOSTagger("maui");
+      dummyTagger = skosServer.getSKOSTagger("dummy");
       logger.info("skosTagger initialized");
     } 
   }
