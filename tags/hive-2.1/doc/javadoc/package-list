@@ -1,0 +1,11 @@
+edu.unc.ils.mrc.hive.admin
+edu.unc.ils.mrc.hive.api
+edu.unc.ils.mrc.hive.api.impl.elmo
+edu.unc.ils.mrc.hive.importers
+edu.unc.ils.mrc.hive.ir.lucene.indexing
+edu.unc.ils.mrc.hive.ir.lucene.search
+edu.unc.ils.mrc.hive.ir.tagging
+edu.unc.ils.mrc.hive.ir.tagging.dummy.nlp
+edu.unc.ils.mrc.hive.ir.tagging.dummy.ranking
+edu.unc.ils.mrc.hive.ir.tagging.dummy.tagger
+edu.unc.ils.mrc.hive.util

@@ -1,0 +1,227 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+  <title>Term Suggester</title>
+
+  <script src="/jquery/jquery-1.5.1.js"></script>	
+  <script src="/jquery/dynatree/jquery-ui.custom.js" type="text/javascript"></script>
+  <script src="/jquery/dynatree/jquery.cookie.js" type="text/javascript"></script>
+
+  <link href="/jquery/dynatree/ui.dynatree.css" rel="stylesheet" type="text/css">
+  <script src="/jquery/dynatree/jquery.dynatree.js" type="text/javascript"></script>
+<style>
+
+.buttons {
+  font-size: 10pt;
+  margin: .5em;
+  padding: .05em;
+  float: right;
+}
+
+body 
+{
+  font-family: arial;
+}
+
+a {
+  color: #000000;
+  text-decoration: none;
+}
+a:hover { 
+   text-decoration: underline;
+}
+.add {
+  background-color: #FFFFFF;
+  -webkit-border-radius: 5px;
+  border: 1px solid #888888;
+  -moz-border-radius: 5px;
+  padding: 3px 10px 3px 10px;
+  float: left;
+}
+.cancel {
+	margin-left: 20px;
+	margin-right: 10px;
+	padding: 5px;
+	text-vertical-align: center;
+	float: left;
+}
+
+.close {
+	background: url(http://static.summon.serialssolutions.com/stylesheets/themes/classic/2.3/assets.png) repeat-x;
+	width: 16px; height: 16px;
+	background-position: 0 -180px;
+	float:right;
+}
+
+.widget-header {
+	background: url(http://static.summon.serialssolutions.com/stylesheets/themes/classic/2.3/hbackgrounds.png) repeat-x;
+	height: 23px;
+	background-position: 0 -180px;
+	background-color: #F3F3F3;
+	margin: 0px;  
+	border-bottom: 1px solid gray;
+	width: 300px;
+}
+
+
+ul.dynatree-container
+{
+	font-size: 9pt;
+	white-space: nowrap;
+	padding-top: 3px;
+	margin-top: -3px;
+	background-color: #FFFFFF;
+	//border: 1px solid gray;
+	border:none;
+	overflow: auto;
+}
+
+.dynatree-path
+{
+   font-size: 8pt;
+   color: gray;
+   font-style: italic;
+   padding-left: 10px;
+   padding-top: 3px;
+}
+</style>
+  <!-- (Irrelevant source removed.) -->
+
+<script type="text/javascript">
+
+	var cv = 'agrovoc';
+	var mp = 1;
+	var fmt = 'list';
+	
+	function changeSource(cv) {
+		this.cv = cv;
+	}
+	function changeFormat(fmt) {
+		this.fmt = fmt;
+	}
+	
+	function changeMP(mp) {
+		this.mp = mp;
+	}
+	
+  function loadTree()
+  {
+	  var text = document.getElementById('text');
+	  var ignore = document.getElementById('ignore');
+	  var container = document.getElementById('treecontainer');
+	  container.style.display = 'block';
+	  $("#treeDiv").dynatree("destroy");
+	  $("#treeDiv").dynatree({
+		  title: "Suggested Terms",
+	      checkbox: true,
+	      selectMode: 2,
+	      minExpandLevel: 10,
+	      initAjax: {
+	          url: "/suggest?cv=" + cv + "&format=" + fmt + "&tx=" + text.value + "&mp=" + mp + "&ex=" + ignore.value
+	      },
+	      onSelect: function(select, node) {
+	        // Display list of selected nodes
+	        var selNodes = node.tree.getSelectedNodes();
+	        // convert to title/key array
+	        var selKeys = $.map(selNodes, function(node){
+	             return "[" + node.data.key + "]: '" + node.data.title + "'";
+	        });
+	        $("#echoActive").text(selKeys.join(", "));
+	      },
+	      onCustomRender: function(node) {
+	    	var html = "<span class='dynatree-title'><a hread='" + node.data.url + "'>" + node.data.title + "</a></span>";
+	    	if (node.data.broaders)
+	    	{
+	    		for (i=0; i < node.data.broaders.length; i++) {
+	    			var parent = node.data.broaders[i];
+	    			
+	    			html +=  "<span class='dynatree-path'>[<a href='" + parent.url + "'>" + parent.title + "</a>]</span>";
+	    			
+	    		}
+	    	}
+	    	
+	    	if (node.data.path)
+		  	  	
+	  	  	return html;
+	      },
+	      onClick: function(node, event) {
+	        // We should not toggle, if target was "checkbox", because this
+	        // would result in double-toggle (i.e. no toggle)
+	        if( node.getEventTargetType(event) == "title" )
+	          node.toggleSelect();
+	      },
+	      onActivate: function(node) {
+
+	          if( node.data.url )
+	            window.open(node.data.url);
+	        },
+	      onKeydown: function(node, event) {
+	        if( event.which == 32 ) {
+	          node.toggleSelect();
+	          return false;
+	        }
+	      },
+	      // The following options are only required, if we have more than one tree on one page:
+	      cookieId: "dynatree-Cb2",
+	      idPrefix: "dynatree-Cb2-",
+	      classNames: {
+	    	  nodeIcon: "custom-node-icon"
+	      }
+	    });
+  }
+  
+  $(function(){
+
+  });
+  
+  
+
+
+  
+</script>
+</head>
+
+<body class="example">
+  <div id="form" style="float:left">
+	  <form>
+	  	Text:<textarea id="text" style="width:300px; display:block; margin-right: 20px" rows="10"></textarea>
+	  	
+	  	Ignore:<input type="text" id="ignore" width="30"/><br>
+		<select id="cv" onchange="changeSource(this.options[this.selectedIndex].id)">
+			<option id="agrovoc">AGROVOC</option>
+			<option id="itis">ITIS</option>
+			<option id="lcsh">LCSH</option>
+			<option id="nbii">NBII</option>	
+			<option id="tgn">TGN</option>
+		</select>
+		<select id="fmt" onchange="changeFormat(this.options[this.selectedIndex].id)">
+			<option id="list">list</option>		
+			<option id="tree">tree</option>
+		</select>
+		<select id="mp" onchange="changeMP(this.options[this.selectedIndex].id)">
+			<option id="1">1</option>
+			<option id="2">2</option>
+			<option id="3">3</option>
+		</select>
+
+	  	<input type="button" name="Suggest" value="Suggest" onclick="loadTree();">
+	  </form>
+ </div>
+ <div id="treecontainer" style="display: none; float: left; overflow: none;  background-color: #F3F3F3; border: 1px solid gray; ">
+    <div id="title" class="widget-header" >
+  		<font style="padding-left: 5px; font-family: tahoma, arial, helvetica; font-size: 10pt; color: #000000;">Suggested Terms: <a href="link_to_hive">?</a></font>
+  		<div class="close"></div>
+  	</div>
+  <div id="treeDiv" style="max-height: 100px; overflow: auto; border: none; overflow-x: hidden; "></div>
+
+
+    <div class="buttons">
+        <div class="add"> <a href="#" onclick="return false;">Add</a> </div>
+        <div class="cancel"> <a href="#" onclick="return false;">Cancel</a> </div>
+  	</div>
+  </div>
+  <div id style="display:block"><span id="echoActive"></span></div>
+
+</body>
+</html>
