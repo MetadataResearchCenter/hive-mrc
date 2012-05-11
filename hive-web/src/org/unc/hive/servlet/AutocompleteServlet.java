@@ -16,7 +16,12 @@ import org.unc.hive.server.VocabularyService;
 import edu.unc.ils.mrc.hive.ir.lucene.search.AutocompleteTerm;
 
 /**
- * Servlet implementation class Search
+ *  Autocomplete  servlet returns JSON/JSONP formatted data for use with JQuery
+ * 
+ *  Parameters: 
+ *  	cv:       vocabulary name (required)
+ *      term:     text (required)
+ *      callback: callback function for JSONP support (optional)
  */
 public class AutocompleteServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -32,7 +37,6 @@ public class AutocompleteServlet extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		System.out.println("doGet");
 
 		ServletContext context = this.getServletContext();
 		String path = context.getRealPath("");
@@ -46,7 +50,6 @@ public class AutocompleteServlet extends HttpServlet {
 		try {
 			terms = service.suggestTermsFor(vocab, term, 15);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		StringBuffer json = new StringBuffer("\n[");
