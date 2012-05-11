@@ -965,7 +965,9 @@ public class ConceptBrowser implements EntryPoint, ValueChangeHandler<String> {
 						} else {
 							//Display the first concept on the list
 							ConceptProxy c = result.get(0);
-							displayConceptInfo(c);
+							//displayConceptInfo(c);
+							displayFullConcept(c);
+												
 							resultStorage = result;
 							resultList.clear();
 							if (filteringVocabularies == null)
@@ -1129,6 +1131,28 @@ public class ConceptBrowser implements EntryPoint, ValueChangeHandler<String> {
 			super.hide();
 		}
 
+	}
+	
+	private void displayFullConcept(ConceptProxy result) 
+	{
+		String uri = result.getURI();
+		String[] tokens = uri.split(" ");
+		String namespaceURI = tokens[0];
+		String localPart = tokens[1];
+
+		conceptBrowserService.getConceptByURI(namespaceURI, localPart,
+				new AsyncCallback<ConceptProxy>() {
+
+					@Override
+					public void onFailure(Throwable caught) {
+						Window.alert(caught.getMessage());
+					}
+
+					@Override
+					public void onSuccess(ConceptProxy result) {
+						displayConceptInfo(result);
+					}
+				});
 	}
 
 	private void displayConceptInfo(ConceptProxy result) {
