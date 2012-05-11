@@ -20,19 +20,15 @@ package maui.main;
  */
 import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.InputStreamReader;
 import java.io.ObjectOutputStream;
-import java.io.PrintWriter;
-import java.sql.SQLException;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Vector;
 
-import org.wikipedia.miner.model.Article;
 import org.wikipedia.miner.model.Wikipedia;
+
+import org.apache.commons.io.FileUtils;
 
 import weka.classifiers.Classifier;
 import weka.core.Attribute;
@@ -45,8 +41,9 @@ import weka.core.Utils;
 import maui.filters.MauiFilter;
 import maui.stemmers.*;
 import maui.stopwords.*;
-import maui.vocab.store.VocabularyStore;
-import maui.vocab.store.VocabularyStoreImpl;
+import maui.vocab.Vocabulary;
+import maui.vocab.VocabularyH2;
+import maui.vocab.VocabularyJena;
 
 /**
  * Builds a topic indexing model from the documents in a given
@@ -103,37 +100,40 @@ import maui.vocab.store.VocabularyStoreImpl;
 public class MauiModelBuilder implements OptionHandler {
 
 	/** Name of directory */
-	String inputDirectoryName = null;
+	public String inputDirectoryName = null;
 
 	/** Name of model */
-	String modelName = null;
+	public String modelName = null;
 
 	/** Vocabulary name */
-	String vocabularyName = "none";
+	public String vocabularyName = "none";
 
 	/** Format of the vocabulary {skos,text} */
-	String vocabularyFormat = null;
+	public String vocabularyFormat = null;
+	
+	/** Directory where H2 vocabulary is stored **/
+	public String vocabularyDirectory = null;
 
 	/** Document language {en,es,de,fr,...} */
-	String documentLanguage = "en";
+	public String documentLanguage = "en";
 
 	/** Document encoding */
-	String documentEncoding = "default";
+	public String documentEncoding = "default";
 
 	/** Debugging mode? */
-	boolean debugMode = false;
+	public boolean debugMode = false;
 
 	/** Maximum length of phrases */
-	private int maxPhraseLength = 5;
+	public int maxPhraseLength = 5;
 
 	/** Minimum length of phrases */
-	private int minPhraseLength = 1;
+	public int minPhraseLength = 1;
 
 	/** Minimum number of occurences of a phrase */
-	private int minNumOccur = 1;
+	public int minNumOccur = 1;
 	
 	/** Wikipedia object */
-	private Wikipedia wikipedia = null;
+	public Wikipedia wikipedia = null;
 	
 	/** Classifier */
 	private Classifier classifier = null;
@@ -193,142 +193,90 @@ public class MauiModelBuilder implements OptionHandler {
 	private MauiFilter mauiFilter = null;
 
 	/** Stemmer to be used */
-	private Stemmer stemmer = new PorterStemmer();
+	Stemmer stemmer = new PorterStemmer();
 
 	/** Llist of stopwords to be used */
-	private Stopwords stopwords = new StopwordsEnglish();
-
-	public Stopwords getStopwords() {
-		return stopwords;
-	}
-
-	public void setStopwords(Stopwords stopwords) {
-		this.stopwords = stopwords;
-	}
-
-	public Stemmer getStemmer() {
-		return stemmer;
-	}
-
-	public void setStemmer(Stemmer stemmer) {
-		this.stemmer = stemmer;
-	}
+	//public  Stopwords stopwords = new StopwordsEnglish("data/stopwords/stopwords_en.txt");
+	// temporary test jpb
+	public  Stopwords stopwords = new StopwordsEnglish("C:/hive/hive-data/nbii/nbiiKEA/data/stopwords/stopwords_en.txt");
+	private Vocabulary vocabulary = null;
 	
-	public void setWikipedia(Wikipedia wikipedia) {
-		this.wikipedia = wikipedia;
+	public void loadThesaurus(Stemmer st, Stopwords sw, String vocabularyDirectory) {
+		if (vocabulary != null)
+			return;
+
+		try {
+
+			if (debugMode) {
+				System.err.println("--- Loading the vocabulary...");
+			}
+			vocabulary = new VocabularyH2(vocabularyName, vocabularyFormat, vocabularyDirectory);
+			vocabulary.setStemmer(st);
+			vocabulary.setStopwords(sw);
+			vocabulary.setDebug(debugMode);
+			vocabulary.setLanguage(documentLanguage);
+			vocabulary.initialize();
+			
+		} catch (Exception e) {
+			System.err.println("Failed to load thesaurus!");
+			e.printStackTrace();
+		}
+
 	}
 
-	public String getWikipediaDatabase() {
-		return wikipediaDatabase;
-	}
-
-	public void setWikipediaDatabase(String wikipediaDatabase) {
-		this.wikipediaDatabase = wikipediaDatabase;
-	}
-	
-	public void setWikipediaServer(String wikipediaServer) {
-		this.wikipediaServer = wikipediaServer;
-	}
-	
-	public void setWikipediaConnection(String wikipediaConnection) {
-		int at = wikipediaConnection.indexOf("@");
-		setWikipediaDatabase(wikipediaConnection.substring(0,at));
-		setWikipediaServer(wikipediaConnection.substring(at+1));
-	}
-	
-	public void setWikipediaDataDirectory(String wikipediaDataDirectory) {
-		this.wikipediaDataDirectory = wikipediaDataDirectory;
-	}
-	public void setCachWikipediaData(boolean cacheWikipediaData) {
-		this.cacheWikipediaData = cacheWikipediaData;
-	}
-	
-	public void setClassifier(Classifier classifier) {
-		this.classifier = classifier;
-	}
-
-
-	
-	public int getMinNumOccur() {
-		return minNumOccur;
-	}
-
-	public void setMinNumOccur(int minNumOccur) {
-		this.minNumOccur = minNumOccur;
-	}
-
-	public int getMaxPhraseLength() {
-		return maxPhraseLength;
-	}
-
-	public void setMaxPhraseLength(int maxPhraseLength) {
-		this.maxPhraseLength = maxPhraseLength;
-	}
-
-	public int getMinPhraseLength() {
-		return minPhraseLength;
-	}
-
-	public void setMinPhraseLength(int minPhraseLength) {
-		this.minPhraseLength = minPhraseLength;
-	}
-
-	public boolean getDebug() {
+	public boolean getDebug()	{
 		return debugMode;
 	}
-
-	public void setDebug(boolean debugMode) {
-		this.debugMode = debugMode;
+	
+	public void setInputDirectoryName(String trainingDirName) {
+		this.inputDirectoryName = trainingDirName;
 	}
-
-	public String getEncoding() {
-		return documentEncoding;
+	
+	public void setStopwords(String stopwordsPath) {
+		this.stopwords = new StopwordsEnglish(stopwordsPath);
 	}
-
-	public void setEncoding(String documentEncoding) {
-		this.documentEncoding = documentEncoding;
-	}
-
-	public String getVocabularyName() {
-		return vocabularyName;
-	}
-
-	public void setVocabularyName(String vocabularyName) {
-		this.vocabularyName = vocabularyName;
-	}
-
-	public String getDocumentLanguage() {
-		return documentLanguage;
-	}
-
-	public void setDocumentLanguage(String documentLanguage) {
-		this.documentLanguage = documentLanguage;
-	}
-
-	public String getVocabularyFormat() {
-		return vocabularyFormat;
-	}
-
-	public void setVocabularyFormat(String vocabularyFormat) {
-		this.vocabularyFormat = vocabularyFormat;
-	}
-
-	public String getModelName() {
-		return modelName;
-	}
-
+	
+    // Set model path and name from voc properties file
 	public void setModelName(String modelName) {
 		this.modelName = modelName;
 	}
-
-	public String getDirName() {
-		return inputDirectoryName;
+	
+	public void setVocabularyName(String vocName) {
+		this.vocabularyName = vocName;
 	}
 
-	public void setDirName(String inputDirectoryName) {
-		this.inputDirectoryName = inputDirectoryName;
+	public void setVocabularyDirectory(String vocDir) {
+		this.vocabularyDirectory = vocDir;
+	}
+	
+	public void setVocabularyFormat(String vocFormat) {
+		this.vocabularyFormat = vocFormat;
 	}
 
+	public void setDocumentEncoding(String encoding) {
+		this.documentEncoding = encoding;
+	}
+	
+	public void setDocumentLanguage(String lang) {
+		this.documentLanguage = lang;
+	}
+
+	public void setStemmer(Stemmer stem) {
+		this.stemmer = stem;
+	}
+	
+	public void setMaxPhraseLength(int len) {
+		this.maxPhraseLength = len;
+	}
+	
+	public void setMinPhraseLength(int len) {
+		this.minPhraseLength = len;
+	}
+	
+	public void setMinNumOccur(int occ) {
+		this.minNumOccur = occ;
+	}
+	
 	public void setBasicFeatures(boolean useBasicFeatures) {
 		this.useBasicFeatures = useBasicFeatures;
 	}
@@ -424,96 +372,84 @@ public class MauiModelBuilder implements OptionHandler {
 
 		String dirName = Utils.getOption('l', options);
 		if (dirName.length() > 0) {
-			setDirName(dirName);
+			inputDirectoryName = dirName;
 		} else {
-			setDirName(null);
+			inputDirectoryName = null;
 			throw new Exception("Name of directory required argument.");
 		}
 
 		String modelName = Utils.getOption('m', options);
 		if (modelName.length() > 0) {
-			setModelName(modelName);
+			this.modelName = modelName;
 		} else {
-			setModelName(null);
+			this.modelName = null;
 			throw new Exception("Name of model required argument.");
 		}
 
 		String vocabularyName = Utils.getOption('v', options);
 		if (vocabularyName.length() > 0) {
-			setVocabularyName(vocabularyName);
+			this.vocabularyName = vocabularyName;
 		} 
 
 		String vocabularyFormat = Utils.getOption('f', options);
 
-		if (!getVocabularyName().equals("none") && !getVocabularyName().equals("wikipedia")) {
+		if (!vocabularyName.equals("none") && !vocabularyName.equals("wikipedia")) {
 			if (vocabularyFormat.length() > 0) {
 				if (vocabularyFormat.equals("skos")
 						|| vocabularyFormat.equals("text")) {
-					setVocabularyFormat(vocabularyFormat);
+					this.vocabularyFormat = vocabularyFormat;
 				} else {
 					throw new Exception(
 							"Unsupported format of vocabulary. It should be either \"skos\" or \"text\".");
 				}
 			} else {
-				setVocabularyFormat(null);
 				throw new Exception(
 						"If a controlled vocabulary is used, format of vocabulary required argument (skos or text).");
 			}
-		} else {
-			setVocabularyFormat(null);
 		}
-
+		
 		String encoding = Utils.getOption('e', options);
-		if (encoding.length() > 0) {
-			setEncoding(encoding);
-		} else {
-			setEncoding("default");
-		}
+		if (encoding.length() > 0) 
+			this.documentEncoding = encoding;
 		
 		String wikipediaConnection = Utils.getOption('w', options);
 		if (wikipediaConnection.length() > 0) {
-			setWikipediaConnection(wikipediaConnection);
+			int at = wikipediaConnection.indexOf("@");
+			wikipediaDatabase = wikipediaConnection.substring(0,at);
+			wikipediaServer = wikipediaConnection.substring(at+1);
 		} 
 
 		String documentLanguage = Utils.getOption('i', options);
-		if (documentLanguage.length() > 0) {
-			setDocumentLanguage(documentLanguage);
-		} else {
-			setDocumentLanguage("en");
-		}
+		if (documentLanguage.length() > 0) 
+			this.documentLanguage = documentLanguage;
+	
 
 		String maxPhraseLengthString = Utils.getOption('x', options);
-		if (maxPhraseLengthString.length() > 0) {
-			setMaxPhraseLength(Integer.parseInt(maxPhraseLengthString));
-		} else {
-			setMaxPhraseLength(5);
-		}
+		if (maxPhraseLengthString.length() > 0) 
+			this.maxPhraseLength = Integer.parseInt(maxPhraseLengthString);
+		
 		String minPhraseLengthString = Utils.getOption('y', options);
-		if (minPhraseLengthString.length() > 0) {
-			setMinPhraseLength(Integer.parseInt(minPhraseLengthString));
-		} else {
-			setMinPhraseLength(1);
-		}
+		if (minPhraseLengthString.length() > 0) 
+			this.minPhraseLength = Integer.parseInt(minPhraseLengthString);
+			
 		String minNumOccurString = Utils.getOption('o', options);
-		if (minNumOccurString.length() > 0) {
-			setMinNumOccur(Integer.parseInt(minNumOccurString));
-		} else {
-			setMinNumOccur(2);
-		}
+		if (minNumOccurString.length() > 0) 
+			this.minNumOccur = Integer.parseInt(minNumOccurString);
+		
 
 		String stopwordsString = Utils.getOption('s', options);
 		if (stopwordsString.length() > 0) {
-			stopwordsString = "kea.stopwords.".concat(stopwordsString);
-			setStopwords((Stopwords) Class.forName(stopwordsString)
-					.newInstance());
+			stopwordsString = "maui.stopwords.".concat(stopwordsString);
+			this.stopwords = (Stopwords) Class.forName(stopwordsString)
+					.newInstance();
 		}
 
 		String stemmerString = Utils.getOption('t', options);
 		if (stemmerString.length() > 0) {
-			stemmerString = "kea.stemmers.".concat(stemmerString);
-			setStemmer((Stemmer) Class.forName(stemmerString).newInstance());
+			stemmerString = "maui.stemmers.".concat(stemmerString);
+			this.stemmer = (Stemmer) Class.forName(stemmerString).newInstance();
 		}
-		setDebug(Utils.getFlag('d', options));
+		debugMode = Utils.getFlag('d', options);
 		Utils.checkForRemainingOptions(options);
 	}
 
@@ -528,31 +464,31 @@ public class MauiModelBuilder implements OptionHandler {
 		int current = 0;
 
 		options[current++] = "-l";
-		options[current++] = "" + (getDirName());
+		options[current++] = "" + (this.inputDirectoryName);
 		options[current++] = "-m";
-		options[current++] = "" + (getModelName());
+		options[current++] = "" + (this.modelName);
 		options[current++] = "-v";
-		options[current++] = "" + (getVocabularyName());
+		options[current++] = "" + (this.vocabularyName);
 		options[current++] = "-f";
-		options[current++] = "" + (getVocabularyFormat());
+		options[current++] = "" + (this.vocabularyFormat);
 		options[current++] = "-e";
-		options[current++] = "" + (getEncoding());
+		options[current++] = "" + (this.documentEncoding);
 		options[current++] = "-i";
-		options[current++] = "" + (getDocumentLanguage());
+		options[current++] = "" + (this.documentLanguage);
 
-		if (getDebug()) {
+		if (this.debugMode) {
 			options[current++] = "-d";
 		}
 		options[current++] = "-x";
-		options[current++] = "" + (getMaxPhraseLength());
+		options[current++] = "" + (this.maxPhraseLength);
 		options[current++] = "-y";
-		options[current++] = "" + (getMinPhraseLength());
+		options[current++] = "" + (this.minPhraseLength);
 		options[current++] = "-o";
-		options[current++] = "" + (getMinNumOccur());
+		options[current++] = "" + (this.minNumOccur);
 		options[current++] = "-s";
-		options[current++] = "" + (getStopwords().getClass().getName());
+		options[current++] = "" + (stopwords.getClass().getName());
 		options[current++] = "-t";
-		options[current++] = "" + (getStemmer().getClass().getName());
+		options[current++] = "" + (stemmer.getClass().getName());
 
 		while (current < options.length) {
 			options[current++] = "";
@@ -638,7 +574,7 @@ public class MauiModelBuilder implements OptionHandler {
 	/**
 	 * Builds the model from the training data
 	 */
-	public void buildModel(HashSet<String> fileNames, VocabularyStore store) throws Exception {
+	public void buildModel(HashSet<String> fileNames) throws Exception {
 
 		// Check whether there is actually any data
 		if (fileNames.size() == 0) {
@@ -657,17 +593,17 @@ public class MauiModelBuilder implements OptionHandler {
 		// Build model
 		mauiFilter = new MauiFilter();
 
-		mauiFilter.setDebug(getDebug());
-		mauiFilter.setMaxPhraseLength(getMaxPhraseLength());
-		mauiFilter.setMinPhraseLength(getMinPhraseLength());
-		mauiFilter.setMinNumOccur(getMinNumOccur());
-		mauiFilter.setStemmer(getStemmer());
-		mauiFilter.setDocumentLanguage(getDocumentLanguage());
-		mauiFilter.setVocabularyName(getVocabularyName());
-		mauiFilter.setVocabularyFormat(getVocabularyFormat());
-		mauiFilter.setStopwords(getStopwords());
+		mauiFilter.setDebug(debugMode);
+		mauiFilter.setMaxPhraseLength(maxPhraseLength);
+		mauiFilter.setMinPhraseLength(minPhraseLength);
+		mauiFilter.setMinNumOccur(minNumOccur);
+		mauiFilter.setStemmer(stemmer);
+		mauiFilter.setDocumentLanguage(documentLanguage);
+		mauiFilter.setVocabularyName(vocabularyName);
+		mauiFilter.setVocabularyFormat(vocabularyFormat);
+		mauiFilter.setStopwords(stopwords);
 		
-	
+/*	
 		if (wikipedia != null) {
 			mauiFilter.setWikipedia(wikipedia);
 		} else if (wikipediaServer.equals("localhost") && wikipediaDatabase.equals("database")) {
@@ -675,7 +611,7 @@ public class MauiModelBuilder implements OptionHandler {
 		} else {
 			mauiFilter.setWikipedia(wikipediaServer, wikipediaDatabase, cacheWikipediaData, wikipediaDataDirectory);
 		}
-		
+*/		
 		if (classifier != null) {
 			mauiFilter.setClassifier(classifier);
 		}
@@ -689,8 +625,8 @@ public class MauiModelBuilder implements OptionHandler {
 		mauiFilter.setPositionsFeatures(usePositionsFeatures);
 		mauiFilter.setLengthFeature(useLengthFeature);
 		mauiFilter.setThesaurusFeatures(useNodeDegreeFeature);
-		mauiFilter.setBasicWikipediaFeatures(useBasicWikipediaFeatures);
-		mauiFilter.setAllWikipediaFeatures(useAllWikipediaFeatures);
+//		mauiFilter.setBasicWikipediaFeatures(useBasicWikipediaFeatures);
+//		mauiFilter.setAllWikipediaFeatures(useAllWikipediaFeatures);
 		mauiFilter.setThesaurusFeatures(useNodeDegreeFeature);
 		
 		mauiFilter.setClassifier(classifier);
@@ -700,10 +636,9 @@ public class MauiModelBuilder implements OptionHandler {
 		mauiFilter.setMinSenseProbability(minSenseProbability);
 		
 		if (!vocabularyName.equals("none") && !vocabularyName.equals("wikipedia") ) {
-			mauiFilter.loadThesaurus(getStemmer(), getStopwords(), store);
+			loadThesaurus(stemmer, stopwords, vocabularyDirectory);
+			mauiFilter.setVocabulary(vocabulary);
 		}
-
-		
 
 		System.err.println("-- Reading the input documents... ");
 
@@ -712,7 +647,6 @@ public class MauiModelBuilder implements OptionHandler {
 			double[] newInst = new double[3];
 
 			newInst[0] = (double) data.attribute(0).addStringValue(fileName);
-			;
 
 			File documentTextFile = new File(inputDirectoryName + "/"
 					+ fileName + ".txt");
@@ -721,26 +655,15 @@ public class MauiModelBuilder implements OptionHandler {
 
 			try {
 
-				InputStreamReader is;
+				String documentText;
 				if (!documentEncoding.equals("default")) {
-					is = new InputStreamReader(new FileInputStream(
-							documentTextFile), documentEncoding);
+					documentText = FileUtils.readFileToString(documentTextFile, documentEncoding);
 				} else {
-					is = new InputStreamReader(new FileInputStream(
-							documentTextFile));
+					documentText = FileUtils.readFileToString(documentTextFile);
 				}
-
-				// Reading the file content
-				StringBuffer txtStr = new StringBuffer();
-				int c;
-				while ((c = is.read()) != -1) {
-					txtStr.append((char) c);
-				}
-				is.close();
-
+	
 				// Adding the text of the document to the instance
-				newInst[1] = (double) data.attribute(1).addStringValue(
-						txtStr.toString());
+				newInst[1] = (double) data.attribute(1).addStringValue(documentText);
 
 			} catch (Exception e) {
 
@@ -751,25 +674,15 @@ public class MauiModelBuilder implements OptionHandler {
 
 			try {
 
-				InputStreamReader is;
+				String documentTopics;
 				if (!documentEncoding.equals("default")) {
-					is = new InputStreamReader(new FileInputStream(
-							documentTopicsFile), documentEncoding);
+					documentTopics = FileUtils.readFileToString(documentTopicsFile, documentEncoding);
 				} else {
-					is = new InputStreamReader(new FileInputStream(
-							documentTopicsFile));
+					documentTopics = FileUtils.readFileToString(documentTopicsFile);
 				}
-
-				// Reading the content of the keyphrase file
-				StringBuffer keyStr = new StringBuffer();
-				int c;
-				while ((c = is.read()) != -1) {
-					keyStr.append((char) c);
-				}
-
+				
 				// Adding the topics to the file
-				newInst[2] = (double) data.attribute(2).addStringValue(
-						keyStr.toString());
+				newInst[2] = (double) data.attribute(2).addStringValue(documentTopics);
 
 			} catch (Exception e) {
 
@@ -827,8 +740,7 @@ public class MauiModelBuilder implements OptionHandler {
 			}
 
 			HashSet<String> fileNames = modelBuilder.collectStems();
-			VocabularyStore store = new VocabularyStoreImpl("/home/hive/maui.properties");
-			modelBuilder.buildModel(fileNames, store);
+			modelBuilder.buildModel(fileNames);
 
 			if (modelBuilder.getDebug() == true) {
 				System.err.print("Model built. Saving the model...");

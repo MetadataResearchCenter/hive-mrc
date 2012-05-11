@@ -105,6 +105,9 @@ public class SKOSSchemeImpl implements SKOSScheme {
 	/* KEA+ model path */
 	private String KEAModelPath;
 	
+	/* Maui model path */
+	private String MauiModelPath;	
+	
 	/* Lingpipe model path */
 	private String lingpipeModel;
 	
@@ -117,8 +120,14 @@ public class SKOSSchemeImpl implements SKOSScheme {
 	/* Autocomplete index path */
 	private String autocompletePath;
 	
-	/* Stemmer class name */
-	private String stemmerClass;
+	/* KEA stemmer class name */
+	private String keaStemmerClass;
+	
+	/* Maui stemmer class name */
+	private String mauiStemmerClass;
+	
+	/* RDF Format */
+	private String rdfFormat;
 	
 	private HiveVocabulary hiveVocab;
 	
@@ -182,6 +191,11 @@ public class SKOSSchemeImpl implements SKOSScheme {
 			if (schemaURI.isEmpty())
 				logger.warn("uri property is empty");
 			
+			// 
+			this.rdfFormat = properties.getProperty("rdfFormat", "rdfxml");
+			if (rdfFormat.isEmpty())
+				logger.warn("rdfFormat property is empty");
+			
 			// Lucene index path
 			this.indexDirectory = properties.getProperty("index");
 			if (indexDirectory.isEmpty())
@@ -201,6 +215,11 @@ public class SKOSSchemeImpl implements SKOSScheme {
 			this.KEAModelPath = properties.getProperty("kea_model");
 			if (KEAModelPath.isEmpty())
 				logger.warn("kea_model property is empty");
+			
+			// Maui model path
+			this.MauiModelPath = properties.getProperty("maui_model");
+			if (MauiModelPath.isEmpty())
+				logger.warn("maui_model property is empty");			
 
 			// KEA+ test set path
 			this.KEAtestSetDir = properties.getProperty("kea_test_set");
@@ -245,11 +264,17 @@ public class SKOSSchemeImpl implements SKOSScheme {
 			if (autocompletePath == null || autocompletePath.isEmpty())
 				logger.warn("autocomplete property is empty");
 			
-			// Stemmer class
-			this.stemmerClass = properties.getProperty("stemmerClass", "kea.stemmer.PorterStemmer");
-			System.out.println("Using stemmer " + stemmerClass);
-			if (stemmerClass == null || stemmerClass.isEmpty())
-				logger.warn("stemmerClass property is empty, defaulting to kea.stemer.PorterStemmer");
+			// kea stemmer class
+			this.keaStemmerClass = properties.getProperty("keaStemmerClass", "kea.stemmers.PorterStemmer");
+			System.out.println("Using kea stemmer " + keaStemmerClass);
+			if (keaStemmerClass == null || keaStemmerClass.isEmpty())
+				logger.warn("keaStemmerClass property is empty, defaulting to kea.stemers.PorterStemmer");
+			
+			// maui stemmer class
+			this.mauiStemmerClass = properties.getProperty("mauiStemmerClass", "maui.stemmers.PorterStemmer");
+			System.out.println("Using maui stemmer " + mauiStemmerClass);
+			if (mauiStemmerClass == null || mauiStemmerClass.isEmpty())
+				logger.warn("mauiStemmerClass property is empty, defaulting to maui.stemers.PorterStemmer");
 			
 			fis.close();
 			
@@ -288,6 +313,11 @@ public class SKOSSchemeImpl implements SKOSScheme {
 	@Override
 	public String getKEAModelPath() {
 		return KEAModelPath;
+	}
+	
+	@Override
+	public String getMauiModelPath() {
+		return MauiModelPath;
 	}
 	
 	public String getAtomFeedURL() {
@@ -334,6 +364,11 @@ public class SKOSSchemeImpl implements SKOSScheme {
 			logger.error(e);
 		}
 		return terms;
+	}
+	
+	@Override
+	public String getH2Path() {
+		return this.h2Directory;
 	}
 
 	@Override
@@ -434,13 +469,13 @@ public class SKOSSchemeImpl implements SKOSScheme {
 
 	@Override
 	public void importConcepts(String path) throws Exception {
-		hiveVocab.importConcepts(path);
+		hiveVocab.importConcepts(path, rdfFormat);
 	}
 	
 	@Override
 	public void importConcepts(String path, boolean doSesame, boolean doLucene,
 			boolean doH2, boolean doH2KEA, boolean doAutocomplete) throws Exception {
-		hiveVocab.importConcepts(path, doSesame, doLucene, doH2, doH2KEA, doAutocomplete);
+		hiveVocab.importConcepts(path, doSesame, doLucene, doH2, doH2KEA, doAutocomplete, rdfFormat);
 	}
 
 	@Override
@@ -486,8 +521,15 @@ public class SKOSSchemeImpl implements SKOSScheme {
 	}
 	
 	@Override
-	public String getStemmerClass()
+	public String getKeaStemmerClass()
 	{
-		return stemmerClass;
+		return keaStemmerClass;
+	}
+	
+	
+	@Override
+	public String getMauiStemmerClass()
+	{
+		return mauiStemmerClass;
 	}
 }

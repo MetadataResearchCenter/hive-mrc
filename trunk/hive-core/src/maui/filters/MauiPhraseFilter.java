@@ -286,7 +286,7 @@ public class MauiPhraseFilter extends Filter implements OptionHandler {
 	 * characters.
 	 * 
 	 * @param text
-	 * @return
+	 * @return the same text with large tokens separated by \n
 	 */
 	public String tokenize(String text) {
 		StringBuffer result = new StringBuffer();

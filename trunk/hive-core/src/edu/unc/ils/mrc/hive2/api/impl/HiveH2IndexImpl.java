@@ -773,7 +773,7 @@ public class HiveH2IndexImpl implements HiveIndex
 	
 	public static void main (String[] args) {
 		try {
-			HiveH2IndexImpl h2 = new HiveH2IndexImpl("/Users/cwillis/dev/hive/hive-data/lcsh/lcshH2", "lcsh");
+			HiveH2IndexImpl h2 = new HiveH2IndexImpl("/usr/local/hive/hive-data/lcsh/lcshH2", "lcsh");
 			h2.createIndex();
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block

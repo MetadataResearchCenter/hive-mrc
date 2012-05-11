@@ -57,8 +57,8 @@
           <boolProp name="HTTPSampler.DO_MULTIPART_POST">true</boolProp>
           <elementProp name="HTTPsampler.Files" elementType="HTTPFileArgs">
             <collectionProp name="HTTPFileArgs.files">
-              <elementProp name="/Users/cwillis/dev/hive/test/test1.pdf" elementType="HTTPFileArg">
-                <stringProp name="File.path">/Users/cwillis/dev/hive/test/test1.pdf</stringProp>
+              <elementProp name="/usr/local/hive/test/test1.pdf" elementType="HTTPFileArg">
+                <stringProp name="File.path">/usr/local/hive/test/test1.pdf</stringProp>
                 <stringProp name="File.paramname">uploadFormElement</stringProp>
                 <stringProp name="File.mimetype">application/pdf</stringProp>
               </elementProp>

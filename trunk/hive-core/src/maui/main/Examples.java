@@ -31,8 +31,6 @@ import maui.stemmers.Stemmer;
 import maui.stopwords.Stopwords;
 import maui.stopwords.StopwordsEnglish;
 import maui.stopwords.StopwordsFrench;
-import maui.vocab.store.VocabularyStore;
-import maui.vocab.store.VocabularyStoreImpl;
 
 import org.wikipedia.miner.model.Wikipedia;
 import org.wikipedia.miner.util.ProgressNotifier;
@@ -54,8 +52,6 @@ import org.wikipedia.miner.util.text.TextProcessor;
  * 
  */
 public class Examples {
-	
-	private static final String CONFIG_FILE = "/home/hive/maui.properties"; 
 
 	private MauiTopicExtractor topicExtractor;
 	private MauiModelBuilder modelBuilder;
@@ -108,31 +104,31 @@ public class Examples {
 	private void setGeneralOptions()  {
 	
 		
-		modelBuilder.setDebug(true);
-		modelBuilder.setWikipedia(wikipedia);
+		modelBuilder.debugMode = true;
+		modelBuilder.wikipedia = wikipedia;
 		
 		/* language specific options
 		Stemmer stemmer = new FrenchStemmer();
 		Stopwords stopwords = new StopwordsFrench();
 		String language = "fr";
 		String encoding = "UTF-8";
-		modelBuilder.setStemmer(stemmer);
-		modelBuilder.setStopwords(stopwords);
-		modelBuilder.setDocumentLanguage(language);
-		modelBuilder.setEncoding(encoding);
-		topicExtractor.setStemmer(stemmer);
-		topicExtractor.setStopwords(stopwords);
-		topicExtractor.setDocumentLanguage(language);
+		modelBuilder.stemmer = stemmer;
+		modelBuilder.stopwords = stopwords;
+		modelBuilder.documentLanguage = language;
+		modelBuilder.documentEncoding = encoding;
+		topicExtractor.stemmer = stemmer;
+		topicExtractor.stopwords = stopwords;
+		topicExtractor.documentLanguage = language;
 		*/
 		
 		/* specificity options
-		modelBuilder.setMinPhraseLength(1);
-		modelBuilder.setMaxPhraseLength(5);
+		modelBuilder.minPhraseLength = 1;
+		modelBuilder.maxPhraseLength = 5;
 		*/
-	
-		topicExtractor.setDebug(true);
-		topicExtractor.setNumTopics(10); // how many topics to extract
-		topicExtractor.setWikipedia(wikipedia);
+		
+		topicExtractor.debugMode = true;
+		topicExtractor.topicsPerDocument = 10; 
+//		topicExtractor.wikipedia = wikipedia;
 	}
 
 	/**
@@ -169,28 +165,26 @@ public class Examples {
 		String modelName = "test";
 
 		// Settings for the model builder
-		modelBuilder.setDirName(trainDir);
-		modelBuilder.setModelName(modelName);
-		
+		modelBuilder.inputDirectoryName = trainDir;
+		modelBuilder.modelName = modelName;
 		
 		// change to 1 for short documents
-		modelBuilder.setMinNumOccur(2);
+		modelBuilder.minNumOccur = 2;
 
 		// Run model builder
 		HashSet<String> fileNames = modelBuilder.collectStems();
-		VocabularyStore store = new VocabularyStoreImpl(CONFIG_FILE);
-		modelBuilder.buildModel(fileNames, store);
+		modelBuilder.buildModel(fileNames);
 		modelBuilder.saveModel();
 
 		// Settings for topic extractor
-		topicExtractor.setDirName(testDir);
-		topicExtractor.setModelName(modelName);
+		topicExtractor.inputDirectoryName = testDir;
+		topicExtractor.modelName = modelName;
 	
 		
 		// Run topic extractor
 		topicExtractor.loadModel();
 		fileNames = topicExtractor.collectStems();
-		topicExtractor.extractKeyphrases(fileNames, store);
+		topicExtractor.extractKeyphrases(fileNames);
 	}
 
 	/**
@@ -218,27 +212,26 @@ public class Examples {
 		HashSet<String> fileNames;
 
 		// Settings for the model builder
-		modelBuilder.setDirName(trainDir);
-		modelBuilder.setModelName(modelName);
-		modelBuilder.setVocabularyFormat(format);
-		modelBuilder.setVocabularyName(vocabulary);
+		modelBuilder.inputDirectoryName = trainDir;
+		modelBuilder.modelName = modelName;
+		modelBuilder.vocabularyFormat = format;
+		modelBuilder.vocabularyName = vocabulary;
 		
 		// Run model builder
 		fileNames = modelBuilder.collectStems();
-		VocabularyStore store = new VocabularyStoreImpl(CONFIG_FILE);
-		modelBuilder.buildModel(fileNames, store);
+		modelBuilder.buildModel(fileNames);
 		modelBuilder.saveModel();
 
 		// Settings for topic extractor
-		topicExtractor.setDirName(testDir);
-		topicExtractor.setModelName(modelName);
-		topicExtractor.setVocabularyName(vocabulary);
-		topicExtractor.setVocabularyFormat(format);
+		topicExtractor.inputDirectoryName = testDir;
+		topicExtractor.modelName = modelName;
+		topicExtractor.vocabularyName = vocabulary;
+		topicExtractor.vocabularyFormat = format;
 		
 		// Run topic extractor
 		topicExtractor.loadModel();
 		fileNames = topicExtractor.collectStems();
-		topicExtractor.extractKeyphrases(fileNames, store);
+		topicExtractor.extractKeyphrases(fileNames);
 		
 	}
 
@@ -266,14 +259,13 @@ public class Examples {
 		HashSet<String> fileNames;
 
 		// Settings for the model builder
-		modelBuilder.setDirName(trainDir);
-		modelBuilder.setModelName(modelName);
-		modelBuilder.setVocabularyName(vocabulary);
+		modelBuilder.inputDirectoryName = trainDir;
+		modelBuilder.modelName = modelName;
+		modelBuilder.vocabularyName = vocabulary;
 		
 		// Run model builder
 		fileNames = modelBuilder.collectStems();
-		VocabularyStore store = new VocabularyStoreImpl(CONFIG_FILE);
-		modelBuilder.buildModel(fileNames, store);
+		modelBuilder.buildModel(fileNames);
 		modelBuilder.saveModel();
 
 //		// Settings for topic extractor

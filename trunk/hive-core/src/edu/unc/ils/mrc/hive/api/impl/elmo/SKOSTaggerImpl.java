@@ -1,5 +1,6 @@
 /**
  * Copyright (c) 2010, UNC-Chapel Hill and Nescent
+
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided 
@@ -72,7 +73,7 @@ public class SKOSTaggerImpl implements SKOSTagger
 
 	private TreeMap<String, Tagger> taggers;
 	private TreeMap<String, SKOSScheme> vocabularies;
-	public String algorithm;
+	private String algorithm;
 	private Configuration config;
 
 	/**
@@ -90,6 +91,7 @@ public class SKOSTaggerImpl implements SKOSTagger
 		this.taggers = new TreeMap<String, Tagger>();
 		Set<String> set = vocabularies.keySet();
 		Iterator<String> it = set.iterator();
+				
 		if (this.algorithm.equals("kea")) {
 			while (it.hasNext()) {
 				String vocName = it.next();
@@ -100,14 +102,26 @@ public class SKOSTaggerImpl implements SKOSTagger
 						.getStopwordsPath(), schema);
 				this.taggers.put(vocName, tagger);
 			}
-		} else if (this.algorithm.equals("dummy")) {
+		} 
+		else if (this.algorithm.equals("maui")) {
+			while (it.hasNext()) {
+				String vocName = it.next();
+				SKOSScheme schema = vocabularies.get(vocName);
+				TaggerFactory.selectTagger(TaggerFactory.MAUITAGGER);
+				Tagger tagger = TaggerFactory.getTagger(schema
+						.getKEAtestSetDir(), schema.getMauiModelPath(), schema
+						.getStopwordsPath(), schema);
+				this.taggers.put(vocName, tagger);
+			}
+		}
+		else if (this.algorithm.equals("dummy")) {
 			SKOSScheme schema = vocabularies.get(vocabularies.firstKey());
 			TaggerFactory.selectTagger(TaggerFactory.DUMMYTAGGER);
 			Tagger tagger = TaggerFactory.getTagger("", schema
 					.getLingpipeModel(), "", null);
 			this.taggers.put("Dummytagger", tagger);
 		} else {
-		    logger.fatal(this.algorithm + " algorithm is not suported");
+		    logger.fatal(this.algorithm + " algorithm is not supported");
 		}
 		logger.debug("NUMBER OF TAGGERS: " + this.taggers.size());
 		for (Tagger tag : this.taggers.values()) {
@@ -165,6 +179,7 @@ public class SKOSTaggerImpl implements SKOSTagger
 	{
 		TextManager tm = new TextManager();
 		String text = tm.getPlainText(filePath);
+				
 		return getTagsInternal(text, vocabularies, searcher, numTerms, 2);          
 	}
 	
@@ -275,7 +290,83 @@ public class SKOSTaggerImpl implements SKOSTagger
 				//keaOutputFile.delete();
 			}
 
-		} else if (this.algorithm.equals("dummy")) {
+		} 
+		else if (this.algorithm.equals("maui")) {
+
+			for (String voc : vocabularies) 
+			{
+				File testDir = new File(this.vocabularies.get(voc).getKEAtestSetDir());
+				String fileId = UUID.randomUUID().toString();
+				String tempFileName = fileId;
+				File keaInputFile =  new File(testDir + File.separator + tempFileName + ".txt");
+				
+				logger.debug("Creating " + keaInputFile.getAbsolutePath());
+				FileOutputStream fos;
+				try {
+					fos = new FileOutputStream(keaInputFile);
+					PrintWriter pr = new PrintWriter(fos);
+					pr.print(text);
+					pr.close();
+					fos.close();
+				} catch (FileNotFoundException e) {
+				    logger.error(e);
+				} catch (IOException e) {
+                    logger.error(e);
+				}
+				Tagger tagger = this.taggers.get(voc);
+				String vocabularyName = tagger.getVocabulary();
+				logger.info("Indexing with " + vocabularyName);
+				try {
+					tagger.extractKeyphrasesFromFile(tempFileName, numTerms, minOccur);
+				} catch (RuntimeException e) {
+					logger.error(e);
+				}
+				
+				File keaOutputFile =  new File(testDir + File.separator + tempFileName + ".key");
+				logger.debug("Reading key file " + keaOutputFile.getAbsolutePath());
+				try {
+					FileInputStream fis = new FileInputStream(keaOutputFile);
+					InputStreamReader isr = new InputStreamReader(fis);
+					BufferedReader br = new BufferedReader(isr);
+					String line = br.readLine();
+					while (line != null) {
+						String[] elements = line.split("\t");
+						String uri = elements[1];
+						String[] uri_elements = uri.split("#");
+						SKOSConcept concept = searcher.searchConceptByURI(
+								uri_elements[0] + "#", uri_elements[1]);
+						concept.setScore(new Double(elements[2]));
+						result.add(concept);
+						line = br.readLine();
+						
+						/*
+						List<SKOSConcept> concepts = searcher
+								.searchConceptByKeyword(concept);
+						if (concepts.size() > 0) {
+						    concepts.get(0).setScore(new Double(elements[2]));
+					        result.add(concepts.get(0));
+					        //logger.debug("concept QName = " + concepts.get(0).getQName());
+						}
+				        */
+					}
+					br.close();
+					isr.close();
+					fis.close();
+				} catch (FileNotFoundException e) {
+					logger.error("unable to find file", e);
+				} catch (IOException e) {
+				    logger.error("file processing problem", e);
+				}
+				
+				// If we do not delete these files, they are re-read during subsequent
+				// extractKeyphrases and cause performance degradation.
+				logger.debug("Deleting "+ keaInputFile.getAbsolutePath());
+				//keaInputFile.delete();
+				logger.debug("Deleting "+ keaOutputFile.getAbsolutePath());
+				//keaOutputFile.delete();
+			}
+		}
+		else if (this.algorithm.equals("dummy")) {
 			Tagger tagger = this.taggers.get("Dummytagger");
 			logger.info("Dummy indexing with " + tagger.getVocabulary());
 			logger.debug("extracting keyphrases");

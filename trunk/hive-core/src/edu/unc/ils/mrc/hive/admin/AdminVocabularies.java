@@ -50,6 +50,7 @@ import edu.unc.ils.mrc.hive.api.impl.elmo.SKOSSchemeImpl;
  *   - Lucene index
  *   - H2 tables and indexes
  *   - KEA++ model (based on training set)
+ *   - Maui model (based on same training set)
  * 
  * This class expects the following:
  *  - SKOS vocabulary file in RDF/XML format
@@ -81,6 +82,7 @@ public class AdminVocabularies {
     	options.addOption("d", false, "Initialize H2");
     	options.addOption("k", false, "Initialize H2 (KEA)");
     	options.addOption("t", false, "Train KEA");
+    	options.addOption("m", false, "Train Maui");
     	options.addOption("x", false, "Initialize autocomplete index");
     	return options;
     }
@@ -115,11 +117,12 @@ public class AdminVocabularies {
 			boolean doLucene = commandLine.hasOption("l");
 			boolean doH2 = commandLine.hasOption("d");
 			boolean doKEAH2 = commandLine.hasOption("k");
-			boolean doTrain = commandLine.hasOption("t");
+			boolean doTrainKEA = commandLine.hasOption("t");
+			boolean doTrainMaui = commandLine.hasOption("m");
 			boolean doAutocomplete = commandLine.hasOption("x");
 			
 			if (doAll)
-				doSesame = doLucene = doH2 = doKEAH2 = doTrain = doAutocomplete =true;
+				doSesame = doLucene = doH2 = doKEAH2 = doTrainKEA = doTrainMaui = doAutocomplete =true;
 			
 			logger.info("Starting import of vocabulary " + vocabularyName);
 			try
@@ -147,15 +150,25 @@ public class AdminVocabularies {
 				else
 					logger.info("Skipping KEA H2 initialization");
 				
-				if (doTrain) 
+				if (doTrainKEA) 
 				{
-					logger.info("Starting KEA training");
 					TaggerTrainer trainer = new TaggerTrainer(scheme);
-					trainer.trainAutomaticIndexingModule();
+					logger.info("Starting KEA training");
+					trainer.trainKEAAutomaticIndexingModule();
 					logger.info("KEA training complete");
 		 		} 
 				else
 					logger.info("Skipping KEA training");
+				
+				if (doTrainMaui) 
+				{
+					TaggerTrainer trainer = new TaggerTrainer(scheme);
+					logger.info("Starting Maui training");
+					trainer.trainMauiAutomaticIndexingModule();
+					logger.info("Maui training complete");
+		 		} 
+				else
+					logger.info("Skipping Maui training");
 				
 				try {
 					scheme.close();

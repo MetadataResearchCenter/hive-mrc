@@ -7,8 +7,18 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+
+import java.io.PrintWriter;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -453,7 +463,7 @@ public class SimpleTextCrawler
 			{
 				diffText = getDiff(tmpText, baseText);
 			
-				diffText = diffText.replaceAll("\\s+", " ");
+				//diffText = diffText.replaceAll("\\s+", " ");
 				diffText = diffText.replaceAll(tmpUrl.toLowerCase(), "");
 				text += diffText;
 			}
@@ -560,6 +570,7 @@ public class SimpleTextCrawler
 		return links;
 	}
 	
+
 	private String getDiff(String base, String current)
 	{
 		List<String> baseRows = Arrays.asList(base.split("\n"));
@@ -571,7 +582,7 @@ public class SimpleTextCrawler
 			Chunk c= delta.getOriginal();
 			List<String> lines = (List<String>) c.getLines();
 			for (String line : lines)
-				diff += line;
+				diff += line + "\n";
 		}
 		return diff;
 	}
@@ -604,6 +615,7 @@ public class SimpleTextCrawler
 			URI base = new URI(baseUrl);
 			absoluteUrl = base.resolve(relativeUrl).toString();
 		} catch (IllegalArgumentException e) {
+			absoluteUrl = "";
 			logger.warn(e);
 		} catch (URISyntaxException e) {
 			logger.warn(e);

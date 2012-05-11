@@ -43,7 +43,8 @@ public interface SKOSServer {
 	
 	public TreeMap<String, SKOSScheme> getSKOSSchemas();
 	public SKOSSearcher getSKOSSearcher();
-	public SKOSTagger getSKOSTagger();
+//	public SKOSTagger getSKOSTagger();
+	public SKOSTagger getSKOSTagger(String algorithm);
 	public String getOrigin(QName uri);
 	public void close();
 
