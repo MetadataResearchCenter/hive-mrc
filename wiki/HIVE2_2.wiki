@@ -12,7 +12,4 @@ The HIVE 2.2 release includes the following minor features and bug fixes:
  * Issue [http://code.google.com/p/hive-mrc/issues/detail?id=42 #42]: UTF-8 encoding issues 
  * Issue [http://code.google.com/p/hive-mrc/issues/detail?id=41 #41]: Provide Links to the HIVE Wiki and HIVE googlecode from the demo 
  * Issue [http://code.google.com/p/hive-mrc/issues/detail?id=18 #18]: skos view after search 
- * Issue [http://code.google.com/p/hive-mrc/issues/detail?id=17 #17]:  * Issue [http://code.google.com/p/hive-mrc/issues/detail?id=18 #18]: skos view after search 
-
-
-
+ * Issue [http://code.google.com/p/hive-mrc/issues/detail?id=17 #17]:  Add button should be clickable
