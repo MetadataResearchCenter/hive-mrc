@@ -169,7 +169,6 @@ public final class Autocomplete
     		nospaces = nospaces.replaceAll(":", "");
     		nospaces = nospaces.replaceAll("'", "");
     		
-    		System.out.println("Indexing: " + nospaces); 
     		// ok index the word
     		Document doc = new Document();
     		doc.add(new Field(ID_FIELD, idMap.get(word), Field.Store.YES, 
