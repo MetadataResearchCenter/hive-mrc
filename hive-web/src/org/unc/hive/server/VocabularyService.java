@@ -304,9 +304,11 @@ public class VocabularyService {
 	 * @gwt.typeArgs <client.ConceptProxy>
 	 * 
 	 * */
-	public List<ConceptProxy> getTags(String input, List<String> openedVocabularies, int numTerms)
+	public List<ConceptProxy> getTags(String input, List<String> openedVocabularies, int numTerms, String algorithm)
 	{
-		SKOSTagger tagger = this.skosServer.getSKOSTagger();
+		logger.debug("getTags for " + input);
+		
+		SKOSTagger tagger = this.skosServer.getSKOSTagger(algorithm);
 		List<SKOSConcept> candidates = tagger.getTags(input, openedVocabularies,
 				this.getSKOSSearcher(), numTerms);
 		List<ConceptProxy> result = new ArrayList<ConceptProxy>(); 
@@ -328,9 +330,9 @@ public class VocabularyService {
 	}
 	
 	public List<ConceptProxy> getTags(String input, List<String> openedVocabularies, 
-			int numTerms, int minPhraseOccur)
+			int numTerms, int minPhraseOccur, String algorithm)
 	{
-		SKOSTagger tagger = this.skosServer.getSKOSTagger();
+		SKOSTagger tagger = this.skosServer.getSKOSTagger(algorithm);
 		List<SKOSConcept> candidates = tagger.getTagsFromText(input, openedVocabularies,
 				this.getSKOSSearcher(), numTerms, minPhraseOccur);
 		List<ConceptProxy> result = new ArrayList<ConceptProxy>(); 
@@ -369,9 +371,9 @@ public class VocabularyService {
 	}
 	
 	public List<ConceptProxy> getTags(URL url, List<String> openedVocabularies, int maxHops, 
-			int numTerms, boolean diff)
+			int numTerms, boolean diff, String algorithm)
 	{
-		SKOSTagger tagger = this.skosServer.getSKOSTagger();
+		SKOSTagger tagger = this.skosServer.getSKOSTagger(algorithm);
 		List<SKOSConcept> candidates = tagger.getTags(url, openedVocabularies,
 				this.getSKOSSearcher(), maxHops, numTerms, diff);
 		List<ConceptProxy> result = new ArrayList<ConceptProxy>(); 
@@ -390,14 +392,14 @@ public class VocabularyService {
 		return result;
 	}
 	
-	public List<ConceptNode> getTagsAsTree(String text, List<String> openedVocabularies, int maxHops, int numTerms)
+	public List<ConceptNode> getTagsAsTree(String text, List<String> openedVocabularies, int maxHops, int numTerms, String algorithm)
 	{
-		SKOSTagger tagger = this.skosServer.getSKOSTagger();
+		SKOSTagger tagger = this.skosServer.getSKOSTagger(algorithm);
 		List<ConceptNode> tree = tagger.getTagsAsTree(text, openedVocabularies,this.getSKOSSearcher(), maxHops, numTerms);
 		return tree;
 	}
 	
-	public ConceptProxy getFirstConcept(String vocabulary)
+	public ConceptProxy getFirstConcept(String vocabulary) 
 	{
 		TreeMap<String, SKOSScheme> vocabularyMap = this.skosServer.getSKOSSchemas();
 	    SKOSScheme voc = vocabularyMap.get(vocabulary.toLowerCase());

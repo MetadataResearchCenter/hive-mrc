@@ -38,7 +38,7 @@
 		    source: function(request, response) {
 		      $.ajax({
 		        url :  '/ac?cv=' + cv + '&',
-		        dataType: 'json',
+		        dataType: 'jsonp',
 		        data: { term: request.term },
 		        success: function(data) {
 		          response($.map(data, function(item) {
@@ -74,7 +74,7 @@
 <div class="demo">
 
 <div class="ui-widget">
-	<label for="taxon">Taxonomic name: </label>
+	<label for="taxon">Enter term: </label>
 	<input id="taxon"  style="width: 400px"/>
 	<select id="cv" onchange="changeSource(this.options[this.selectedIndex].id)">
 		<option id="agrovoc">AGROVOC</option>

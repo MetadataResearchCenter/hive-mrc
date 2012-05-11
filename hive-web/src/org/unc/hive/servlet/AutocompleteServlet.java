@@ -20,6 +20,7 @@ import edu.unc.ils.mrc.hive.ir.lucene.search.AutocompleteTerm;
  */
 public class AutocompleteServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+	static final String PARAM_CALLBACK = "callback";
        
 	
 
@@ -39,6 +40,7 @@ public class AutocompleteServlet extends HttpServlet {
 		
 		String vocab = request.getParameter("cv");
 		String term = request.getParameter("term");
+		String callback = request.getParameter("callback");
 		
 		List<AutocompleteTerm> terms =null;
 		try {
@@ -49,23 +51,30 @@ public class AutocompleteServlet extends HttpServlet {
 		}
 		StringBuffer json = new StringBuffer("\n[");
 		int i = 0;
-		for (AutocompleteTerm t: terms) {
-			if (i > 0)
-				json.append(",\n");
-			json.append("{");
-			json.append("\"id\": \"");
-			json.append(t.getId());
-			json.append("\", \"label\": \"");
-			json.append(t.getValue());
-			json.append("\", \"value\": \"");
-			json.append(t.getValue());
-			json.append("\"}");
-			i++;
+		if (terms != null)
+		{
+			for (AutocompleteTerm t: terms) {
+				if (i > 0)
+					json.append(",\n");
+				json.append("{");
+				json.append("\"id\": \"");
+				json.append(t.getId());
+				json.append("\", \"label\": \"");
+				json.append(t.getValue());
+				json.append("\", \"value\": \"");
+				json.append(t.getValue());
+				json.append("\"}");
+				i++;
+			}
 		}
 		json.append("\n]");
 
+		if (callback != null)
+		{
+			json.insert(0, callback + "(");
+			json.append(")");
+		}
 		
-		System.out.println(json);
 		response.setContentType("text/json");
 		PrintWriter writer = new PrintWriter(response.getOutputStream());
 		writer.write(json.toString());
