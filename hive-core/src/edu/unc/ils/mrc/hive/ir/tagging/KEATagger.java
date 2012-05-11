@@ -89,7 +89,7 @@ public class KEATagger implements Tagger{
 		// NoStemmer)
 		//this.ke.setStemmer(new PorterStemmer());
 
-		String stemmerClass = schema.getStemmerClass();
+		String stemmerClass = schema.getKeaStemmerClass();
 		try
 		{
 			Class cls = Class.forName(stemmerClass);

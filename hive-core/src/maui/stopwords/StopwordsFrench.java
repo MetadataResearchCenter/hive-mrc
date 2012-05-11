@@ -17,16 +17,18 @@ public class StopwordsFrench extends Stopwords {
 
 	private static final long serialVersionUID = 1L;
 	
+	/** The location of the stopwords file **/
+	private static String filePath;
+	
 	/** The hashtable containing the list of stopwords */
 	private static HashSet<String> m_Stopwords = null;
 	
-	
-	static {
-		
+	public StopwordsFrench(String filePath) {
+		super(filePath);
 		if (m_Stopwords == null) {
 			m_Stopwords = new HashSet<String>();
 			
-			File txt = new File("data/stopwords/stopwords_fr.txt");	
+			File txt = new File(filePath);	
 			InputStreamReader is;
 			String sw = null;
 			try {
@@ -38,9 +40,9 @@ public class StopwordsFrench extends Stopwords {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			
 		}
 	}
+
 	
 	/** 
 	 * Returns true if the given string is a stop word.

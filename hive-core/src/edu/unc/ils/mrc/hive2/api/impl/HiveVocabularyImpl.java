@@ -26,7 +26,9 @@ package edu.unc.ils.mrc.hive2.api.impl;
 
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -403,9 +405,9 @@ public class HiveVocabularyImpl implements HiveVocabulary
 	}
 
 	@Override
-	public void importConcepts(String path) throws Exception 
+	public void importConcepts(String path, String format) throws Exception 
 	{
-		importConcepts(path, true, true, true, true, true);
+		importConcepts(path, true, true, true, true, true, format);
 	}
 	/**
 	 * Imports all concepts from the specified RDF/XML formatted file. 
@@ -414,15 +416,27 @@ public class HiveVocabularyImpl implements HiveVocabulary
 	 */
 	@Override
 	public void importConcepts(String path, boolean doSesame, boolean doLucene, 
-			boolean doH2, boolean doKEAH2, boolean doAutocomplete) throws Exception 
+			boolean doH2, boolean doKEAH2, boolean doAutocomplete, String format) throws Exception 
 	{
 		logger.info("importConcepts " + path);
+		
+		RDFFormat rdfformat = RDFFormat.RDFXML;
+		if (format.equals("rdfxml")) {
+			rdfformat = RDFFormat.RDFXML;
+		} else if (format.equals("n3")) {
+			rdfformat = RDFFormat.N3;
+		} else if (format.equals("ntriples")) {
+			rdfformat = RDFFormat.NTRIPLES;
+		} else if (format.equals("turtle")) {
+			rdfformat = RDFFormat.TURTLE;
+		}		
 		
 		// Import RDF/XML directly to Sesame
 		if (doSesame)
 		{
 			logger.info("Importing " + path + " to Sesame store");
-			manager.getConnection().add(new File(path), "", RDFFormat.RDFXML);
+			manager.getConnection().add(new InputStreamReader(new FileInputStream(path), "UTF-8"), "", rdfformat);
+
 			manager.flush();
 			logger.info("Import to Sesame store complete");
 		}
@@ -506,6 +520,7 @@ public class HiveVocabularyImpl implements HiveVocabulary
 	{
 		logger.debug("importConcept " + qname + ", " + path);
 		
+
 		// Read RDF/XML file into in-memory Sesame Store
 		logger.debug("Reading concept from file " + path);
 		MemoryStore tempStore = new MemoryStore();
@@ -514,10 +529,10 @@ public class HiveVocabularyImpl implements HiveVocabulary
         ElmoModule tempElmo = new ElmoModule();           
         SesameManagerFactory tempFactory = new SesameManagerFactory(tempElmo, tempRepository);         
         SesameManager tempManager = tempFactory.createElmoManager();
-        if (path.startsWith("http")) 
-        	tempManager.getConnection().add(new URL(path), "", RDFFormat.RDFXML);
+        if (path.startsWith("http"))
+        	tempManager.getConnection().add(new InputStreamReader(new URL(path).openStream(), "UTF-8"), "", RDFFormat.RDFXML);
         else
-        	tempManager.getConnection().add(new File(path), "", RDFFormat.RDFXML);
+        	tempManager.getConnection().add(new InputStreamReader(new FileInputStream(path), "UTF-8"), "", RDFFormat.RDFXML);
         tempManager.flush();
         
         // Get concept from temp store

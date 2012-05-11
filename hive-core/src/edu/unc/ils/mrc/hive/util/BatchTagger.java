@@ -34,13 +34,16 @@ public class BatchTagger
 		String inputPath = args[1];		
 		// Vocabulary name
 		String vocabulary = args[2];
+		
+		// Algorithm for indexing
+		String algorithm = "maui";
 
 		File inputDir = new File(inputPath);
 		List<String> vocabularies = new ArrayList<String>();
 		vocabularies.add(vocabulary);
 		
 		SKOSServer server = new SKOSServerImpl(confPath);
-		SKOSTagger tagger = server.getSKOSTagger();
+		SKOSTagger tagger = server.getSKOSTagger(algorithm);
 		SKOSSearcher searcher = server.getSKOSSearcher();
 		File[] files = inputDir.listFiles(new FileExtensionFilter("pdf"));
 		for (File file: files) {

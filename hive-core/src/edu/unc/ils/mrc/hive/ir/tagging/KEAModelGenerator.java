@@ -76,7 +76,7 @@ public class KEAModelGenerator {
 		String modelPath = schema.getKEAModelPath();
 		String vocabularyPath = schema.getRdfPath();
 		String stopwordsPath = schema.getStopwordsPath();
-		String stemmerClass = schema.getStemmerClass();
+		String stemmerClass = schema.getKeaStemmerClass();
 		
 		this.km = new KEAModelBuilder(schema);
 		

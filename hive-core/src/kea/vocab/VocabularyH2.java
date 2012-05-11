@@ -1,8 +1,10 @@
 package kea.vocab;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -67,11 +69,11 @@ public class VocabularyH2 extends Vocabulary
 	private SesameManager manager;
 	
 	String name;
-	/* FileWriters used during H2 database initialization */
-	FileWriter vocabularyEN;
-	FileWriter vocabularyENrev;
-	FileWriter vocabularyUSE;
-	FileWriter vocabularyREL;
+	/* OutputStreamWriter used during H2 database initialization */
+	OutputStreamWriter vocabularyEN;
+	OutputStreamWriter vocabularyENrev;
+	OutputStreamWriter vocabularyUSE;
+	OutputStreamWriter vocabularyREL;
 	
 	File h2;
 	
@@ -109,7 +111,7 @@ public class VocabularyH2 extends Vocabulary
 		
 		try
 		{
-			Class cls = Class.forName(scheme.getStemmerClass());
+			Class cls = Class.forName(scheme.getKeaStemmerClass());
 			Stemmer stemmer = (Stemmer)cls.newInstance();
 			setStemmer(stemmer);
 		} catch (Exception e) {
@@ -199,10 +201,10 @@ public class VocabularyH2 extends Vocabulary
 			logger.info("Creating temp file " + fileUSE.getAbsolutePath());
 			logger.info("Creating temp file " + fileREL.getAbsolutePath());
 			
-			vocabularyEN = new FileWriter(fileEN);
-			vocabularyENrev = new FileWriter(fileENrev);
-			vocabularyUSE = new FileWriter(fileUSE);
-			vocabularyREL = new FileWriter(fileREL);
+			vocabularyEN = new OutputStreamWriter(new FileOutputStream(fileEN), "UTF-8");
+			vocabularyENrev = new OutputStreamWriter(new FileOutputStream(fileENrev), "UTF-8");
+			vocabularyUSE = new OutputStreamWriter(new FileOutputStream(fileUSE), "UTF-8");
+			vocabularyREL = new OutputStreamWriter(new FileOutputStream(fileREL), "UTF-8");
 		
 			int count = 1;
 

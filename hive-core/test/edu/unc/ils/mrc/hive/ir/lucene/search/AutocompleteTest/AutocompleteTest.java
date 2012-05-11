@@ -12,11 +12,11 @@ public class AutocompleteTest extends TestCase {
 
 	public void testAutocomplete() throws IOException, ParseException {
     	String vocab = "agrovoc";
-    	Autocomplete autocomplete = new Autocomplete("/Users/cwillis/dev/hive/hive-data/" + vocab + "/" + vocab + "Autocomplete");
+    	Autocomplete autocomplete = new Autocomplete("/usr/local/hive/hive-data/" + vocab + "/" + vocab + "Autocomplete");
 
     	// run this to re-index from the current index, shouldn't need to do
     	// this very often
-    	autocomplete.reIndex(FSDirectory.getDirectory("/Users/cwillis/dev/hive/hive-data/" + vocab + "/" + vocab + "Index", null),
+    	autocomplete.reIndex(FSDirectory.getDirectory("/usr/local/hive/hive-data/" + vocab + "/" + vocab + "Index", null),
     	"prefLabel");
 
 
