@@ -558,6 +558,10 @@ public class MauiTopicExtractor implements OptionHandler {
 			
 			mauiFilter.input(data.instance(0));
 			
+			// test
+			if (buildGlobalDictionary)
+				mauiFilter.batchFinished();
+			// end test
 			
 			data = data.stringFreeStructure();
 			if (debugMode) {
@@ -736,7 +740,9 @@ public class MauiTopicExtractor implements OptionHandler {
 		
 		System.err.println("");
 		}
-		mauiFilter.batchFinished();
+		
+		if (!buildGlobalDictionary)
+			mauiFilter.batchFinished();
 	}
 	
 	/**
@@ -996,6 +1002,8 @@ public class MauiTopicExtractor implements OptionHandler {
 
 	public void setMinNumOccur(int minNumOccur) {
 		this.minNumOccur = minNumOccur;
-		this.mauiFilter.setMinNumOccur(minNumOccur);
+		if (this.mauiFilter != null) {
+			this.mauiFilter.setMinNumOccur(minNumOccur);
+		}
 	}
 }
