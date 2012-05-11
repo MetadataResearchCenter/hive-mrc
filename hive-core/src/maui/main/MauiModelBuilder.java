@@ -196,9 +196,7 @@ public class MauiModelBuilder implements OptionHandler {
 	Stemmer stemmer = new PorterStemmer();
 
 	/** Llist of stopwords to be used */
-	//public  Stopwords stopwords = new StopwordsEnglish("data/stopwords/stopwords_en.txt");
-	// temporary test jpb
-	public  Stopwords stopwords = new StopwordsEnglish("C:/hive/hive-data/nbii/nbiiKEA/data/stopwords/stopwords_en.txt");
+	public  Stopwords stopwords = null;
 	private Vocabulary vocabulary = null;
 	
 	public void loadThesaurus(Stemmer st, Stopwords sw, String vocabularyDirectory) {
