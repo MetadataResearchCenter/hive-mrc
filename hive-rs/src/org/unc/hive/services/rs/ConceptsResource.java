@@ -18,6 +18,7 @@ package org.unc.hive.services.rs;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.TreeMap;
 
 import javax.ws.rs.GET;
@@ -388,7 +389,7 @@ public class ConceptsResource {
         if (s.equalsIgnoreCase(schemeName)) {
           SKOSScheme skosScheme = skosSchemes.get(s);
           if (skosScheme != null) {
-            TreeMap<String, QName> alphaIndex = skosScheme.getAlphaIndex();         
+            Map<String, QName> alphaIndex = skosScheme.getAlphaIndex();
             if (alphaIndex != null) {
               for (String prefLabel : alphaIndex.keySet()) {
                 prefLabelsBuffer.append(prefLabel + "\n");
@@ -647,10 +648,12 @@ public class ConceptsResource {
    */
   @PUT
   @Path("tags/SKOSFormat")
-  public String tagDocument(@PathParam("schemeName") String schemeName,
-                            File file) {
+  public String tagDocument(
+		  @PathParam("schemeName") String schemeName, 
+		  @QueryParam("algorithm") String algorithm,
+          File file) 
+  {
     String xmlString = "";
-    
     if (file != null) {
       String inputFilePath = file.getAbsolutePath();
       logger.debug("inputFilePath: " + inputFilePath);
@@ -659,7 +662,7 @@ public class ConceptsResource {
       vocabularyList.add(schemeName); 
     
       SKOSSearcher skosSearcher = ConfigurationListener.getSKOSSearcher();
-      SKOSTagger skosTagger = ConfigurationListener.getSKOSTagger();
+      SKOSTagger skosTagger = ConfigurationListener.getSKOSTagger(algorithm);
       
       if (skosSearcher != null && skosTagger != null) {
         skosConcepts = 

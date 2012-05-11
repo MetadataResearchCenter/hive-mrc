@@ -170,7 +170,7 @@ public class SchemesResource {
   @GET
   @Path("{schemeName}/numberOfConcepts")
   public String getNumberOfConcepts(@PathParam("schemeName") String schemeName) {
-    Integer numberOfConcepts = -1;
+    Long numberOfConcepts = -1L;
     SKOSServer skosServer = ConfigurationListener.getSKOSServer();
       
     if (schemeName != null) {
@@ -199,7 +199,7 @@ public class SchemesResource {
   @GET
   @Path("{schemeName}/numberOfRelations")
   public String getNumberOfRelations(@PathParam("schemeName") String schemeName) {
-    Integer numberOfRelations = -1;
+    Long numberOfRelations = -1L;
     SKOSServer skosServer = ConfigurationListener.getSKOSServer();
       
     if (schemeName != null) {
@@ -269,8 +269,7 @@ public class SchemesResource {
         if (s.equalsIgnoreCase(schemeName)) {
           SKOSScheme skosScheme = skosSchemes.get(s);
           if (skosScheme != null) {
-            TreeMap<String, QName> alphaIndex = 
-              skosScheme.getAlphaIndex();
+            TreeMap<String, QName> alphaIndex = (TreeMap<String, QName>) skosScheme.getAlphaIndex();
             if (alphaIndex != null) {
               xmlString = 
                 ConceptsResource.conceptTreeMapToXML(alphaIndex);
@@ -344,7 +343,7 @@ public class SchemesResource {
           SKOSScheme skosScheme = skosSchemes.get(s);
           if (skosScheme != null) {
             TreeMap<String, QName> topConceptIndex = 
-              skosScheme.getTopConceptIndex();
+            	(TreeMap<String, QName>) skosScheme.getTopConceptIndex();
             if (topConceptIndex != null) {
               xmlString = 
                 ConceptsResource.conceptTreeMapToXML(topConceptIndex);
@@ -383,7 +382,7 @@ public class SchemesResource {
           SKOSScheme skosScheme = skosSchemes.get(s);
           if (skosScheme != null) {
             TreeMap<String, QName> topConceptIndex = 
-              skosScheme.getSubTopConceptIndex(startLetters);
+              (TreeMap<String, QName>) skosScheme.getSubTopConceptIndex(startLetters);
             if (topConceptIndex != null) {
               xmlString = 
                 ConceptsResource.conceptTreeMapToXML(topConceptIndex);
