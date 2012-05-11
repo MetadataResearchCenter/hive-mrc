@@ -28,7 +28,6 @@ public class StopwordsEnglish extends Stopwords {
 		if (m_Stopwords == null) {
 			m_Stopwords = new Hashtable<String,Double>();
 			Double dummy = new Double(0);
-			System.out.println(stopwordsPath);
 			File txt = new File(stopwordsPath);
 			InputStreamReader is;
 			String sw = null;
