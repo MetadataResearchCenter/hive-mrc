@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
-import org.gwtmultipage.client.*;  
+import org.gwtmultipage.client.*;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
@@ -53,48 +53,50 @@ import com.google.gwt.user.client.ui.FormPanel.SubmitEvent;
 import com.google.gwt.user.client.ui.FlexTable;
 
 @UrlPatternEntryPoint(value = "indexing.html")
-
 public class Indexer implements EntryPoint {
-	
+
 	private CaptionPanel indexingCaption;
 	private FlowPanel indexingSteps;
 	private String fileName;
 	private String tempFileName;
-	private List<String> openedVocabularies;  // store the name of current loaded vocabularies in client side
-	private List<String> allVocabulary; // store the name of all vocabularies that hive have
-	
-	private List<ConceptProxy> selectedConcepts;   
-	private Button startover = new Button("Start Over");   
+	private List<String> openedVocabularies; // store the name of current loaded
+												// vocabularies in client side
+	private List<String> allVocabulary; // store the name of all vocabularies
+										// that hive have
+
+	private List<ConceptProxy> selectedConcepts;
+	private Button startover = new Button("Start Over");
 	private Button selectedConceptsButton;
 	private FlowPanel addVocabularyPanel;
-	private HorizontalPanel configure;	
-	private Button openNewVocabulary; 
+	private HorizontalPanel configure;
+	private Button openNewVocabulary;
 	private FlexTable indexingTable;
 	private PopupPanel uploadPopup;
-	private HorizontalPanel deleteFile; 
+	private HorizontalPanel deleteFile;
 	private String fileToProcess;
 	private SimplePanel conceptInfo;
 	private DockPanel resultDock;
 	private HorizontalPanel steps;
-	
+
 	private final IndexerServiceAsync indexerService = GWT
 			.create(IndexerService.class);
-	private final ConceptBrowserServiceAsync conceptBrowserService = GWT.create(ConceptBrowserService.class);
-	
+	private final ConceptBrowserServiceAsync conceptBrowserService = GWT
+			.create(ConceptBrowserService.class);
+
 	private boolean isFileUploaded;
 	private boolean isURL;
-	
+
 	private Anchor clickedConcept;
 	private boolean selected;
 	private String recText = "";
 	private TextArea recs = new TextArea();
 	private RecordFormatter formatter = new RecordFormatter();
-		
+
 	@Override
 	public void onModuleLoad() {
-		
-		conceptBrowserService.getAllVocabulariesName(new AsyncCallback<List<String>>()
-				{
+
+		conceptBrowserService
+				.getAllVocabulariesName(new AsyncCallback<List<String>>() {
 
 					@Override
 					public void onFailure(Throwable caught) {
@@ -105,22 +107,22 @@ public class Indexer implements EntryPoint {
 					@Override
 					public void onSuccess(List<String> result) {
 						// TODO Auto-generated method stub
-					   allVocabulary = result;
+						allVocabulary = result;
 					}
 				});
-		
+
 		this.initialize();
 
 	}
 
-	private void displayOpenedVocabularies() 
-	{	
-		
+	private void displayOpenedVocabularies() {
+
 		for (final String c : openedVocabularies) {
-			
-			final ToggleButton closeVocabulary = new ToggleButton(new Image("./img/close-white.jpg"), new Image("./img/disabled.jpg"));
+
+			final ToggleButton closeVocabulary = new ToggleButton(new Image(
+					"./img/close-white.jpg"), new Image("./img/disabled.jpg"));
 			Label vname = new Label(c);
-			vname.addStyleName("vname");			
+			vname.addStyleName("vname");
 			final HorizontalPanel hp = new HorizontalPanel();
 			hp.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 			hp.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_LEFT);
@@ -128,50 +130,41 @@ public class Indexer implements EntryPoint {
 			hp.add(closeVocabulary);
 			hp.add(vname);
 			configure.add(hp);
-			closeVocabulary.addClickHandler(new ClickHandler()
-			{
-				public void onClick(ClickEvent e)
-				{
-					if(closeVocabulary.isDown())
-					{
+			closeVocabulary.addClickHandler(new ClickHandler() {
+				public void onClick(ClickEvent e) {
+					if (closeVocabulary.isDown()) {
 						closeVocabulary.setDown(false);
-					    ConfirmDialog dlg = new ConfirmDialog(hp, closeVocabulary,c,false,true);	
-					    dlg.center();	
-					    dlg.show();
-					}
-					else
-					{
+						ConfirmDialog dlg = new ConfirmDialog(hp,
+								closeVocabulary, c, false, true);
+						dlg.center();
+						dlg.show();
+					} else {
 						openedVocabularies.add(c);
 					}
-				}				
+				}
 			});
 		}
 	}
-	
-	
-	private void initVocabulariesMenu()
-	{
-		
+
+	private void initVocabulariesMenu() {
+
 		this.openNewVocabulary = new Button("Select");
-		
-		openNewVocabulary.addClickHandler(new ClickHandler()
-		{
+
+		openNewVocabulary.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
-				final PopupPanel pop = new PopupPanel(true,false);
+				final PopupPanel pop = new PopupPanel(true, false);
 				addVocabularyPanel.clear();
 				addVocabularyPanel.removeFromParent();
-				for(final String c : allVocabulary)
-				{
-					if (!openedVocabularies.contains(c.toLowerCase()))
-					{
-						final Hyperlink hp = new Hyperlink(c,c);						
-						hp.addClickHandler(new ClickHandler()
-						{
+				for (final String c : allVocabulary) {
+					if (!openedVocabularies.contains(c.toLowerCase())) {
+						final Hyperlink hp = new Hyperlink(c, c);
+						hp.addClickHandler(new ClickHandler() {
 
-							public void onClick(ClickEvent e)
-							{
+							public void onClick(ClickEvent e) {
 								openedVocabularies.add(c.toLowerCase());
-								final ToggleButton closeVocabulary = new ToggleButton(new Image("./img/close-white.jpg"), new Image("./img/disabled.jpg"));
+								final ToggleButton closeVocabulary = new ToggleButton(
+										new Image("./img/close-white.jpg"),
+										new Image("./img/disabled.jpg"));
 								Label vname = new Label(c);
 								vname.addStyleName("vname");
 								final HorizontalPanel vpanel = new HorizontalPanel();
@@ -180,83 +173,87 @@ public class Indexer implements EntryPoint {
 								vpanel.addStyleName("vocabularyMenu");
 								vpanel.add(closeVocabulary);
 								vpanel.add(vname);
-								configure.insert(vpanel, configure.getWidgetCount()-1);
+								configure.insert(vpanel,
+										configure.getWidgetCount() - 1);
 								pop.hide();
-								
-								closeVocabulary.addClickHandler(new ClickHandler()
-								{
-									public void onClick(ClickEvent e)
-									{
-										if(closeVocabulary.isDown())
-										{
-											closeVocabulary.setDown(false);
-					            			ConfirmDialog dlg = new ConfirmDialog(vpanel, closeVocabulary,c,false,true);	
-											dlg.show();
-											dlg.center();	
-										}
-										else
-										{
-											openedVocabularies.add(c);
-											final Hyperlink hp = new Hyperlink(c, c);
-											hp.addClickHandler(new ClickHandler()
-											{
-												@Override
-												public void onClick(ClickEvent event) {
-													// TODO Auto-generated method stub
-													
-												}	
-											});
-										}
-									}				
-								});						
+
+								closeVocabulary
+										.addClickHandler(new ClickHandler() {
+											public void onClick(ClickEvent e) {
+												if (closeVocabulary.isDown()) {
+													closeVocabulary
+															.setDown(false);
+													ConfirmDialog dlg = new ConfirmDialog(
+															vpanel,
+															closeVocabulary, c,
+															false, true);
+													dlg.show();
+													dlg.center();
+												} else {
+													openedVocabularies.add(c);
+													final Hyperlink hp = new Hyperlink(
+															c, c);
+													hp.addClickHandler(new ClickHandler() {
+														@Override
+														public void onClick(
+																ClickEvent event) {
+															// TODO
+															// Auto-generated
+															// method stub
+
+														}
+													});
+												}
+											}
+										});
 							}
-						}
-						);		
-						addVocabularyPanel.add(hp);	
+						});
+						addVocabularyPanel.add(hp);
 					}
 				}
-				if(addVocabularyPanel.getWidgetCount() == 0)
-				{
-					Label msg = new Label("All vocabularies have been selected.");
+				if (addVocabularyPanel.getWidgetCount() == 0) {
+					Label msg = new Label(
+							"All vocabularies have been selected.");
 					addVocabularyPanel.add(msg);
 				}
 				pop.add(addVocabularyPanel);
 				pop.addStyleName("add-pop");
-				pop.setPopupPosition(openNewVocabulary.getAbsoluteLeft()+12, openNewVocabulary.getAbsoluteTop()+11);
+				pop.setPopupPosition(openNewVocabulary.getAbsoluteLeft() + 12,
+						openNewVocabulary.getAbsoluteTop() + 11);
 				pop.show();
-			}		
+			}
 		});
 		configure.add(openNewVocabulary);
 	}
-	
-	private void initialize()
-	{
+
+	private void initialize() {
 		this.deleteFile = new HorizontalPanel();
 		this.isFileUploaded = false;
 		this.isURL = false;
 		uploadPopup = new PopupPanel(false);
 		uploadPopup.addStyleName("upload-popup");
-		uploadPopup.setGlassEnabled(true);   
+		uploadPopup.setGlassEnabled(true);
 		Label uploading = new Label("Uploading...");
-		
+
 		uploading.setHeight("100%");
 		uploadPopup.add(uploading);
 		openedVocabularies = new ArrayList<String>();
-		
-		selectedConcepts = new ArrayList<ConceptProxy>();   
-		
+
+		selectedConcepts = new ArrayList<ConceptProxy>();
+
 		indexingSteps = new FlowPanel();
 		indexingSteps.addStyleName("indexing-steps");
-		final HTML steps = new HTML("HIVE automatically extracts concepts from a document or URL based on selected vocabularies. <br>" +
-				"<ul><li>Step 1: Select a vocabulary</li>" +
-				"<li>Step 2: Upload a document <span style = 'color: #efb81f; font-weight: bold;'>OR</span> provide the URL for a document</li>"	+
-				"<li>Step 3: Click Start Processing button</li></ul>"); 
+		final HTML steps = new HTML(
+				"HIVE automatically extracts concepts from a document or URL based on selected vocabularies. <br>"
+						+ "<ul><li>Step 1: Select a vocabulary</li>"
+						+ "<li>Step 2: Upload a document <span style = 'color: #efb81f; font-weight: bold;'>OR</span> provide the URL for a document</li>"
+						+ "<li>Step 3: Click Start Processing button</li></ul>");
 		indexingSteps.add(steps);
-		
+
 		indexingCaption = new CaptionPanel("HIVE Automatic Concepts Extractor");
 		indexingCaption.addStyleName("indexing-Caption");
 		indexingTable = new FlexTable();
-		
+
 		this.configure = new HorizontalPanel();
 		configure.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 		SimplePanel configureWrapper = new SimplePanel();
@@ -269,17 +266,19 @@ public class Indexer implements EntryPoint {
 		hp1.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 		hp1.setCellVerticalAlignment(lb1, HasVerticalAlignment.ALIGN_MIDDLE);
 		hp1.setCellVerticalAlignment(step1, HasVerticalAlignment.ALIGN_MIDDLE);
-		
+
 		lb1.addStyleName("label");
 		indexingTable.setWidget(0, 0, hp1);
 		indexingTable.setWidget(0, 1, configure);
-		indexingTable.getCellFormatter().setVerticalAlignment(0, 0, HasVerticalAlignment.ALIGN_MIDDLE);
-		indexingTable.getCellFormatter().setVerticalAlignment(0, 1, HasVerticalAlignment.ALIGN_MIDDLE);
+		indexingTable.getCellFormatter().setVerticalAlignment(0, 0,
+				HasVerticalAlignment.ALIGN_MIDDLE);
+		indexingTable.getCellFormatter().setVerticalAlignment(0, 1,
+				HasVerticalAlignment.ALIGN_MIDDLE);
 		addVocabularyPanel = new FlowPanel();
 		addVocabularyPanel.setSize("200px", "150px");
 		this.displayOpenedVocabularies();
 		this.initVocabulariesMenu();
-		
+
 		final FormPanel form = new FormPanel();
 		form.setEncoding(FormPanel.ENCODING_MULTIPART);
 		form.setMethod(FormPanel.METHOD_POST);
@@ -291,31 +290,29 @@ public class Indexer implements EntryPoint {
 		Button uploadButton = new Button("Upload");
 		uploadButton.addStyleName("upload-button");
 		uploadholder.setVerticalAlignment(HasVerticalAlignment.ALIGN_TOP);
-		uploadholder.setCellVerticalAlignment(uploadButton, HasVerticalAlignment.ALIGN_TOP);
+		uploadholder.setCellVerticalAlignment(uploadButton,
+				HasVerticalAlignment.ALIGN_TOP);
 		uploadholder.addStyleName("uploadholder");
 		uploadholder.add(form);
 		uploadholder.add(uploadButton);
 		uploadButton.addClickHandler(new ClickHandler() {
-			public void onClick(ClickEvent e)
-			{
+			public void onClick(ClickEvent e) {
 				form.submit();
-			}		
-		});			
+			}
+		});
 		form.addSubmitHandler(new FormPanel.SubmitHandler() {
 			public void onSubmit(SubmitEvent event) {
 				// This event is fired just before the form is submitted. We can
 				// take this opportunity to perform validation.
-			//	String path = upload.getFilename();	
-				
-			//	Window.alert(path);
+				// String path = upload.getFilename();
+
+				// Window.alert(path);
 				if (upload.getFilename().length() == 0) {
 					Window.alert("Please choose a file to upload.");
 					event.cancel();
-				}
-				else
-				{
-				    uploadPopup.center();
-				    uploadPopup.show();
+				} else {
+					uploadPopup.center();
+					uploadPopup.show();
 				}
 			}
 		});
@@ -323,42 +320,41 @@ public class Indexer implements EntryPoint {
 		form.addSubmitCompleteHandler(new FormPanel.SubmitCompleteHandler() {
 			public void onSubmitComplete(SubmitCompleteEvent event) {
 				String result = event.getResults();
-				if(result.contains("success"))
-				{
+				if (result.contains("success")) {
 					uploadPopup.hide();
-					if(isFileUploaded = true)
-					{
+					if (isFileUploaded = true) {
 						deleteFile.clear();
 						deleteFile.removeFromParent();
 					}
-					
-					String response = result.substring(result.indexOf("|")+1, result.lastIndexOf("?"));
+
+					String response = result.substring(result.indexOf("|") + 1,
+							result.lastIndexOf("?"));
 					String[] fileNames = response.split("\\|");
 					fileName = fileNames[0];
 					tempFileName = fileNames[1];
-										
+
 					isFileUploaded = true;
 					Label filename = new Label(fileName);
-			//		Window.alert(fileName);
-					final PushButton delete = new PushButton(new Image("./img/cancel-upld.gif"));
+					// Window.alert(fileName);
+					final PushButton delete = new PushButton(new Image(
+							"./img/cancel-upld.gif"));
 					deleteFile.add(delete);
 					deleteFile.add(filename);
 					indexingTable.insertRow(2);
 					indexingTable.setWidget(2, 1, deleteFile);
-					delete.addClickHandler(new ClickHandler()
-					{
+					delete.addClickHandler(new ClickHandler() {
 						@Override
 						public void onClick(ClickEvent event) {
 							// TODO Auto-generated method stub
 							isFileUploaded = false;
 							deleteFile.removeFromParent();
-						}	
+						}
 					});
 				}
-				
+
 			}
-		});	
-	    
+		});
+
 		Label lb3 = new Label("Upload a document");
 		lb3.addStyleName("label");
 		HorizontalPanel hp2 = new HorizontalPanel();
@@ -370,15 +366,19 @@ public class Indexer implements EntryPoint {
 		hp2.setCellVerticalAlignment(step2, HasVerticalAlignment.ALIGN_MIDDLE);
 		indexingTable.setWidget(1, 0, hp2);
 		indexingTable.setWidget(1, 1, uploadholder);
-		indexingTable.getCellFormatter().setVerticalAlignment(1, 0, HasVerticalAlignment.ALIGN_MIDDLE);
-		indexingTable.getCellFormatter().setVerticalAlignment(1, 1, HasVerticalAlignment.ALIGN_MIDDLE);
-		
+		indexingTable.getCellFormatter().setVerticalAlignment(1, 0,
+				HasVerticalAlignment.ALIGN_MIDDLE);
+		indexingTable.getCellFormatter().setVerticalAlignment(1, 1,
+				HasVerticalAlignment.ALIGN_MIDDLE);
+
 		final FlowPanel logoPanel = new FlowPanel();
 		Label powered = new Label("Powered by");
-	    HTML kea = new HTML("<a class = 'kea' href='http://www.nzdl.org/Kea/index.html' target = '_blank'><img src = './img/kea_logo.gif'/></a>", true);
+		HTML kea = new HTML(
+				"<a class = 'kea' href='http://www.nzdl.org/Kea/index.html' target = '_blank'><img src = './img/kea_logo.gif'/></a>",
+				true);
 		logoPanel.add(powered);
 		logoPanel.add(kea);
-		
+
 		HTML lb4 = new HTML("<span>OR</span> Enter the URL", false);
 		lb4.addStyleName("or-label");
 		lb4.addStyleName("label");
@@ -388,35 +388,51 @@ public class Indexer implements EntryPoint {
 		docURL.addStyleName("docURL");
 		indexingTable.setCellSpacing(0);
 		indexingTable.setWidget(2, 1, docURL);
-		
-		final DisclosurePanelImages images =
-			(DisclosurePanelImages) GWT.create(DisclosurePanelImages.class);
-		class DisclosurePanelHeader extends HorizontalPanel
-		{
-		    public DisclosurePanelHeader(boolean isOpen, String html)
-		    {
-		        add(isOpen ? images.disclosurePanelOpen().createImage()
-		              : images.disclosurePanelClosed().createImage());
-		        add(new HTML(html));
-		    }
+
+		final DisclosurePanelImages images = (DisclosurePanelImages) GWT
+				.create(DisclosurePanelImages.class);
+		class DisclosurePanelHeader extends HorizontalPanel {
+			public DisclosurePanelHeader(boolean isOpen, String html) {
+				add(isOpen ? images.disclosurePanelOpen().createImage()
+						: images.disclosurePanelClosed().createImage());
+				add(new HTML(html));
+			}
 		}
-		
-		final DisclosurePanel advancedPanel = new DisclosurePanel("Show advanced settings");
+
+		final DisclosurePanel advancedPanel = new DisclosurePanel(
+				"Show advanced settings");
 
 		advancedPanel.addCloseHandler(new CloseHandler<DisclosurePanel>() {
-            @Override
-            public void onClose(CloseEvent<DisclosurePanel> event) {
-            	advancedPanel.setHeader(new DisclosurePanelHeader(false, "Show advanced settings"));
-            }
-        });
-		
+			@Override
+			public void onClose(CloseEvent<DisclosurePanel> event) {
+				advancedPanel.setHeader(new DisclosurePanelHeader(false,
+						"Show advanced settings"));
+			}
+		});
+
 		advancedPanel.addOpenHandler(new OpenHandler<DisclosurePanel>() {
-            @Override
-            public void onOpen(OpenEvent<DisclosurePanel> event) {
-            	advancedPanel.setHeader(new DisclosurePanelHeader(true, "Hide advanced settings"));
-            }
-        });
-		
+			@Override
+			public void onOpen(OpenEvent<DisclosurePanel> event) {
+				advancedPanel.setHeader(new DisclosurePanelHeader(true,
+						"Hide advanced settings"));
+			}
+		});
+
+		// Create the algorithm selection listbox and panel
+		final ListBox algSel = new ListBox();
+		algSel.addItem("Maui");
+		algSel.addItem("KEA");
+		algSel.addItem("dummy");
+		Label algSelLbl = new Label();
+		algSelLbl.setText("  Indexing algorithm");
+		algSelLbl.addStyleName("label");
+		HorizontalPanel algSelPanel = new HorizontalPanel();
+		algSelPanel.setStyleName("advanced-subpanel");
+		algSelPanel.add(algSel);
+		algSelPanel.add(algSelLbl);
+		algSelPanel
+				.setTitle("Algorithm used when indexing a document or website.");
+
 		// Create the max hops listbox and panel
 		final ListBox maxHops = new ListBox();
 		maxHops.addItem("0");
@@ -433,8 +449,9 @@ public class Indexer implements EntryPoint {
 		maxHopsPanel.setStyleName("advanced-subpanel");
 		maxHopsPanel.add(maxHops);
 		maxHopsPanel.add(maxHopsLbl);
-		maxHopsPanel.setTitle("Maximum number of links to follow when indexing a website. " + 
-			"Set to 0 to index the first page only. Increasing this value will increase indexing time.");
+		maxHopsPanel
+				.setTitle("Maximum number of links to follow when indexing a website. "
+						+ "Set to 0 to index the first page only. Increasing this value will increase indexing time.");
 
 		// Create max terms listbox and panel
 		final ListBox maxTerms = new ListBox();
@@ -452,7 +469,7 @@ public class Indexer implements EntryPoint {
 		maxTermsPanel.add(maxTerms);
 		maxTermsPanel.add(maxTermsLbl);
 		maxTermsPanel.setTitle("Maximum number of terms to suggest.");
-		
+
 		final CheckBox diffCb = new CheckBox();
 		Label diffLbl = new Label();
 		diffLbl.setText(" Index differences only");
@@ -461,11 +478,12 @@ public class Indexer implements EntryPoint {
 		diffPanel.setStyleName("advanced-subpanel");
 		diffPanel.add(diffCb);
 		diffPanel.add(diffLbl);
-		diffPanel.setTitle("Check this checkbox to index only the differences between multiple pages in a multipage site. " +
-						"This will reduce the effect of repeated components such as headers and menus.");	
-		
-		
+		diffPanel
+				.setTitle("Check this checkbox to index only the differences between multiple pages in a multipage site. "
+						+ "This will reduce the effect of repeated components such as headers and menus.");
+
 		VerticalPanel vp = new VerticalPanel();
+		vp.add(algSelPanel);
 		vp.add(maxHopsPanel);
 		vp.add(maxTermsPanel);
 		vp.add(diffPanel);
@@ -479,59 +497,55 @@ public class Indexer implements EntryPoint {
 		final HTML step3 = new HTML("<img src = './img/step3.png'/>");
 		indexingTable.setWidget(0, 2, step3);
 		indexingTable.setWidget(1, 2, startProcessing);
-		indexingTable.getFlexCellFormatter().setHorizontalAlignment(1, 2, HasHorizontalAlignment.ALIGN_RIGHT);
+		indexingTable.getFlexCellFormatter().setHorizontalAlignment(1, 2,
+				HasHorizontalAlignment.ALIGN_RIGHT);
 		indexingTable.setWidget(2, 2, logoPanel);
 		indexingTable.getFlexCellFormatter().addStyleName(0, 2, "border-left");
-		indexingTable.getFlexCellFormatter().addStyleName(1, 2, "border-left-increase");
-		indexingTable.getFlexCellFormatter().addStyleName(2, 2, "border-left-increase2");
-		startProcessing.addClickHandler(new ClickHandler()
-		{
+		indexingTable.getFlexCellFormatter().addStyleName(1, 2,
+				"border-left-increase");
+		indexingTable.getFlexCellFormatter().addStyleName(2, 2,
+				"border-left-increase2");
+		startProcessing.addClickHandler(new ClickHandler() {
 			@Override
-			public void onClick(ClickEvent event) 
-			{
+			public void onClick(ClickEvent event) {
 				// TODO Auto-generated method stub
 				boolean isValid = false;
 				String url = docURL.getValue();
-				int hops = Integer.parseInt(maxHops.getValue(maxHops.getSelectedIndex()));
-				int terms = Integer.parseInt(maxTerms.getValue(maxTerms.getSelectedIndex()));
+				String algorithm = algSel.getValue(algSel.getSelectedIndex());
+				int hops = Integer.parseInt(maxHops.getValue(maxHops
+						.getSelectedIndex()));
+				int terms = Integer.parseInt(maxTerms.getValue(maxTerms
+						.getSelectedIndex()));
 				boolean diff = diffCb.getValue();
-				if(openedVocabularies.isEmpty())
-				{
+				if (openedVocabularies.isEmpty()) {
 					Window.alert("Please select at least one vocabulary.");
-				}
-				else if(isFileUploaded == true && url.equals(""))
-				{
+				} else if (isFileUploaded == true && url.equals("")) {
 					fileToProcess = tempFileName;
 					isValid = true;
-				}
-				else if(isFileUploaded == false && !url.equals(""))
-				{
-					if (!url.startsWith("http://") && !url.startsWith("https://"))
+				} else if (isFileUploaded == false && !url.equals("")) {
+					if (!url.startsWith("http://")
+							&& !url.startsWith("https://"))
 						url = "http://" + url;
-					
+
 					fileToProcess = url;
 					isValid = true;
-				}
-				else if(isFileUploaded == true && !url.equals(""))
-				{
+				} else if (isFileUploaded == true && !url.equals("")) {
 					Window.alert("You can only upload a document or enter a URL, but not both.");
-				}
-				else if(isFileUploaded == false && url.equals(""))
-				{
+				} else if (isFileUploaded == false && url.equals("")) {
 					Window.alert("Please upload a document or enter a URL (use http://).");
 				}
-				
-				if(isValid == true)
-				{
+
+				if (isValid == true) {
 					final PopupPanel processingPopup = new PopupPanel();
 					final Label processing = new Label("Processing...");
 					processingPopup.addStyleName("z-index");
-			    	processingPopup.add(processing);
-			    	processingPopup.setGlassEnabled(true);  
+					processingPopup.add(processing);
+					processingPopup.setGlassEnabled(true);
 					processingPopup.center();
 					processingPopup.show();
-									
-					indexerService.getTags(fileToProcess, openedVocabularies, hops, terms, diff,
+
+					indexerService.getTags(fileToProcess, openedVocabularies,
+							hops, terms, diff, algorithm,
 							new AsyncCallback<List<ConceptProxy>>() {
 								@Override
 								public void onFailure(Throwable caught) {
@@ -539,6 +553,7 @@ public class Indexer implements EntryPoint {
 									caught.printStackTrace();
 									processingPopup.hide();
 								}
+
 								@Override
 								public void onSuccess(List<ConceptProxy> result) {
 									// TODO Auto-generated method stub
@@ -548,45 +563,45 @@ public class Indexer implements EntryPoint {
 							});
 				}
 			}
-			
+
 		});
-		
-		for(int i=0; i<indexingTable.getRowCount(); i++)
-		{
-			indexingTable.getCellFormatter().addStyleName(i, 0, "indexing-table-prompt");
-			indexingTable.getCellFormatter().addStyleName(i, 1, "indexing-table-control");
-			if(i <= 2)
-			{
-				indexingTable.getRowFormatter().addStyleName(i, "indexing-table-operation");
+
+		for (int i = 0; i < indexingTable.getRowCount(); i++) {
+			indexingTable.getCellFormatter().addStyleName(i, 0,
+					"indexing-table-prompt");
+			indexingTable.getCellFormatter().addStyleName(i, 1,
+					"indexing-table-control");
+			if (i <= 2) {
+				indexingTable.getRowFormatter().addStyleName(i,
+						"indexing-table-operation");
 			}
 		}
 		indexingTable.addStyleName("indexing-table");
 		indexingCaption.add(indexingTable);
-		
+
 		resultDock = new DockPanel();
 		resultDock.addStyleName("result-Dock");
-		resultDock.add(indexingSteps, DockPanel.NORTH); 
+		resultDock.add(indexingSteps, DockPanel.NORTH);
 		resultDock.add(indexingCaption, DockPanel.CENTER);
 		RootPanel.get("indexer").add(resultDock);
-		//test  RootPanel.get("indexer").add(indexingCaption);
+		// test RootPanel.get("indexer").add(indexingCaption);
 	}
-	
-	private void displayResult(List<ConceptProxy> result)
-	{
+
+	private void displayResult(List<ConceptProxy> result) {
 		indexingCaption.clear();
 		indexingCaption.setCaptionText("Extracted Concepts Cloud");
 		indexingCaption.removeFromParent();
 		indexingTable.clear();
 		resultDock = new DockPanel();
 		resultDock.addStyleName("result-Dock");
-		
-		indexingSteps.clear();  
-		final HTML steps = new HTML("You can select multiple concepts from the cloud and view in the following formats: " +
-		"SKOS RDF/XML, SKOS N triples, Dublin Core, MARC/XML, and MODS/XML.");
+
+		indexingSteps.clear();
+		final HTML steps = new HTML(
+				"You can select multiple concepts from the cloud and view in the following formats: "
+						+ "SKOS RDF/XML, SKOS N triples, Dublin Core, MARC/XML, and MODS/XML.");
 		indexingSteps.add(steps);
-		
-		startover.addClickHandler(new ClickHandler()
-		{
+
+		startover.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
 				// TODO Auto-generated method stub
@@ -597,159 +612,163 @@ public class Indexer implements EntryPoint {
 			}
 		});
 		selectedConceptsButton = new Button("");
-		selectedConceptsButton.setHTML("<html>Select Concepts to<br>View in multiple formats</html>");
+		selectedConceptsButton
+				.setHTML("<html>Select Concepts to<br>View in multiple formats</html>");
 		selectedConceptsButton.setStyleName("selectedConceptsButton");
 		selectedConceptsButton.addClickHandler(new FormatRecordsHandler());
- 
+
 		startover.setStyleName("start-over");
 		FlowPanel fp = new FlowPanel();
 		fp.setStyleName("vocabulary-tags");
-	    fp.add(startover);
-		fp.add(selectedConceptsButton);  
-		resultDock.add(fp, DockPanel.NORTH);  
-	
+		fp.add(startover);
+		fp.add(selectedConceptsButton);
+		resultDock.add(fp, DockPanel.NORTH);
+
 		resultDock.add(indexingCaption, DockPanel.CENTER);
 		conceptInfo = new SimplePanel();
-		resultDock.add(conceptInfo,DockPanel.SOUTH);
+		resultDock.add(conceptInfo, DockPanel.SOUTH);
 		RootPanel.get("indexer").add(resultDock);
-	    DockPanel tagDock = new DockPanel();
-	    FlowPanel tagcloud = new FlowPanel();
-	    tagcloud.setWidth("600px");
-	    tagcloud.addStyleName("tag-cloud");
-	    VerticalPanel oriVoc = new VerticalPanel();
-	    oriVoc.setSpacing(5);
-	    List<String> oriList = new ArrayList<String>();
-	    indexingCaption.add(tagDock);
-	    tagDock.add(tagcloud,DockPanel.CENTER);
-	    tagDock.add(oriVoc, DockPanel.WEST);
-	    String current = null;
-	    FlowPanel currentPanel = new FlowPanel();
-	    currentPanel.setStyleName("vocabulary-tags");
-	    for(ConceptProxy cp : result)
-	    {	    	
-	    	String ori = cp.getOrigin();
-	    	if(!openedVocabularies.contains(ori.toLowerCase()))
-	    	{
-	    		continue;
-	    	}
-	    	
-	    	if (!ori.equals(current)) {	    		
-	    		if (current != null) {
-	    			tagcloud.add(currentPanel);
-	    			currentPanel = new FlowPanel();
-	    			currentPanel.setStyleName("vocabulary-tags");
-	    		}	    			
-	    		current = ori;
-	    	}
-	    		
-	    	String uri = cp.getURI();
-	    	String uris[] = uri.split(" ");
-	    	String namespace = uris[0];
-	    	String lp = uris[1];
-	    	if(!oriList.contains(ori)) oriList.add(ori);
-	    	String colorCss = ori.toLowerCase() + "-color";
-	    	String term = cp.getPreLabel();
-	    	term = term.replaceAll(" ", "&nbsp;") + " ";
-	    	double score = cp.getScore();
-	    	/*Decide the font-size based on the score*/
-	    	double rate = (score * 10000);
-	    	String fontCss = "";
-	    	if(rate >= 0 && rate < 30)
-	    		fontCss = "font-one";
-	    	else if(rate >= 30 && rate < 60)
-	    		fontCss = "font-two";
-	    	else if(rate >= 60 && rate < 90)
-	    		fontCss = "font-three";
-	    	else if(rate >= 90 && rate < 120)
-	    		fontCss = "font-four";
-	    	else if(rate >=120 && rate < 150)
-	    		fontCss = "font-five";
-	    	else
-	    		fontCss = "font-six";
-          	final Anchor a = new Anchor(term, true);
-	    	a.setStyleName("base-css");
-	    	a.addStyleName(colorCss);
-	    	a.addStyleName(fontCss);
-	    	a.addStyleName("tag-name");
-	    	a.addStyleName("deselectedconcept-bgcolor");   
-	    	a.addClickHandler(new ConceptHandler(namespace, lp));
-	    	currentPanel.add(a);
-	    }
-	    
-	    tagcloud.add(currentPanel);
-	    
-	    for(String ori : oriList)
-	    {
-	    	Label square = new Label("");
-	    	square.setSize("15px", "15px");
-	    	square.addStyleName(ori.toLowerCase() + "-bgcolor");
-	    	Label name = new Label(ori);
-	    	HorizontalPanel hp = new HorizontalPanel();
-	    	hp.add(square);
-	    	hp.add(name);
-	    	oriVoc.add(hp);
-	    }
+		DockPanel tagDock = new DockPanel();
+		FlowPanel tagcloud = new FlowPanel();
+		tagcloud.setWidth("600px");
+		tagcloud.addStyleName("tag-cloud");
+		VerticalPanel oriVoc = new VerticalPanel();
+		oriVoc.setSpacing(5);
+		List<String> oriList = new ArrayList<String>();
+		indexingCaption.add(tagDock);
+		tagDock.add(tagcloud, DockPanel.CENTER);
+		tagDock.add(oriVoc, DockPanel.WEST);
+		String current = null;
+		FlowPanel currentPanel = new FlowPanel();
+		currentPanel.setStyleName("vocabulary-tags");
+        double minScore = 99999;
+        double maxScore = 0.0;
+		for (ConceptProxy cp : result) {
+			String cporigin = cp.getOrigin();
+			if ((openedVocabularies.contains(cporigin.toLowerCase()))
+					&& (!oriList.contains(cporigin))) {
+				oriList.add(cporigin);
+				if (cp.getScore() < minScore) minScore = cp.getScore();
+				if (cp.getScore() > maxScore) maxScore = cp.getScore();
+			}
+		}
+		minScore = minScore * 10000;
+		maxScore = maxScore * 10000;
+		int r = (int)((maxScore - minScore) / 4);
+
+		for (String cporigin : oriList) {
+			currentPanel = new FlowPanel();
+			currentPanel.setStyleName("vocabulary-tags");
+
+			for (ConceptProxy cp : result) {
+				String ori = cp.getOrigin();
+				if (!openedVocabularies.contains(ori.toLowerCase()))
+					continue;
+				if (ori.equals(cporigin)) {
+					String uri = cp.getURI();
+					String uris[] = uri.split(" ");
+					String namespace = uris[0];
+					String lp = uris[1];
+					String colorCss = ori.toLowerCase() + "-color";
+					String term = cp.getPreLabel();
+					term = term.replaceAll(" ", "&nbsp;") + " ";
+					double score = cp.getScore();
+					/* Decide the font-size based on the score */
+					double rate = (score * 10000);
+					String fontCss = "";
+					if (rate >= 0 && rate < (minScore + r))
+						fontCss = "font-three";
+					else if (rate >= (minScore + r) && rate < (minScore + 2*r))
+						fontCss = "font-four";
+					else if (rate >= (minScore + 2*r) && rate < (minScore + 3*r))
+						fontCss = "font-five";
+					else
+						fontCss = "font-six";
+			        final Anchor a = new Anchor(term, true);
+					a.setStyleName("base-css");
+					a.addStyleName(colorCss);
+					a.addStyleName(fontCss);
+					a.addStyleName("tag-name");
+					a.addStyleName("deselectedconcept-bgcolor");
+					a.addClickHandler(new ConceptHandler(namespace, lp));
+					currentPanel.add(a);
+				}
+			}
+			tagcloud.add(currentPanel);
+
+		}
+
+		// tagcloud.add(currentPanel);
+
+		for (String ori : oriList) {
+			Label square = new Label("");
+			square.setSize("15px", "15px");
+			square.addStyleName(ori.toLowerCase() + "-bgcolor");
+			Label name = new Label(" " + ori);
+			HorizontalPanel hp = new HorizontalPanel();
+			hp.add(square);
+			hp.add(name);
+			oriVoc.add(hp);
+		}
 	}
-	
-	private class ConfirmDialog extends DialogBox
-	{
+
+	private class ConfirmDialog extends DialogBox {
 		String associateVoc;
 		int vocIndex;
-		public ConfirmDialog(final HorizontalPanel toBeDeleted, final ToggleButton trigger, String vocabulary, boolean autohide, boolean modal)
-		{			
+
+		public ConfirmDialog(final HorizontalPanel toBeDeleted,
+				final ToggleButton trigger, String vocabulary,
+				boolean autohide, boolean modal) {
 			super(autohide, modal);
 			associateVoc = vocabulary;
 			vocIndex = openedVocabularies.indexOf(associateVoc.toLowerCase());
 			this.setText("Confirm");
 			this.setAnimationEnabled(true);
-			com.google.gwt.user.client.ui.Button yesBtn = new com.google.gwt.user.client.ui.Button("Yes");
-			com.google.gwt.user.client.ui.Button cancelBtn = new com.google.gwt.user.client.ui.Button("Cancel");
+			com.google.gwt.user.client.ui.Button yesBtn = new com.google.gwt.user.client.ui.Button(
+					"Yes");
+			com.google.gwt.user.client.ui.Button cancelBtn = new com.google.gwt.user.client.ui.Button(
+					"Cancel");
 			VerticalPanel vp = new VerticalPanel();
-		    vp.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
-		    vp.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
-		    vp.setSpacing(10);
-		    vp.setSize("100%", "100%");
-			HTML msg = new HTML("Do you really want to close <span style = 'color: #3399FF'>" + associateVoc + "</span>?", true);
+			vp.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
+			vp.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+			vp.setSpacing(10);
+			vp.setSize("100%", "100%");
+			HTML msg = new HTML(
+					"Do you really want to close <span style = 'color: #3399FF'>"
+							+ associateVoc + "</span>?", true);
 			vp.add(msg);
-			yesBtn.addClickHandler(new ClickHandler()
-			{
-				public void onClick(ClickEvent e)
-				{ 
+			yesBtn.addClickHandler(new ClickHandler() {
+				public void onClick(ClickEvent e) {
 					trigger.setDown(true);
 					toBeDeleted.removeFromParent();
 					ConfirmDialog.this.hide();
-					/*Delete the vocabulary from UI*/			
+					/* Delete the vocabulary from UI */
 					openedVocabularies.remove(vocIndex);
 				}
-			});		
-			cancelBtn.addClickHandler(new ClickHandler()
-			{
-				public void onClick(ClickEvent e)
-				{
+			});
+			cancelBtn.addClickHandler(new ClickHandler() {
+				public void onClick(ClickEvent e) {
 					trigger.setDown(false);
 					ConfirmDialog.this.hide();
 				}
-			}
-			);
+			});
 			HorizontalPanel opr = new HorizontalPanel();
 			opr.setSpacing(10);
 			opr.add(yesBtn);
 			opr.add(cancelBtn);
 			vp.add(opr);
-			this.add(vp);	
-		}	
-		
-		public void show()
-		{		
+			this.add(vp);
+		}
+
+		public void show() {
 			super.show();
 		}
 
-		public void hide()
-		{
+		public void hide() {
 			super.hide();
 		}
 	}
-	
+
 	private class ConceptHandler implements ClickHandler {
 		private String namespaceURI;
 		private String localPart;
@@ -761,26 +780,24 @@ public class Indexer implements EntryPoint {
 
 		@Override
 		public void onClick(ClickEvent event) {
-            // Toggle selected concept link, de/re-highlighting with each click
+			// Toggle selected concept link, de/re-highlighting with each click
 			selected = false;
 			try {
-			    clickedConcept = (Anchor)event.getSource();
-			    String styles = clickedConcept.getStyleName();
-			    if (styles.contains("deselected")) {
-			      selected = true;
-			      clickedConcept.removeStyleName("deselectedconcept-bgcolor");	
-			      clickedConcept.addStyleName("selectedconcept-bgcolor");  
-			    }
-			   else {
-				   selected = false;
-				   clickedConcept.removeStyleName("selectedconcept-bgcolor");	
-			       clickedConcept.addStyleName("deselectedconcept-bgcolor");  
-			   }
-			}
-			catch (ClassCastException exc) {
+				clickedConcept = (Anchor) event.getSource();
+				String styles = clickedConcept.getStyleName();
+				if (styles.contains("deselected")) {
+					selected = true;
+					clickedConcept.removeStyleName("deselectedconcept-bgcolor");
+					clickedConcept.addStyleName("selectedconcept-bgcolor");
+				} else {
+					selected = false;
+					clickedConcept.removeStyleName("selectedconcept-bgcolor");
+					clickedConcept.addStyleName("deselectedconcept-bgcolor");
+				}
+			} catch (ClassCastException exc) {
 				Window.alert("Class Cast Exception: ClickEvent source to Anchor");
 			}
-			
+
 			conceptBrowserService.getConceptByURI(namespaceURI, localPart,
 					new AsyncCallback<ConceptProxy>() {
 						@Override
@@ -791,80 +808,78 @@ public class Indexer implements EntryPoint {
 
 						@Override
 						public void onSuccess(ConceptProxy result) {
-							updateSelectedConcepts(result, selected);   
+							updateSelectedConcepts(result, selected);
 							displayConceptInfo(result);
-			
+
 						}
 					});
 		}
 	}
-	
-	private class SKOSHandler implements ClickHandler
-	{
+
+	private class SKOSHandler implements ClickHandler {
 		private String SKOSCode;
-		
-		public SKOSHandler(String SKOSCode)
-		{
+
+		public SKOSHandler(String SKOSCode) {
 			super();
 			this.SKOSCode = SKOSCode;
 		}
-		
+
 		public void onClick(ClickEvent event) {
 			// TODO Auto-generated method stub
 			final DecoratedPopupPanel skosDlg = new DecoratedPopupPanel(false);
 			skosDlg.setAnimationEnabled(false);
-			skosDlg.setGlassEnabled(true);   
+			skosDlg.setGlassEnabled(true);
 			TextArea skos = new TextArea();
 			skos.setSize("650px", "400px");
 			skos.setValue(SKOSCode);
-			PushButton closeButton = new PushButton(new Image("./img/closebutton.png"));		
+			PushButton closeButton = new PushButton(new Image(
+					"./img/closebutton.png"));
 			closeButton.addStyleName("close-button");
-			closeButton.addClickHandler(new ClickHandler()
-			{
+			closeButton.addClickHandler(new ClickHandler() {
 				@Override
 				public void onClick(ClickEvent event) {
 					// TODO Auto-generated method stub
 					skosDlg.removeFromParent();
 				}
-				
+
 			});
 			DockPanel dock = new DockPanel();
-			dock.add(closeButton,DockPanel.NORTH);
+			dock.add(closeButton, DockPanel.NORTH);
 			dock.add(skos, DockPanel.CENTER);
-			dock.setCellHorizontalAlignment(closeButton, HasHorizontalAlignment.ALIGN_RIGHT);
+			dock.setCellHorizontalAlignment(closeButton,
+					HasHorizontalAlignment.ALIGN_RIGHT);
 			dock.setCellWidth(closeButton, "20px");
 			skosDlg.add(dock);
 			skosDlg.show();
 			skosDlg.center();
-		}	
+		}
 	}
-	
-	private class FormatRecordsHandler implements ClickHandler
-	{
-				
-		public FormatRecordsHandler()
-		{
+
+	private class FormatRecordsHandler implements ClickHandler {
+
+		public FormatRecordsHandler() {
 			super();
 		}
-		
+
 		public void onClick(ClickEvent event) {
-			if(selectedConcepts.isEmpty()) {
+			if (selectedConcepts.isEmpty()) {
 				Window.alert("Please select at least one concept.");
 				return;
 			}
-				
-			final DecoratedPopupPanel formatRecDlg = new DecoratedPopupPanel(false);
+
+			final DecoratedPopupPanel formatRecDlg = new DecoratedPopupPanel(
+					false);
 			formatRecDlg.setAnimationEnabled(false);
-			formatRecDlg.setGlassEnabled(true); 
+			formatRecDlg.setGlassEnabled(true);
 			formatRecDlg.addStyleName("recordformat-panel");
 			FlowPanel hdr = new FlowPanel();
 			Label lb = new Label("Select Format:");
 			lb.addStyleName("heading");
 			lb.addStyleName("format-label");
-		    	
+
 			recs.setSize("800px", "400px");
 			recs.setValue("");
-			
+
 			final ListBox formatList = new ListBox();
 			formatList.addItem("SKOS - RDF/XML");
 			formatList.addItem("SKOS - N Triples");
@@ -874,53 +889,56 @@ public class Indexer implements EntryPoint {
 			formatList.setVisibleItemCount(1);
 			formatList.setSelectedIndex(0);
 			formatList.addStyleName("format-listbox");
-			
+
 			formatter.init();
-			
-     		formatList.addChangeHandler(new ChangeHandler() {
-			   public void onChange(ChangeEvent event)	{
-				   recText = "";
-				   recText = formatter.format(selectedConcepts, formatList.getItemText(formatList.getSelectedIndex()));
-				   recs.setValue(recText);
-			   }
+
+			formatList.addChangeHandler(new ChangeHandler() {
+				public void onChange(ChangeEvent event) {
+					recText = "";
+					recText = formatter.format(selectedConcepts, formatList
+							.getItemText(formatList.getSelectedIndex()));
+					recs.setValue(recText);
+				}
 			});
-     		
+
 			// default record format is SKOS RDF/XML
-     		recText = formatter.format(selectedConcepts, "SKOS - RDF/XML");
+			recText = formatter.format(selectedConcepts, "SKOS - RDF/XML");
 			recs.setValue(recText);
-			
-			PushButton closeButton = new PushButton(new Image("./img/closebutton.png"));		
+
+			PushButton closeButton = new PushButton(new Image(
+					"./img/closebutton.png"));
 			closeButton.addStyleName("close-button");
-			closeButton.addClickHandler(new ClickHandler()
-			{
+			closeButton.addClickHandler(new ClickHandler() {
 				@Override
 				public void onClick(ClickEvent event) {
 					formatRecDlg.removeFromParent();
 				}
-				
+
 			});
 			DockPanel dock = new DockPanel();
-			dock.add(closeButton,DockPanel.NORTH);
-			
+			dock.add(closeButton, DockPanel.NORTH);
+
 			hdr.add(lb);
 			hdr.add(formatList);
 			dock.add(hdr, DockPanel.NORTH);
 			dock.add(recs, DockPanel.CENTER);
-			dock.setCellHorizontalAlignment(closeButton, HasHorizontalAlignment.ALIGN_RIGHT);
+			dock.setCellHorizontalAlignment(closeButton,
+					HasHorizontalAlignment.ALIGN_RIGHT);
 			dock.setCellWidth(closeButton, "20px");
 			formatRecDlg.add(dock);
 			formatRecDlg.show();
 			formatRecDlg.center();
 		}
-			
+
 	}
-	
+
 	private void displayConceptInfo(ConceptProxy result) {
 		conceptInfo.clear();
 		conceptInfo.addStyleName("concept-info");
 		VerticalPanel vp = new VerticalPanel();
 		VerticalPanel header = new VerticalPanel();
-		Label htext = new Label(result.getOrigin() + "->" + result.getPreLabel());
+		Label htext = new Label(result.getOrigin() + "->"
+				+ result.getPreLabel());
 		htext.addStyleName("concept-name-style");
 		Button showSKOSBtn = new Button("View in SKOS");
 		showSKOSBtn.setStyleName("skos-btn");
@@ -929,7 +947,8 @@ public class Indexer implements EntryPoint {
 		header.add(htext);
 		header.add(showSKOSBtn);
 		header.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
-		header.setCellHorizontalAlignment(showSKOSBtn, HasHorizontalAlignment.ALIGN_RIGHT);
+		header.setCellHorizontalAlignment(showSKOSBtn,
+				HasHorizontalAlignment.ALIGN_RIGHT);
 		header.addStyleName("concept-header");
 		header.setWidth("100%");
 		vp.add(header);
@@ -962,7 +981,8 @@ public class Indexer implements EntryPoint {
 				String[] tokens = uri.split(" ");
 				String namespaceURI = tokens[0];
 				String localPart = tokens[1];
-				ConceptLink hp = new ConceptLink(namespaceURI, localPart, key, localPart);
+				ConceptLink hp = new ConceptLink(namespaceURI, localPart, key,
+						localPart);
 				hp.addClickHandler(new ConceptHandler(namespaceURI, localPart));
 				hp.addStyleName("Hyperlink-trick");
 				broaderPanel.add(hp);
@@ -984,17 +1004,17 @@ public class Indexer implements EntryPoint {
 				String[] tokens = uri.split(" ");
 				String namespaceURI = tokens[0];
 				String localPart = tokens[1];
-				ConceptLink hp = new ConceptLink(namespaceURI, localPart, key, localPart);
+				ConceptLink hp = new ConceptLink(namespaceURI, localPart, key,
+						localPart);
 				hp.addClickHandler(new ConceptHandler(namespaceURI, localPart));
 				hp.addStyleName("Hyperlink-trick");
 				narrowerPanel.add(hp);
 			}
 
-		conceptTable.setWidget(4, 1, narrowerPanel);
-		} 
-		else 
-		{
-			conceptTable.setText(4, 1, "This concept does not have narrower terms.");
+			conceptTable.setWidget(4, 1, narrowerPanel);
+		} else {
+			conceptTable.setText(4, 1,
+					"This concept does not have narrower terms.");
 		}
 
 		HashMap<String, String> related = result.getRelated();
@@ -1007,7 +1027,8 @@ public class Indexer implements EntryPoint {
 				String[] tokens = uri.split(" ");
 				String namespaceURI = tokens[0];
 				String localPart = tokens[1];
-				ConceptLink hp = new ConceptLink(namespaceURI, localPart, key, localPart);
+				ConceptLink hp = new ConceptLink(namespaceURI, localPart, key,
+						localPart);
 				hp.addClickHandler(new ConceptHandler(namespaceURI, localPart));
 				hp.addStyleName("Hyperlink-trick");
 				relatedPanel.add(hp);
@@ -1047,30 +1068,32 @@ public class Indexer implements EntryPoint {
 		vp.add(conceptTable);
 		conceptInfo.add(vp);
 	}
-	
+
 	private void updateSelectedConcepts(ConceptProxy result, boolean selected) {
 		int numberOfSelectedConcepts = 0;
 		if (selected)
-		    selectedConcepts.add(result);  //make this a set??
+			selectedConcepts.add(result); // make this a set??
 		else {
 			int indx = -1;
 			for (ConceptProxy cp : selectedConcepts) {
-				if (cp.getPreLabel().equalsIgnoreCase(result.getPreLabel()) &&
-		             cp.getURI().equalsIgnoreCase(result.getURI()))   {
+				if (cp.getPreLabel().equalsIgnoreCase(result.getPreLabel())
+						&& cp.getURI().equalsIgnoreCase(result.getURI())) {
 					indx = selectedConcepts.indexOf(cp);
-				    selectedConcepts.remove(indx);
-				    break;
+					selectedConcepts.remove(indx);
+					break;
 				}
 			}
 		}
-		String numConcepts = "Select Concepts to "; 
+		String numConcepts = "Select Concepts to ";
 		if (!selectedConcepts.isEmpty()) {
-		    numberOfSelectedConcepts = selectedConcepts.size();	
-		    numConcepts = String.valueOf(numberOfSelectedConcepts);
-			numConcepts = numConcepts + 
-					((numberOfSelectedConcepts == 1) ? " Concept Selected" : " Concepts Selected");
+			numberOfSelectedConcepts = selectedConcepts.size();
+			numConcepts = String.valueOf(numberOfSelectedConcepts);
+			numConcepts = numConcepts
+					+ ((numberOfSelectedConcepts == 1) ? " Concept Selected"
+							: " Concepts Selected");
 		}
-		numConcepts =  "<html>" + numConcepts + "<br>" + "View in multiple formats" + "</html>";
+		numConcepts = "<html>" + numConcepts + "<br>"
+				+ "View in multiple formats" + "</html>";
 		selectedConceptsButton.setHTML(numConcepts);
 	}
 }

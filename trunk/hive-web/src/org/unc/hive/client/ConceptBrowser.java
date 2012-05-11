@@ -607,92 +607,11 @@ public class ConceptBrowser implements EntryPoint, ValueChangeHandler<String> {
 		this.openNewVocabulary = new PushButton(new Image("./img/add.jpg"));
 		openNewVocabulary.setSize("12px", "11px");
 
-		openNewVocabulary.addClickHandler(new ClickHandler() {
-			public void onClick(ClickEvent event) {
-				final PopupPanel pop = new PopupPanel(true, false);
-				pop.addStyleName("add-pop");
-				addVocabularyPanel.clear();
-				addVocabularyPanel.removeFromParent();
-				for (final String c : allVocabulary) {
-					if (!openedVocabularies.contains(c.toLowerCase())) {
-						final Hyperlink hp = new Hyperlink(c.toUpperCase(), c.toUpperCase());
-						hp.addClickHandler(new ClickHandler() {
-
-							public void onClick(ClickEvent e) {
-								openedVocabularies.add(c.toLowerCase());
-								currentViewing = c.toUpperCase();
-								final ToggleButton closeVocabulary = new ToggleButton(
-										new Image("./img/close.jpg"),
-										new Image("./img/disabled.jpg"));
-								Label vname = new Label(c.toUpperCase());
-								vname.addStyleName("vname");
-								final HorizontalPanel vpanel = new HorizontalPanel();
-								vpanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_TOP);
-								vpanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_LEFT);
-								vpanel.addStyleName("vocabularyMenu");
-								vpanel.add(closeVocabulary);
-								vpanel.add(vname);
-								configure.insert(vpanel, configure.getWidgetCount() - 2);
-								pop.hide();
-								final Hyperlink newtabhead = new Hyperlink(c.toUpperCase(), c.toUpperCase());
-								browsingTab.addTab(newtabhead);
-								browsingTab.selectTab(browsingTab.getTabCount()-1);
-								getAndDisplayConcepts(currentViewing.toString(), subAlpha.toString());
-								newtabhead.addClickHandler(new ClickHandler() {
-									@Override
-									public void onClick(ClickEvent event) {
-										// TODO Auto-generated method stub
-										currentViewing = c.toUpperCase();
-										getAndDisplayConcepts(currentViewing.toString(), subAlpha.toString());
-									}
-
-								});
-
-								closeVocabulary.addClickHandler(new ClickHandler() {
-											public void onClick(ClickEvent e) {
-												if (closeVocabulary.isDown()) {
-													closeVocabulary.setDown(false);
-													ConfirmDialog dlg = new ConfirmDialog(vpanel,closeVocabulary, c,false, true);
-													dlg.show();
-													dlg.center();
-												} else {
-													openedVocabularies.add(c.toLowerCase());
-													final Hyperlink hp = new Hyperlink(c, c);
-													hp.addClickHandler(new ClickHandler() {
-
-																@Override
-																public void onClick(
-																		ClickEvent event) {
-																	currentViewing = c;
-																	getAndDisplayConcepts(
-																			currentViewing
-																					.toString(),
-																			subAlpha
-																					.toString());
-																}
-															});
-													browsingTab.addTab(hp);
-												}
-											}
-										});
-							}
-						});
-						addVocabularyPanel.add(hp);
-					}
-				}
-				if (addVocabularyPanel.getWidgetCount() == 0) {
-					Label msg = new Label("All vocabularies are open.");
-					addVocabularyPanel.add(msg);
-				}
-				pop.add(addVocabularyPanel);
-				pop.setPopupPosition(openNewVocabulary.getAbsoluteLeft() + 12,
-						openNewVocabulary.getAbsoluteTop() + 11);
-				pop.show();
-			}
-		});
+		openNewVocabulary.addClickHandler(new OpenNewVocabularyHandler());
 		configure.add(openNewVocabulary);
 		configure.setCellHorizontalAlignment(openNewVocabulary, HasHorizontalAlignment.ALIGN_LEFT);
 		Label lb = new Label("Add");
+		lb.addClickHandler(new OpenNewVocabularyHandler());
 		lb.addStyleName("addlabel");
 		configure.add(lb);
 	}
@@ -965,7 +884,9 @@ public class ConceptBrowser implements EntryPoint, ValueChangeHandler<String> {
 						} else {
 							//Display the first concept on the list
 							ConceptProxy c = result.get(0);
-							displayConceptInfo(c);
+							//displayConceptInfo(c);
+							displayFullConcept(c);
+												
 							resultStorage = result;
 							resultList.clear();
 							if (filteringVocabularies == null)
@@ -1130,6 +1051,28 @@ public class ConceptBrowser implements EntryPoint, ValueChangeHandler<String> {
 		}
 
 	}
+	
+	private void displayFullConcept(ConceptProxy result) 
+	{
+		String uri = result.getURI();
+		String[] tokens = uri.split(" ");
+		String namespaceURI = tokens[0];
+		String localPart = tokens[1];
+
+		conceptBrowserService.getConceptByURI(namespaceURI, localPart,
+				new AsyncCallback<ConceptProxy>() {
+
+					@Override
+					public void onFailure(Throwable caught) {
+						Window.alert(caught.getMessage());
+					}
+
+					@Override
+					public void onSuccess(ConceptProxy result) {
+						displayConceptInfo(result);
+					}
+				});
+	}
 
 	private void displayConceptInfo(ConceptProxy result) {
 		conceptInfo.clear();
@@ -1272,6 +1215,90 @@ public class ConceptBrowser implements EntryPoint, ValueChangeHandler<String> {
 	private static native String getParamString () /*-{ 
      	return $wnd.location.search; 
  	}-*/; 
+	
+	
+	class OpenNewVocabularyHandler implements ClickHandler
+	{
+		public void onClick(ClickEvent event) {
+			final PopupPanel pop = new PopupPanel(true, false);
+			pop.addStyleName("add-pop");
+			addVocabularyPanel.clear();
+			addVocabularyPanel.removeFromParent();
+			for (final String c : allVocabulary) {
+				if (!openedVocabularies.contains(c.toLowerCase())) {
+					final Hyperlink hp = new Hyperlink(c.toUpperCase(), c.toUpperCase());
+					hp.addClickHandler(new ClickHandler() {
 
+						public void onClick(ClickEvent e) {
+							openedVocabularies.add(c.toLowerCase());
+							currentViewing = c.toUpperCase();
+							final ToggleButton closeVocabulary = new ToggleButton(
+									new Image("./img/close.jpg"),
+									new Image("./img/disabled.jpg"));
+							Label vname = new Label(c.toUpperCase());
+							vname.addStyleName("vname");
+							final HorizontalPanel vpanel = new HorizontalPanel();
+							vpanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_TOP);
+							vpanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_LEFT);
+							vpanel.addStyleName("vocabularyMenu");
+							vpanel.add(closeVocabulary);
+							vpanel.add(vname);
+							configure.insert(vpanel, configure.getWidgetCount() - 2);
+							pop.hide();
+							final Hyperlink newtabhead = new Hyperlink(c.toUpperCase(), c.toUpperCase());
+							browsingTab.addTab(newtabhead);
+							browsingTab.selectTab(browsingTab.getTabCount()-1);
+							getAndDisplayConcepts(currentViewing.toString(), subAlpha.toString());
+							newtabhead.addClickHandler(new ClickHandler() {
+								@Override
+								public void onClick(ClickEvent event) {
+									// TODO Auto-generated method stub
+									currentViewing = c.toUpperCase();
+									getAndDisplayConcepts(currentViewing.toString(), subAlpha.toString());
+								}
 
+							});
+
+							closeVocabulary.addClickHandler(new ClickHandler() {
+										public void onClick(ClickEvent e) {
+											if (closeVocabulary.isDown()) {
+												closeVocabulary.setDown(false);
+												ConfirmDialog dlg = new ConfirmDialog(vpanel,closeVocabulary, c,false, true);
+												dlg.show();
+												dlg.center();
+											} else {
+												openedVocabularies.add(c.toLowerCase());
+												final Hyperlink hp = new Hyperlink(c, c);
+												hp.addClickHandler(new ClickHandler() {
+
+															@Override
+															public void onClick(
+																	ClickEvent event) {
+																currentViewing = c;
+																getAndDisplayConcepts(
+																		currentViewing
+																				.toString(),
+																		subAlpha
+																				.toString());
+															}
+														});
+												browsingTab.addTab(hp);
+											}
+										}
+									});
+						}
+					});
+					addVocabularyPanel.add(hp);
+				}
+			}
+			if (addVocabularyPanel.getWidgetCount() == 0) {
+				Label msg = new Label("All vocabularies are open.");
+				addVocabularyPanel.add(msg);
+			}
+			pop.add(addVocabularyPanel);
+			pop.setPopupPosition(openNewVocabulary.getAbsoluteLeft() + 12,
+					openNewVocabulary.getAbsoluteTop() + 11);
+			pop.show();
+		}
+	}
 }

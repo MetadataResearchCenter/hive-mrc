@@ -35,9 +35,11 @@ public class TermSuggestionServlet extends HttpServlet
 	static final String PARAM_MIN_PHRASE_OCCURRENCES = "mp";
 	static final String PARAM_EXISTING_TERMS = "ex";
 	static final String PARAM_FORMAT = "fmt";
+	static final String PARAM_CALLBACK = "callback";
 	
 	static final String FORMAT_TREE = "tree";
 	static final String FORMAT_LIST = "list";
+
 	
 	public TermSuggestionServlet() {
 		super();
@@ -72,6 +74,9 @@ public class TermSuggestionServlet extends HttpServlet
 			errors.add("No input text specified");
 		}
 		
+		String algorithm = "maui";
+		
+		
 		// Get the minimum phrase occurrences, if specified. Otherwise default to 1.
 		String mp = request.getParameter(PARAM_MIN_PHRASE_OCCURRENCES);
 		int minPhraseOccur = 1;
@@ -92,6 +97,11 @@ public class TermSuggestionServlet extends HttpServlet
 		if (StringUtils.isEmpty(format))
 			format = FORMAT_TREE;
 		
+		// Get the callback
+		String callback = request.getParameter(PARAM_CALLBACK);
+		if (StringUtils.isEmpty(callback))
+			callback = null;
+		
 		String json = "";
 		try
 		{
@@ -101,7 +111,7 @@ public class TermSuggestionServlet extends HttpServlet
 			{
 				List<ConceptNode> tree =null;
 	
-				tree = service.getTagsAsTree(text, vocabs, 15, minPhraseOccur);
+				tree = service.getTagsAsTree(text, vocabs, 15, minPhraseOccur, algorithm);
 				if (tree.size() > 0)
 				{
 					int i =0;
@@ -124,7 +134,7 @@ public class TermSuggestionServlet extends HttpServlet
 			else
 			{
 				List<ConceptProxy> list =null;
-				list = service.getTags(text, vocabs, 15, minPhraseOccur);
+				list = service.getTags(text, vocabs, 15, minPhraseOccur, algorithm);
 				if (list.size() > 0)
 				{
 					int i =0;
@@ -149,6 +159,10 @@ public class TermSuggestionServlet extends HttpServlet
 			errors.add("A server error has occurred.");
 		}
 			
+		if (callback != null)
+		{
+			json = callback + "(" + json + ");";
+		}
 		response.setContentType("text/json");
 		response.setCharacterEncoding("UTF-8");
 		PrintWriter writer = new PrintWriter(new OutputStreamWriter(response.getOutputStream(), "UTF-8"));
