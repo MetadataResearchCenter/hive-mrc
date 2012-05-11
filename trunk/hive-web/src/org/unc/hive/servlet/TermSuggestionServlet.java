@@ -24,7 +24,15 @@ import org.unc.hive.server.VocabularyService;
 import edu.unc.ils.mrc.hive.api.ConceptNode;
 
 /**
+ *  Term suggestion servlet returns JSON/JSONP formatted data for use with JQuery/Dynatree component.
  * 
+ *  Parameters: 
+ *  	cv:       comma separated list of vocabularies (required)
+ *      txt:      text (required)
+ *  	fmt:      "tree" or "list" (optional, default "tree")
+ *      mp:       minimum phrase occurrences (optional, default 1)
+ *      ex:       pipe delimited list of c.v. terms to exclude (optional)
+ *      callback: callback function for JSONP support (optional)
  */
 public class TermSuggestionServlet extends HttpServlet 
 {
