@@ -70,7 +70,7 @@ AdminVocabularies takes these parameters:
 
 For example (with training): 
 {{{
-java  -Djava.ext.dirs=/path/to/tomcat6/webapps/ROOT/WEB-INF/lib  edu.unc.ils.mrc.hive.admin.AdminVocabularies -c <path to directory with hive.properties> -v <vocabulary name> [-a | -sldktmx]
+java  -Djava.ext.dirs=<path to HIVE lib dir> edu.unc.ils.mrc.hive.admin.AdminVocabularies -c <path to directory with hive.properties> -v <vocabulary name> [-a | -sldktmx]
 }}}
 
 Flags:
