@@ -27,6 +27,7 @@
     	<echo>  all     : Cleans, compiles, and packages application</echo>
     	<echo>  clean   : Deletes work directories</echo>
     	<echo>  compile : Compiles classes</echo>
+		<echo>  doc     : Document</echo>
     	<echo>  dist    : Packages JAR</echo>
     	<echo></echo>
     	<echo>For example, to clean, compile, and package all at once, run:</echo>
@@ -36,6 +37,21 @@
 	<target name="all" depends="clean,compile,dist"
           description="Clean work dirs, then compile and create JAR"/>
 
+	<target name="doc">
+		  <javadoc packagenames="edu.unc.*"
+		           sourcepath="src"
+		  	       excludepackagenames="org.apache.*,org.openrdf.*"
+		           destdir="docs/api"
+		  		   classpathref="compile.classpath"
+		  	       author="false"
+		           version="true"
+		           use="true"
+		           windowtitle="HIVE API">
+		    <doctitle><![CDATA[<h1>HIVE API</h1>]]></doctitle>
+		    <bottom><![CDATA[<i>Copyright &#169; 2009-2012, UNC-Chapel Hill and Nescent</i>]]></bottom>
+		  </javadoc>
+	</target>
+	
  	<target name="clean"
           description="Delete build directory">
     	<delete dir="${build.dir}"/>
@@ -51,7 +67,7 @@
     	</javac>
   	</target>
 
- 	<target name="dist" depends="compile"
+ 	<target name="dist" depends="compile,doc"
           description="Create JAR file">
     	<jar jarfile="${dist.dir}/${name}.jar"
         	 basedir="${build.dir}"/>
