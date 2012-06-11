@@ -84,6 +84,7 @@ public class AdminVocabularies {
     	options.addOption("t", false, "Train KEA");
     	options.addOption("m", false, "Train Maui");
     	options.addOption("x", false, "Initialize autocomplete index");
+    	options.addOption("mo", true, "Minimum phrase occurrence");
     	return options;
     }
     
@@ -121,6 +122,11 @@ public class AdminVocabularies {
 			boolean doTrainMaui = commandLine.hasOption("m");
 			boolean doAutocomplete = commandLine.hasOption("x");
 			
+			String moStr = commandLine.getOptionValue("mo");
+			int minOccur = 2;
+			if (moStr != null)
+				minOccur = Integer.parseInt(moStr);
+			
 			if (doAll)
 				doSesame = doLucene = doH2 = doKEAH2 = doTrainKEA = doTrainMaui = doAutocomplete =true;
 			
@@ -153,6 +159,7 @@ public class AdminVocabularies {
 				if (doTrainKEA) 
 				{
 					TaggerTrainer trainer = new TaggerTrainer(scheme);
+					trainer.setMinOccur(minOccur);
 					logger.info("Starting KEA training");
 					trainer.trainKEAAutomaticIndexingModule();
 					logger.info("KEA training complete");
@@ -163,6 +170,7 @@ public class AdminVocabularies {
 				if (doTrainMaui) 
 				{
 					TaggerTrainer trainer = new TaggerTrainer(scheme);
+					trainer.setMinOccur(minOccur);
 					logger.info("Starting Maui training");
 					trainer.trainMauiAutomaticIndexingModule();
 					logger.info("Maui training complete");
