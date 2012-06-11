@@ -265,7 +265,7 @@ public class SKOSSchemeImpl implements SKOSScheme {
 				logger.warn("autocomplete property is empty");
 			
 			// kea stemmer class
-			this.keaStemmerClass = properties.getProperty("keaStemmerClass", "kea.stemmers.PorterStemmer");
+			this.keaStemmerClass = properties.getProperty("keaStemmerClass", "l");
 			System.out.println("Using kea stemmer " + keaStemmerClass);
 			if (keaStemmerClass == null || keaStemmerClass.isEmpty())
 				logger.warn("keaStemmerClass property is empty, defaulting to kea.stemers.PorterStemmer");

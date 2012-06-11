@@ -146,7 +146,7 @@ public class SKOSTaggerImpl implements SKOSTagger
 	 * @return
 	 */
 	public List<SKOSConcept> getTags(URL url, List<String> vocabulary, 
-			SKOSSearcher searcher, int maxHops, int numTerms, boolean diff)
+			SKOSSearcher searcher, int maxHops, int numTerms, boolean diff, int minOccur)
 	{
 		try
 		{
@@ -157,7 +157,7 @@ public class SKOSTaggerImpl implements SKOSTagger
 			tm.setProxy(proxyHost, proxyPort);
 			tm.setIgnorePrefixes(ignorePrefixes);
 			String text = tm.getPlainText(url, maxHops, diff);
-			return getTagsInternal(text, vocabulary, searcher, numTerms, 2);
+			return getTagsInternal(text, vocabulary, searcher, numTerms, minOccur);
 		} catch (Exception e) {
 			logger.error(e);
 		}
@@ -175,12 +175,12 @@ public class SKOSTaggerImpl implements SKOSTagger
 	 * @return
 	 */
 	public List<SKOSConcept> getTags(String filePath, List<String> vocabularies, 
-			SKOSSearcher searcher, int numTerms) 
+			SKOSSearcher searcher, int numTerms, int minOccur) 
 	{
 		TextManager tm = new TextManager();
 		String text = tm.getPlainText(filePath);
 				
-		return getTagsInternal(text, vocabularies, searcher, numTerms, 2);          
+		return getTagsInternal(text, vocabularies, searcher, numTerms, minOccur);          
 	}
 	
 	
