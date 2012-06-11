@@ -2,6 +2,7 @@
 	<inherits name='com.google.gwt.user.User' />
 	<inherits name='com.google.gwt.user.theme.standard.Standard' />
 	<inherits name='org.gwtmultipage.gwtmultipage' />
+	<inherits name="com.google.gwt.i18n.I18N"/>
 	
 	<!-- Use this EntryPoint instead of your own one. -->
     <entry-point class='org.gwtmultipage.client.EntrypointDispatcher'/>
@@ -16,5 +17,8 @@
 	
 	<stylesheet src="../hive.css" />
 	<stylesheet src="../Upload.css" />
-
+	
+	<extend-property name="locale" values="es"/>
+	<extend-property name="locale" values="en"/>
+	
 </module>

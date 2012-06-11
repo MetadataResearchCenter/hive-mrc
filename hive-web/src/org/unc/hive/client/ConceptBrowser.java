@@ -55,7 +55,8 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 
-@UrlPatternEntryPoint(value = "ConceptBrowser.html(\\\\#.*)?" )
+//@UrlPatternEntryPoint(value = "ConceptBrowser.html(\\\\#.*)?" )
+@UrlPatternEntryPoint(value = "ConceptBrowser([^.]*).html(\\\\?.*)?(\\\\#.*)?" )
 /*
  * Entry point classes define <code>onModuleLoad()</code>.
  */
@@ -88,13 +89,13 @@ public class ConceptBrowser implements EntryPoint, ValueChangeHandler<String> {
 												// vocabularies in client side
 	private List<String> allVocabulary; // store the name of all vocabularies
 										// that hive have
-	private String[] alphabetical = { "A", "B", "C", "D", "E", "F", "G", "H",
-			"I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U",
-			"V", "W", "X", "Y", "Z", "[0-9]" };
+
 	private List<ConceptProxy> resultStorage;
 	private List<String> filteringVocabularies;
 	private String queryfromhome = "";
 	private String currentViewing; // store the name of the vocabulary the user currently is browsing
+	
+	private HIVEMessages messages = (HIVEMessages)GWT.create(HIVEMessages.class);
 
 	// private ConceptProxy randomConcept;
 
@@ -107,7 +108,7 @@ public class ConceptBrowser implements EntryPoint, ValueChangeHandler<String> {
 
 	public void onModuleLoad() {
         final PopupPanel loadingPopup = new PopupPanel();
-        loadingPopup.add(new Label("Loading..."));
+        loadingPopup.add(new Label(messages.conceptbrowser_loading()));
         loadingPopup.addStyleName("z-index");
         loadingPopup.setGlassEnabled(true);
         loadingPopup.show();
@@ -119,16 +120,12 @@ public class ConceptBrowser implements EntryPoint, ValueChangeHandler<String> {
 
 			@Override
 			public void onFailure(Throwable caught) {
-				// TODO Auto-generated method stub
-				
-				Window.alert("Get all vocabularies failed.");
-				
+				Window.alert(messages.conceptbrowser_getVocabulariesError());
 			}
 
 			@Override
 			public void onSuccess(List<String> result) 
 			{
-				// TODO Auto-generated method stub
 				loadingPopup.hide();
 				allVocabulary = result;
 	
@@ -154,7 +151,9 @@ public class ConceptBrowser implements EntryPoint, ValueChangeHandler<String> {
 								public void onFailure(Throwable caught) {
 									// TODO Auto-generated method stub
 									HTML reminder = new HTML(
-											"<span style = 'color:red'>Server is unresponse, please try again later.</span>");
+											"<span style = 'color:red'>" 
+											+ messages.conceptbrowser_serverError()
+											+ "</span>");
 									resultList.clear();
 									filteringPanel.clear();
 									resultList.add(reminder);
@@ -162,11 +161,9 @@ public class ConceptBrowser implements EntryPoint, ValueChangeHandler<String> {
 
 								@Override
 								public void onSuccess(List<ConceptProxy> result) {
-									// TODO Auto-generated method stub
-
 									if (result.size() == 0) {
 										HTML reminder = new HTML(
-												"<span style = 'color:red'> No results.</span>");
+												"<span style = 'color:red'>" + messages.conceptbrowser_noresults() + "</span>");
 										resultList.clear();
 										filteringPanel.clear();
 										resultList.add(reminder);
@@ -312,10 +309,10 @@ public class ConceptBrowser implements EntryPoint, ValueChangeHandler<String> {
 				   choosePanel.setGlassEnabled(true);   
 				   choosePanel.addStyleName("choose-panel");
 				   DockPanel dock = new DockPanel();
-				   Label lb = new Label("Please choose vocabularies to open");
+				   Label lb = new Label(messages.conceptbrowser_chooseVocabulary());
 				   lb.addStyleName("heading");
 				   dock.add(lb, DockPanel.NORTH);
-				   CaptionPanel caption = new CaptionPanel("List of Vocabularies at HIVE");
+				   CaptionPanel caption = new CaptionPanel(messages.conceptbrowser_vocabularyList());
 				   FlowPanel flow = new FlowPanel();
 				   for(String c : allVocabulary)
 				   {
@@ -344,7 +341,7 @@ public class ConceptBrowser implements EntryPoint, ValueChangeHandler<String> {
 				   caption.setHeight("200px");
 				   dock.add(caption, DockPanel.CENTER);
 				   HorizontalPanel hp = new HorizontalPanel();
-				   Button okButton = new Button("OK");
+				   Button okButton = new Button(messages.conceptbrowser_ok());
 				   okButton.addClickHandler(new ClickHandler()
 				   {
 
@@ -381,7 +378,7 @@ public class ConceptBrowser implements EntryPoint, ValueChangeHandler<String> {
 						
 					}
 				   });
-				   Button cancelButton = new Button("CANCEL");
+				   Button cancelButton = new Button(messages.conceptbrowser_cancel());
 				   cancelButton.addClickHandler(new ClickHandler()
 				   {
 
@@ -416,7 +413,7 @@ public class ConceptBrowser implements EntryPoint, ValueChangeHandler<String> {
 					}
 					   
 				   });
-				   Label tip = new Label("On CANCEL, the default vocabulary will be opened.");
+				   Label tip = new Label(messages.conceptbrowser_cancelDefault() );
 				   tip.setWidth("250px");
 				   tip.addStyleName("tip");
 				   hp.add(okButton);
@@ -449,7 +446,7 @@ public class ConceptBrowser implements EntryPoint, ValueChangeHandler<String> {
 		SimplePanel configureWrapper = new SimplePanel();
 		configureWrapper.add(configure);
 		configureWrapper.setStyleName("configure");
-		final Label lb1 = new Label("Opened vocabularies:");
+		final Label lb1 = new Label(messages.conceptbrowser_openedVocabularies());
 		lb1.setWidth("150px");
 		lb1.addStyleName("label");
 		configure.add(lb1);
@@ -488,7 +485,7 @@ public class ConceptBrowser implements EntryPoint, ValueChangeHandler<String> {
 		searchResult.addStyleName("border-default");
 		searchResult.addStyleName("background-default");
 		filteringPanel = new VerticalPanel();
-		captionForFiltering = new CaptionPanel("Filter the result");
+		captionForFiltering = new CaptionPanel(messages.conceptbrowser_filter());
 		captionForFiltering.add(filteringPanel);
 		captionForFiltering.addStyleName("add-margin");
 		captionForFiltering.setWidth("120px");
@@ -540,14 +537,14 @@ public class ConceptBrowser implements EntryPoint, ValueChangeHandler<String> {
 				if (event.getCharCode() == KeyCodes.KEY_ENTER) {
 					String query = queryBox.getValue();
 					if (query.equals("")) {
-						Window.alert("Please enter a query.");
+						Window.alert(messages.conceptbrowser_enterQueryMessage());
 					} else {
 						loadingResultList(query);
 					}
 				}
 			}
 		});
-		final Button searchButton = new Button("Search");
+		final Button searchButton = new Button(messages.conceptbrowser_searchButton());
 		searchButton.addClickHandler(new ClickHandler() {
 
 			@Override
@@ -555,7 +552,7 @@ public class ConceptBrowser implements EntryPoint, ValueChangeHandler<String> {
 
 				final String query = queryBox.getValue();
 				if (query.equals("")) {
-					Window.alert("please enter query.");
+					Window.alert(messages.conceptbrowser_enterQueryMessage());
 				} else {
 					loadingResultList(query);
 				}
@@ -610,7 +607,7 @@ public class ConceptBrowser implements EntryPoint, ValueChangeHandler<String> {
 		openNewVocabulary.addClickHandler(new OpenNewVocabularyHandler());
 		configure.add(openNewVocabulary);
 		configure.setCellHorizontalAlignment(openNewVocabulary, HasHorizontalAlignment.ALIGN_LEFT);
-		Label lb = new Label("Add");
+		Label lb = new Label(messages.conceptbrowser_addButton());
 		lb.addClickHandler(new OpenNewVocabularyHandler());
 		lb.addStyleName("addlabel");
 		configure.add(lb);
@@ -624,6 +621,8 @@ public class ConceptBrowser implements EntryPoint, ValueChangeHandler<String> {
 		int i = 0;
 		int j = 0;
 
+                String alphaList = messages.conceptbrowser_alphaList();
+                String[] alphabetical = alphaList.split(",");
 		for (final String c : alphabetical) {
 
 			final Hyperlink hp = new Hyperlink(c, c);
@@ -741,7 +740,7 @@ public class ConceptBrowser implements EntryPoint, ValueChangeHandler<String> {
 								@Override
 								public void onFailure(Throwable caught) {
 									// TODO Auto-generated method stub
-									TreeItem error = new TreeItem("Cannot load the information!");
+									TreeItem error = new TreeItem(messages.conceptbrowser_cannotLoadError() );
 									thisItem.addItem(error);
 									thisItem.setState(true, false);
 								}
@@ -864,7 +863,7 @@ public class ConceptBrowser implements EntryPoint, ValueChangeHandler<String> {
 					public void onFailure(Throwable caught) {
 						// TODO Auto-generated method stub
 						HTML reminder = new HTML(
-								"<span style = 'color:red'>Server is down, please try again later.</span>");
+								"<span style = 'color:red'>" + messages.conceptbrowser_serverDownError() + "</span>");
 						resultList.clear();
 						filteringPanel.clear();
 						resultList.add(reminder);
@@ -876,7 +875,7 @@ public class ConceptBrowser implements EntryPoint, ValueChangeHandler<String> {
 
 						if (result.size() == 0) {
 							HTML reminder = new HTML(
-									"<span style = 'color:red'> No results.</span>");
+									"<span style = 'color:red'>" + messages.conceptbrowser_noresults() + "</span>");
 							resultList.clear();
 							filteringPanel.clear();
 							resultList.add(reminder);
@@ -998,15 +997,14 @@ public class ConceptBrowser implements EntryPoint, ValueChangeHandler<String> {
 			associateVoc = vocabulary;
 			vocIndex = openedVocabularies.indexOf(associateVoc.toLowerCase());
 			com.google.gwt.user.client.ui.Button yesBtn = new com.google.gwt.user.client.ui.Button(
-					"Yes");
+					messages.conceptbrowser_yes() );
 			com.google.gwt.user.client.ui.Button cancelBtn = new com.google.gwt.user.client.ui.Button(
-					"Cancel");
+					messages.conceptbrowser_cancel());
 			VerticalPanel vp = new VerticalPanel();
 			vp.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 			vp.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
 			vp.setSpacing(10);
-			HTML msg = new HTML("Are you sure to close <span style = 'color: #3399FF'>"
-							+ associateVoc + "</span>?", true);
+			HTML msg = new HTML(messages.conceptbrowser_areYouSure(associateVoc), true);
 			vp.add(msg);
 			yesBtn.addClickHandler(new ClickHandler() {
 				public void onClick(ClickEvent e) {
@@ -1024,7 +1022,7 @@ public class ConceptBrowser implements EntryPoint, ValueChangeHandler<String> {
 					}
 					else
 					{
-						conceptList.add(new Label("No vocabularies are open."));
+						conceptList.add(new Label(messages.conceptbrowser_noVocabularies()));
 					}
 				}
 			});
@@ -1080,7 +1078,7 @@ public class ConceptBrowser implements EntryPoint, ValueChangeHandler<String> {
 		VerticalPanel header = new VerticalPanel();
 		Label htext = new Label(result.getOrigin() + "->" + result.getPreLabel());
 		htext.addStyleName("concept-name-style");
-		Button showSKOSBtn = new Button("View in SKOS");
+		Button showSKOSBtn = new Button(messages.conceptbrowser_viewSKOS());
 		showSKOSBtn.setStyleName("skos-btn");
 		showSKOSBtn.addClickHandler(new SKOSHandler(result.getSkosCode()));
 		header.addStyleName("concept-name-header");
@@ -1094,23 +1092,23 @@ public class ConceptBrowser implements EntryPoint, ValueChangeHandler<String> {
 		
 		Label preLabel = new Label(result.getPreLabel());
 		FlexTable conceptTable = new FlexTable();
-		conceptTable.setText(0, 0, "Preferred Label");
+		conceptTable.setText(0, 0, messages.conceptbrowser_prefLabel());
 		conceptTable.setWidget(0, 1, preLabel);
-		conceptTable.setText(1, 0, "URI");
+		conceptTable.setText(1, 0, messages.conceptbrowser_uri() );
 		conceptTable.setText(1, 1, result.getURI());
 		List<String> altLabel = result.getAltLabel();
-		conceptTable.setText(2, 0, "Alternative Label");
+		conceptTable.setText(2, 0, messages.conceptbrowser_altLabel() );
 		String altlabels = "";
 		if (altLabel != null) {
 			for (String c : altLabel) {
 				altlabels = altlabels + c + "; ";
 			}
 		} else {
-			altlabels = "This concept does not have alternative labels.";
+			altlabels = messages.conceptbrowser_noAltLabels();
 		}
 		conceptTable.setText(2, 1, altlabels);
 		HashMap<String, String> broader = result.getBroader();
-		conceptTable.setText(3, 0, "Broader Concepts");
+		conceptTable.setText(3, 0, messages.conceptbrowser_broaderConcepts() );
 		if (broader != null) {
 			FlowPanel broaderPanel = new FlowPanel();
 			Set<String> keys = broader.keySet();
@@ -1131,10 +1129,10 @@ public class ConceptBrowser implements EntryPoint, ValueChangeHandler<String> {
 			conceptTable.setWidget(3, 1, broaderPanel);
 		} else {
 			conceptTable.setText(3, 1,
-					"This concept does not have broader terms.");
+					messages.conceptbrowser_noBroaders());
 		}
 
-		conceptTable.setText(4, 0, "Narrower Concepts");
+		conceptTable.setText(4, 0, messages.conceptbrowser_narrowerConcepts());
 		HashMap<String, String> narrower = result.getNarrower();
 		if (narrower != null) {
 			FlowPanel narrowerPanel = new FlowPanel();
@@ -1156,11 +1154,11 @@ public class ConceptBrowser implements EntryPoint, ValueChangeHandler<String> {
 		else 
 		{
 			conceptTable.setText(4, 1,
-					"This concept does not have narrower terms.");
+					messages.conceptbrowser_noNarrowers());
 		}
 
 		HashMap<String, String> related = result.getRelated();
-		conceptTable.setText(5, 0, "Related Concepts");
+		conceptTable.setText(5, 0, messages.conceptbrowser_relatedConceptsj());
 		if (related != null) {
 			FlowPanel relatedPanel = new FlowPanel();
 			Set<String> keys = related.keySet();
@@ -1178,11 +1176,11 @@ public class ConceptBrowser implements EntryPoint, ValueChangeHandler<String> {
 			}
 		} else {
 			conceptTable.setText(5, 1,
-					"This concept does not have related concepts.");
+					messages.conceptbrowser_noRelated());
 		}
 
 		List<String> scopeNotes = result.getScopeNotes();
-		conceptTable.setText(6, 0, "Scope Notes");
+		conceptTable.setText(6, 0, messages.conceptbrowser_scoreNotes());
 		String sn = "";
 		if (scopeNotes != null) {
 			for (String s : scopeNotes) {
@@ -1190,7 +1188,7 @@ public class ConceptBrowser implements EntryPoint, ValueChangeHandler<String> {
 			}
 
 		} else {
-			sn = "This concept does not have scope notes.";
+			sn = messages.conceptbrowser_noScopeNotes();
 		}
 
 		conceptTable.setText(6, 1, sn);
@@ -1292,7 +1290,7 @@ public class ConceptBrowser implements EntryPoint, ValueChangeHandler<String> {
 				}
 			}
 			if (addVocabularyPanel.getWidgetCount() == 0) {
-				Label msg = new Label("All vocabularies are open.");
+				Label msg = new Label(messages.conceptbrowser_allVocabOpen());
 				addVocabularyPanel.add(msg);
 			}
 			pop.add(addVocabularyPanel);
