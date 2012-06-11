@@ -51,21 +51,27 @@ public class TaggerTrainer {
     private static final Log logger = LogFactory.getLog(TaggerTrainer.class);
 	
 	private SKOSScheme schema;
+	private int minOccur = 2;
 
 	public TaggerTrainer(SKOSScheme schema) {
 		this.schema = schema;
 
 	}
+	
+	public void setMinOccur(int minOccur) 
+	{
+		this.minOccur = minOccur;
+	}
 
 	public void trainKEAAutomaticIndexingModule() throws HiveException {
 		logger.trace("trainKEAAutomaticIndexingModule");
-		KEAModelGenerator generator = new KEAModelGenerator(this.schema);
+		KEAModelGenerator generator = new KEAModelGenerator(this.schema, minOccur);
 		generator.createModel(this.schema.getStopwordsPath());
 	}
 	
 	public void trainMauiAutomaticIndexingModule() throws HiveException {
 		logger.trace("trainMauiAutomaticIndexingModule");
-		MauiModelGenerator generator = new MauiModelGenerator(this.schema);
+		MauiModelGenerator generator = new MauiModelGenerator(this.schema, minOccur);
 		generator.createModel(this.schema.getStopwordsPath());
 	}	
 
