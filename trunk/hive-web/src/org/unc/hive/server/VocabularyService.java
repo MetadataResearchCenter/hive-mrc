@@ -38,6 +38,7 @@ public class VocabularyService {
 	private static final Log logger = LogFactory.getLog(VocabularyService.class); //jpb
 	private static VocabularyService instance = null;
 	private SKOSServer skosServer;
+	private int DEFAULT_MIN_OCCUR = 2;
 	
 	protected VocabularyService(String configFile) {
 		this.skosServer = new SKOSServerImpl(configFile);
@@ -310,7 +311,7 @@ public class VocabularyService {
 		
 		SKOSTagger tagger = this.skosServer.getSKOSTagger(algorithm);
 		List<SKOSConcept> candidates = tagger.getTags(input, openedVocabularies,
-				this.getSKOSSearcher(), numTerms);
+				this.getSKOSSearcher(), numTerms, DEFAULT_MIN_OCCUR);
 		List<ConceptProxy> result = new ArrayList<ConceptProxy>(); 
 		for(SKOSConcept concept : candidates)
 		{
@@ -333,7 +334,7 @@ public class VocabularyService {
 			int numTerms, int minPhraseOccur, String algorithm)
 	{
 		SKOSTagger tagger = this.skosServer.getSKOSTagger(algorithm);
-		List<SKOSConcept> candidates = tagger.getTagsFromText(input, openedVocabularies,
+		List<SKOSConcept> candidates = tagger.getTags(input, openedVocabularies,
 				this.getSKOSSearcher(), numTerms, minPhraseOccur);
 		List<ConceptProxy> result = new ArrayList<ConceptProxy>(); 
 		for(SKOSConcept concept : candidates)
@@ -371,11 +372,11 @@ public class VocabularyService {
 	}
 	
 	public List<ConceptProxy> getTags(URL url, List<String> openedVocabularies, int maxHops, 
-			int numTerms, boolean diff, String algorithm)
+			int numTerms, boolean diff, int minOccur, String algorithm)
 	{
 		SKOSTagger tagger = this.skosServer.getSKOSTagger(algorithm);
 		List<SKOSConcept> candidates = tagger.getTags(url, openedVocabularies,
-				this.getSKOSSearcher(), maxHops, numTerms, diff);
+				this.getSKOSSearcher(), maxHops, numTerms, diff, minOccur);
 		List<ConceptProxy> result = new ArrayList<ConceptProxy>(); 
 		for(SKOSConcept concept : candidates)
 		{

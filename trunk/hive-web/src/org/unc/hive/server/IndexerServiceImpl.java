@@ -52,7 +52,7 @@ public class IndexerServiceImpl extends RemoteServiceServlet implements
      *   
      */
 	public List<ConceptProxy> getTags(String input, List<String> openedVocabularies, int maxHops, 
-			int numTerms, boolean diff, String algorithm) 
+			int numTerms, boolean diff, int minOccur, String algorithm) 
 	{
 		logger.debug("getTags for " + input);
 
@@ -60,7 +60,7 @@ public class IndexerServiceImpl extends RemoteServiceServlet implements
 			try
 			{
 				URL url = new URL (input);
-				return this.service.getTags(url, openedVocabularies, maxHops, numTerms, diff, algorithm);
+				return this.service.getTags(url, openedVocabularies, maxHops, numTerms, diff, minOccur, algorithm);
 
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -72,7 +72,7 @@ public class IndexerServiceImpl extends RemoteServiceServlet implements
 			String filePath = this.path + "/WEB-INF/tmp/" + input;
 			
 			List<ConceptProxy> concepts = new ArrayList<ConceptProxy>();
-			concepts = this.service.getTags(filePath, openedVocabularies, numTerms, algorithm);
+			concepts = this.service.getTags(filePath, openedVocabularies, numTerms, minOccur, algorithm);
 			
 			// Delete the temporary file
 			File file = new File(filePath);
