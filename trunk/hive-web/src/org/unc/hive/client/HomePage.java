@@ -1,6 +1,8 @@
 package org.unc.hive.client;
 
 import java.util.List;
+import java.util.Locale;
+
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -8,6 +10,7 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
+import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
@@ -26,7 +29,9 @@ import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import org.gwtmultipage.client.UrlPatternEntryPoint;
 
-@UrlPatternEntryPoint(value = "home.html")
+
+//@UrlPatternEntryPoint(value = "home.html")
+@UrlPatternEntryPoint(value = "home([^.]*).html(\\\\?.*)?")
 
 public class HomePage implements EntryPoint {
 
@@ -39,15 +44,20 @@ public class HomePage implements EntryPoint {
 
 	private final ConceptBrowserServiceAsync conceptBrowserService = GWT
 			.create(ConceptBrowserService.class);
+	
+	
+	private HIVEMessages messages = (HIVEMessages)GWT.create(HIVEMessages.class);
 
 	public void onModuleLoad() {
 		// TODO Auto-generated method stub
-		vocabularyStatistics = new CaptionPanel("Vocabulary Statistics");
+		vocabularyStatistics = new CaptionPanel(messages.homepage_stats() );
 		vocabularyStatistics.setWidth("100%");
 		vocabularyStatistics.setStyleName("caption");
-		searchConcept = new CaptionPanel("<a href = 'ConceptBrowser.html'> Search a Concept </a>", true);
+		searchConcept = new CaptionPanel("<a href = '" + messages.homepage_conceptBrowserURL() + "'> " + 
+				messages.homepage_searchLabel() + " </a>", true);
 		searchConcept.setStyleName("caption");
-		indexing = new CaptionPanel("<a href = 'indexing.html'> Index a Document </a>", true);
+		indexing = new CaptionPanel("<a href = '" + messages.homepage_indexingURL() + "'> "+ 
+				messages.homepage_indexLabel() +" </a>", true);
 		indexing.setStyleName("caption");
 		demoServerStmt = new CaptionPanel("");
 		demoServerStmt.setStyleName("caption"); 
@@ -65,31 +75,32 @@ public class HomePage implements EntryPoint {
 				   String query = queryBox.getValue();
 				   if(query.equals(""))
 				   {
-					 Window.alert("Please enter a query!");
+					 Window.alert(messages.homepage_enterQuery());
 				   }
 				   else
 				   {
-					   String url = "../ConceptBrowser.html#query=" + query;
+					   String url = "../" + messages.homepage_conceptBrowserURL() + "#query=" + query;
 					   redirect(url);	
 				   }
 				}
 			}
 		});
 		
-		searchBtn = new Button("Search");
+		
+		
+		searchBtn = new Button(messages.homepage_searchButton());
 		searchBtn.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
 				// TODO Auto-generated method stub
 				String query = queryBox.getValue();
 				if (query.equals("")!= true) {
-					String url = "ConceptBrowser.html#query=" + query;
+					String url =  messages.homepage_conceptBrowserURL() + "#query=" + query;
 					redirect(url);	
 				}
 			}
 		});
-		final HTML introCB = new HTML(
-				"Browse and search concepts in selected vocabularies.",	true);
+		final HTML introCB = new HTML(messages.homepage_browseDesc(), true);
 		final HorizontalPanel search = new HorizontalPanel();
 		search.setSpacing(5);
 		// 2011/1/20 craig.willis: Disabled non-functioning search box and button.
@@ -101,10 +112,10 @@ public class HomePage implements EntryPoint {
 		searchVP.add(search);
 		searchConcept.add(searchVP);
 		final HTML introIndex = new HTML(
-				"Automatically extract document concepts for subject metadata creation.",
+				messages.homepage_indexDesc(),
 				true);
 	
-		final Button submitBtn = new Button("Upload");
+		final Button submitBtn = new Button(messages.homepage_uploadButton());
 		submitBtn.addStyleName("uploadBtn");
 
 		final HorizontalPanel uploaderPanel = new HorizontalPanel();
@@ -120,8 +131,7 @@ public class HomePage implements EntryPoint {
 		
 		final VerticalPanel demoVP = new VerticalPanel();
 		final HTML demoStmt = new HTML(
-				"<i>This HIVE system is for demo purposes and may change in response to your feedback.</i>" +
-						"<a href='mailto:hive-community@googlegroups.com'> Contact us</a>", true);
+				"<i>"+messages.homepage_info()+"</i>" + messages.homepage_contact(), true);
 		demoVP.add(demoStmt);
 		demoVP.add(uploaderPanel);
 		demoServerStmt.add(demoVP);
@@ -146,9 +156,9 @@ public class HomePage implements EntryPoint {
 						// TODO Auto-generated method stub
 
 						vocabularyStatistics.add(new Label(
-								"Cannot get the information!"));
+								messages.homepage_loadStatsError()));
 						
-						Window.alert("Unable to retrieve vocabularies.");
+						Window.alert(messages.homepage_loadVocabError());
 
 					}
 
@@ -160,13 +170,13 @@ public class HomePage implements EntryPoint {
 						for (int i = 0; i < result.size() + 1; i++) {
 							if (i == 0) {
 								vocabulariesGrid.setWidget(i, 0, new Label(
-										"Vocabulary"));
+										messages.homepage_vocabLabel() ));
 								vocabulariesGrid.setWidget(i, 1, new Label(
-										"Concepts"));
+										messages.homepage_conceptsLabel()));
 								vocabulariesGrid.setWidget(i, 2, new Label(
-										"Relationships"));
+										messages.homepage_relationshipslabel()));
 								vocabulariesGrid.setWidget(i, 3, new Label(
-										"Last Updated"));
+										messages.homepage_lastUpdatedLabel()));
 							} else {
 								List<String> vocabularyInfo = result.get(i - 1);
 								for (int j = 0; j < vocabularyInfo.size(); j++) {
@@ -178,7 +188,8 @@ public class HomePage implements EntryPoint {
 											@Override
 											public void onClick(ClickEvent event) {
 												// TODO Auto-generated method stub
-												String url = "../ConceptBrowser.html#voc=" + hp.getTargetHistoryToken();
+												String url = "../" + messages.homepage_conceptBrowserURL() + 
+													"#voc=" + hp.getTargetHistoryToken();
 												redirect(url);	
 											}
 										});
