@@ -40,10 +40,11 @@ public interface SKOSTagger {
 	 * @param vocabularies	List of vocabularies
 	 * @param searcher		Searcher implementation
 	 * @param maxTerms		Maximum number of terms
+	 * @param minOccur		Minimum number of times a phrase/term must occur
 	 * @return
 	 */
 	public List<SKOSConcept> getTags(String path, List<String> vocabularies, 
-			SKOSSearcher searcher, int maxTerms);
+			SKOSSearcher searcher, int maxTerms, int minOccur);
 
 	/**
 	 * Returns a list of SKOSConcept objects for the specified URL
@@ -57,10 +58,11 @@ public interface SKOSTagger {
 	 * @param maxHops		Maximum number of links to be traversed (hops)
 	 * @param maxTerms		Maximum number of terms
 	 * @param diff			Index only the differences between base page and subsequent pages
+	 * @param minOccur		Minimum number of times a phrase/term must occur
 	 * @return
 	 */
 	public List<SKOSConcept> getTags(URL url, List<String> vocabularies, 
-			SKOSSearcher searcher, int maxHops, int maxTerms, boolean diff);
+			SKOSSearcher searcher, int maxHops, int maxTerms, boolean diff, int minOccur);
 	
 	public void setConfig(Configuration config);
 	
