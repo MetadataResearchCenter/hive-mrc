@@ -68,7 +68,7 @@ public class MauiModelGenerator {
 		km.setMinNumOccur(this.minNumOccur);
 	}
 */
-	public MauiModelGenerator(SKOSScheme schema) {
+	public MauiModelGenerator(SKOSScheme schema, int minOccur) {
 
 		this.scheme = schema;
 		
@@ -144,7 +144,7 @@ public class MauiModelGenerator {
 
 		// 11. Minumum occurrence of a phrase in the document -- use 2 for long
 		// documents!
-		mm.setMinNumOccur(2);
+		mm.setMinNumOccur(minOccur);
 
 	}
 
