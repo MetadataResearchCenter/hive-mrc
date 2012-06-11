@@ -57,7 +57,7 @@ public class BatchTagger
 				String keyFileName = pdfName.substring(0, pdfName.lastIndexOf('.')) + ".key";
 				FileWriter keyFileWriter = new FileWriter(keyFileName);
 
-				List<SKOSConcept> concepts = tagger.getTags(file.getAbsolutePath(), vocabularies, searcher, NUM_TERMS);
+				List<SKOSConcept> concepts = tagger.getTags(file.getAbsolutePath(), vocabularies, searcher, NUM_TERMS, 2);
 				for (SKOSConcept concept : concepts) {
 					keyFileWriter.write(concept.getPrefLabel() + "\r\n");
 				}
