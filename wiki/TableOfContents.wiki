@@ -14,6 +14,7 @@
    * [HIVEMemoryUsage HIVE Memory Usage]
    * [InstallingHiveEC2 Installing HIVE on EC2]
    * [VocabularySynchronization Synchronization]
+   * [Localization Localization]
  * Using HIVE
    * [TrainingKEA How to train HIVE]
    * [VocabularyConversion How to convert vocabularies]
