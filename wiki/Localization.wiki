@@ -1,0 +1,10 @@
+#summary How to translate the HIVE interface into new languages
+
+
+= Localization =
+
+
+== HTML ==
+
+
+== GWT ==
