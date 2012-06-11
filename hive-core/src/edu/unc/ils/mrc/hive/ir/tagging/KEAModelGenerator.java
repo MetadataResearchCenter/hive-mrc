@@ -68,7 +68,7 @@ public class KEAModelGenerator {
 		km.setMinNumOccur(this.minNumOccur);
 	}
 
-	public KEAModelGenerator(SKOSScheme schema) {
+	public KEAModelGenerator(SKOSScheme schema, int minOccur) {
 
 		this.scheme = schema;
 		
@@ -141,7 +141,7 @@ public class KEAModelGenerator {
 
 		// 11. Minumum occurrence of a phrase in the document -- use 2 for long
 		// documents!
-		km.setMinNumOccur(2);
+		km.setMinNumOccur(minOccur);
 
 	}
 
