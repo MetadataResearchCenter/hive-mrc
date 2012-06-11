@@ -1,0 +1,6 @@
+#summary HIVE 2.2 Release Notes
+
+= Release Notes =
+
+The HIVE 2.2 release includes the following minor features and bug fixes:
+ * Issue [http://code.google.com/p/hive-mrc/issues/detail?id=49 #49]: Add localization support 
