@@ -2,19 +2,14 @@
 
 = What is HIVE? =
 
-HIVE is an automatic metadata generation approach that dynamically integrates discipline-specific controlled vocabularies encoded with the Simple Knowledge Organisation System (SKOS), a World Wide Web Consortium (W3C) standard. HIVE will assist content creators and information professionals with subject cataloging and will provide a solution to the traditional controlled vocabulary problems of cost, interoperability, and usability.
+HIVE is a framework and service for the integration of multiple controlled vocabularies and thesauri using Simple Knowledge Organization (SKOS) format. 
 
-HIVE functions:
- * Conversion of vocabularies to SKOS
- * Rich internet application (RIA) for browsing and searching multiple SKOS vocabularies
- * Java API and REST application interfaces for programmatic access to multiple SKOS vocabularies
- * Support Natural language and SPARQL-based queries
- * Automatic keyphrase indexing using multiple SKOS vocabularies. HIVE supports two indexers:
-   * KEA++ indexer
-   * Basic Lucene indexer
+HIVE features can be used in three ways:
+ * [AboutHiveWeb HIVE Web]: GWT-based web application
+ * [AboutHiveCore Core API]: Java SE API for programmatic access
+ * [AboutHiveRestService REST Service]: REST-based service for programmatic access
 
-
-Learn more:
- * [AboutHiveCore About HIVE Core]
- * [AboutHiveWeb About HIVE Web]
- * [AboutKEA About KEA]
+HIVE supports the following functions:
+ * Conversion of various vocabularies to SKOS
+ * Browsing and searching SKOS vocabularies (Concept Browser)
+ * Automatic controlled indexing using [http://www.nzdl.org/Kea/ KEA++], [https://code.google.com/p/maui-indexer/ Maui], and simple Lucene-based indexers.
