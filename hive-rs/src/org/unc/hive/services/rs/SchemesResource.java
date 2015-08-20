@@ -23,6 +23,9 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.xml.namespace.QName;
 
+import org.apache.log4j.Logger;
+
+import edu.unc.ils.mrc.hive.api.SKOSConcept;
 import edu.unc.ils.mrc.hive.api.SKOSScheme;
 import edu.unc.ils.mrc.hive.api.SKOSServer;
 
@@ -44,6 +47,8 @@ import edu.unc.ils.mrc.hive.api.SKOSServer;
 @Produces("text/plain")
 @Path("schemes")
 public class SchemesResource {
+	
+	private Logger logger = Logger.getLogger(SchemesResource.class);
 
   /**
    * Gets the list of scheme names supported by the HIVE-CORE system,
@@ -67,6 +72,43 @@ public class SchemesResource {
     }
     
     return schemeNames.toString().trim();
+  }
+  
+  /**
+   * Gets the list of scheme names supported by the HIVE-CORE system,
+   * in JSON format.
+   * 
+   * @return         a list of scheme names, in JSON format
+   * @author jpboone
+   */
+  @GET
+  @Path("names")
+  @Produces("application/json")
+  public String getNames() {
+    StringBuffer schemeNames = new StringBuffer("");
+    SKOSServer skosServer = ConfigurationListener.getSKOSServer();
+    
+    TreeMap<String, SKOSScheme> skosSchemes = skosServer.getSKOSSchemas();
+    
+    StringBuffer jsonStringBuffer = new StringBuffer("{ \"schemes\": [ \n");
+    
+    int numConcepts = skosSchemes.size(); 
+    int count = 1;
+    for (String name : skosSchemes.keySet()) {
+        String jsonFormat = "{\"name\": \"" + name + "\"}";
+        jsonStringBuffer.append(jsonFormat);
+        if (count < numConcepts)  
+          	jsonStringBuffer.append(",\n");
+        count++;
+    }
+    jsonStringBuffer.append("\n]");
+    jsonStringBuffer.append("\n}");  
+    
+    String jsonString = jsonStringBuffer.toString();
+    
+    logger.info("schemes/names JSON:" +  jsonString);
+    return jsonString;
+    
   }
   
   
