@@ -16,19 +16,26 @@
 package org.unc.hive.services.rs;
 
 import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
 import javax.ws.rs.GET;
-import javax.ws.rs.PUT;
+// import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.xml.namespace.QName;
 
+
+
+
+// import org.apache.commons.logging.Log;
+// import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.Logger;
 
 import edu.unc.ils.mrc.hive.api.SKOSConcept;
@@ -36,6 +43,7 @@ import edu.unc.ils.mrc.hive.api.SKOSScheme;
 import edu.unc.ils.mrc.hive.api.SKOSSearcher;
 import edu.unc.ils.mrc.hive.api.SKOSServer;
 import edu.unc.ils.mrc.hive.api.SKOSTagger;
+// import edu.unc.ils.mrc.hive.api.impl.elmo.SKOSTaggerImpl;
 
 /**
  * The ConceptsResource class utilizes the SKOSConcept, SKOSSearcher,
@@ -102,6 +110,171 @@ public class ConceptsResource {
     return xmlString;
   }
   
+  /**
+   * Utility method to transform a list of SKOSConcept objects into JSON.
+   * 
+   * @param   skosConcepts   the list of SKOSConcept objects
+   * @return  jsonString     the JSON string
+   */
+  public String conceptListToJSON(List<SKOSConcept> skosConcepts) {
+	  
+	logger.info("conceptListToJSON");
+	
+	/////////////
+	//SKOSConcept skosConceptTemp = null;
+    //String prefLabelTemp = null;
+    
+   // String schemaURI = "tbd";
+	/*
+    SKOSSearcher skosSearcherTemp = ConfigurationListener.getSKOSSearcher();
+      
+      if (skosSearcherTemp != null) {
+        skosConceptTemp = skosSearcherTemp.searchConceptByURI(schemaURI, localPart);
+        if (skosConceptTemp != null) {
+          prefLabelTemp = skosConceptTemp.getPrefLabel();
+        }
+      }
+    */
+	
+    ///////////////////
+	
+    StringBuffer jsonStringBuffer = new StringBuffer("{ \"concepts\": [ \n");
+    
+    int numConcepts = skosConcepts.size(); 
+    int count = 1;
+    for (SKOSConcept skosConcept : skosConcepts) {
+        if (skosConcept != null) {
+            //String jsonFormat = skosConcept.getJSONFormat();   // define local method to convert concept to JSON
+            String jsonFormat = conceptToJSON(skosConcept);
+            jsonStringBuffer.append(jsonFormat);
+            if (count < numConcepts)  
+            	jsonStringBuffer.append(",\n");
+            count++;
+        }
+    }
+    jsonStringBuffer.append("\n]");
+    jsonStringBuffer.append("\n}");  
+    
+    String jsonString = jsonStringBuffer.toString();
+    
+    logger.info("JSONSTRING:" +  jsonString);
+    return jsonString;
+  }
+  
+  public String conceptToJSON(SKOSConcept concept) {
+	  SKOSSearcher skosSearcher = ConfigurationListener.getSKOSSearcher();
+	  StringBuffer json =  new StringBuffer();
+	    
+	  json.append("{   \"uri\": " + "\"" +  concept.getQName().getNamespaceURI() + concept.getQName().getLocalPart() + "\",\n");
+      json.append("   \"type\": [\"http://www.w3.org/2004/02/skos/core#Concept\"],\n");
+	  json.append("   \"prefLabel\": " + "\"" +  concept.getPrefLabel() + "\"\n");
+		
+      int num = concept.getAltLabels().size();
+	  int count = 0;
+	  if (!concept.getAltLabels().isEmpty()) {
+		  json.append("   ,\"altLabel\": [\n");
+		  for(String alt : concept.getAltLabels()) {
+		     if (count < num-1) 
+			     json.append("   \"" + alt + "\",\n"); 
+		     else
+		    	 json.append("   \"" + alt + "\"\n"); 
+		     count++;
+		  }    
+          json.append("]\n");
+       }
+		
+		num = concept.getBroaders().size();
+		count = 0;
+		if (!concept.getBroaders().isEmpty()) {
+			json.append("   ,\"broader\": [ \n");
+			for (String broader : concept.getBroaders().keySet()) {
+				json.append("      { \"uri\": \"");
+				String schemaURI = concept.getBroaders().get(broader).getNamespaceURI();
+				String localPart = concept.getBroaders().get(broader).getLocalPart();
+				json.append(schemaURI);
+				json.append(localPart  + "\",");
+				
+				if (skosSearcher != null) {
+			        SKOSConcept conceptTemp = skosSearcher.searchConceptByURI(schemaURI, localPart);
+			        if (conceptTemp != null) {
+			          String prefLabelTemp = conceptTemp.getPrefLabel();
+			          json.append("       \"prefLabel\": \"" + prefLabelTemp); //  + "\"" );	
+			        }
+			      }
+
+				if (count < num-1) 
+					json.append("\"},");
+		    	else
+		    		json.append("\"}");
+		        count++;
+			}
+			json.append("\n]");
+		}
+		
+		num = concept.getNarrowers().size();
+		count = 0;
+		if (!concept.getNarrowers().isEmpty()) {
+			json.append("  ,\"narrower\": [ \n");
+			for(String narrower : concept.getNarrowers().keySet()) {
+				json.append("      { \"uri\": \"");
+				String schemaURI = concept.getNarrowers().get(narrower).getNamespaceURI();
+				String localPart = concept.getNarrowers().get(narrower).getLocalPart();
+				json.append(schemaURI); 
+				json.append(localPart  + "\",");  
+				
+				if (skosSearcher != null) {
+			        SKOSConcept conceptTemp = skosSearcher.searchConceptByURI(schemaURI, localPart);
+			        if (conceptTemp != null) {
+			          String prefLabelTemp = conceptTemp.getPrefLabel();
+			          json.append("       \"prefLabel\": \"" + prefLabelTemp); //  + "\"" );	
+			        }
+			      }
+				
+				if (count < num-1) 
+					json.append("\"},");
+		    	else
+		    		json.append("\"}");
+		        count++;
+			}
+			json.append("\n]");
+		}
+		
+		num = concept.getRelated().size();
+		count = 0;
+		if (!concept.getRelated().isEmpty()) {
+			json.append("  ,\"related\": [ \n");
+			for(String related : concept.getRelated().keySet()) {
+				json.append("      { \"uri\": \"");
+				String schemaURI = concept.getRelated().get(related).getNamespaceURI();
+				String localPart = concept.getRelated().get(related).getLocalPart();
+				json.append(schemaURI);  
+				json.append(localPart  + "\","); 
+				
+				if (skosSearcher != null) {
+			        SKOSConcept conceptTemp = skosSearcher.searchConceptByURI(schemaURI, localPart);
+			        if (conceptTemp != null) {
+			          String prefLabelTemp = conceptTemp.getPrefLabel();
+			          json.append("       \"prefLabel\": \"" + prefLabelTemp); //  + "\"" );	
+			        }
+			      }
+				
+				if (count < num-1) 
+					json.append("\"},");
+		    	else
+		    		json.append("\"}");
+		        count++;
+			}
+			json.append("\n]");
+		}
+		
+		
+		json.append("   ,\"inScheme\": \"" +  concept.getQName().getNamespaceURI() + "\",\n");
+	    json.append("   \"score\": \"" +  concept.getScore() + "\"\n");
+	    json.append("\n}");
+	
+	    logger.trace(json.toString());
+		return json.toString();
+  }
 
   /**
    * Utility method to transform a map of String keys and QName values
@@ -642,38 +815,278 @@ public class ConceptsResource {
    * Analyzes a document to search for tags that match a given vocabulary
    * and returns the matching tags as a list of vocabulary concepts.
    * 
-   * @param  schemeName     the scheme name, e.g. "nbii"        
-   * @param  file           the file to be analyzed
-   * @return                a list of SKOS concepts in XML format
+   * @param  schemeName     the scheme name, dummy value: "multi"        
+   * @param  vocs           one or more vocabularies to use for tagging (indexing);  format: uat%2Bagrovoc%2Blcsh
+   * @param  File           the file to be analyzed
+   * @return                a list of SKOS concepts in JSON format
+   * @author jpboone
    */
-  @PUT
-  @Path("tags/SKOSFormat")
+
+  @GET
+  @Path("tags/doc")
+  @Produces("application/json")
   public String tagDocument(
 		  @PathParam("schemeName") String schemeName, 
-		  @QueryParam("algorithm") String algorithm,
+		  @QueryParam("vocs") String vocs,  
           File file) 
   {
-    String xmlString = "";
+    String jsonString = "";
     if (file != null) {
       String inputFilePath = file.getAbsolutePath();
       logger.debug("inputFilePath: " + inputFilePath);
       List<SKOSConcept> skosConcepts = null;
       List<String> vocabularyList = new ArrayList<String>();
-      vocabularyList.add(schemeName); 
+      String[] vocNames = vocs.split("[+]");
+      for (int i=0; i<vocNames.length; i++) {
+          vocabularyList.add(vocNames[i]);
+      } 
     
       SKOSSearcher skosSearcher = ConfigurationListener.getSKOSSearcher();
-      SKOSTagger skosTagger = ConfigurationListener.getSKOSTagger(algorithm);
+      SKOSTagger skosTagger = ConfigurationListener.getSKOSTagger("maui");
       
       if (skosSearcher != null && skosTagger != null) {
         skosConcepts = 
           skosTagger.getTags(inputFilePath, vocabularyList, skosSearcher, 10);
-        xmlString = conceptListToXML(skosConcepts);
+        jsonString = conceptListToJSON(skosConcepts);
       }
       file.delete();
     }
     
-    return xmlString;
+    return jsonString;
   }
   
+
+/**
+ * Analyzes a URL to search for tags that match one or more vocabularies
+ * and returns the matching tags as a list of vocabulary concepts.
+ * 
+ * @param  schemeName     the scheme name, dummy value: "multi"       
+ * @param  URL            the URL to be analyzed
+ * @param  vocs           one or more vocabularies to use for tagging (indexing);  format: uat%2Bagrovoc%2Blcsh
+ * @return                a list of SKOS concepts in XML format
+ * @author jpboone
+ */
+/*
+@GET
+@Path("tagURLxml")
+public String tagURLxml(
+		@PathParam("schemeName") String schemeName,
+		@QueryParam("url") String url,     
+		@QueryParam("vocs") String vocs)  
+{
+    String xmlString = "";
+    List<SKOSConcept> skosConcepts = null;
+    List<String> vocabularyList = new ArrayList<String>();
+   System.out.println("vocs=" + vocs); 
+    String[] vocNames = vocs.split("[+]");
+    for (int i=0; i<vocNames.length; i++) {
+        vocabularyList.add(vocNames[i]);
+    } 
+    if (!url.startsWith("http://") && !url.startsWith("https://"))
+		url = "http://" + url;
+       
+    SKOSSearcher skosSearcher = ConfigurationListener.getSKOSSearcher();
+    SKOSTagger skosTagger = ConfigurationListener.getSKOSTagger("maui");
+    try {
+       if (skosSearcher != null && skosTagger != null) {
+        
+		   skosConcepts = skosTagger.getTags(new URL(url), vocabularyList, skosSearcher, 0, 10, true);
+      
+         xmlString = conceptListToXML(skosConcepts);
+       } 
+    }
+    catch (MalformedURLException e) {
+       logger.debug("malformed URL exception: " + url);	 
+    }
+
+  return xmlString;
+}
+*/
+
+/**
+ * Analyzes a URL to search for tags that match one or more vocabularies
+ * and returns the matching tags as a list of vocabulary concepts in JSON format
+ * 
+ * @param  schemeName     the scheme name, dummy value: "multi"       
+ * @param  URL            the URL to be analyzed
+ * @param  vocs           one or more vocabularies to use for tagging (indexing);  format: uat%2Bagrovoc%2Blcsh
+ * @return                a list of SKOS concepts in JSON format
+ * @author jpboone
+ */
+/*
+@GET
+@Path("tagURLjson")
+@Produces("text/plain")
+public String tagURLjson(
+		@PathParam("schemeName") String schemeName,
+		@QueryParam("url") String url,     
+		@QueryParam("vocs") String vocs)  
+{
+    String jsonString = "";
+    List<SKOSConcept> skosConcepts = null;
+    List<String> vocabularyList = new ArrayList<String>();
+    System.out.println("vocs=" + vocs); 
+    String[] vocNames = vocs.split("[+]");
+    for (int i=0; i<vocNames.length; i++) {
+        //System.out.println("voc " + i + ": " + vocNames[i]); 
+        vocabularyList.add(vocNames[i]);
+    } 
+    if (!url.startsWith("http://") && !url.startsWith("https://"))
+		url = "http://" + url;
+      
+    SKOSSearcher skosSearcher = ConfigurationListener.getSKOSSearcher();
+    SKOSTagger skosTagger = ConfigurationListener.getSKOSTagger("maui");
+    try {
+       if (skosSearcher != null && skosTagger != null) {
+        
+		   skosConcepts = skosTagger.getTags(new URL(url), vocabularyList, skosSearcher, 0, 10, true);
+      
+           jsonString = conceptListToJSON(skosConcepts);
+       } 
+    }
+    catch (MalformedURLException e) {
+       logger.debug("malformed URL exception: " + url);	 
+    }
+
+    logger.info("in tagURLjson(): jsonString return value:" + jsonString);
+    return jsonString;
+} 
+*/
+
+/**
+ * Analyzes a URL to search for tags that match one or more vocabularies
+ * and returns the matching tags as a list of vocabulary concepts in JSON format
+ * 
+ * @param  schemeName     the scheme name, dummy value: "multi"       
+ * @param  URL            the URL to be analyzed
+ * @param  vocs           one or more vocabularies to use for tagging (indexing);  format: uat%2Bagrovoc%2Blcsh
+ * @return                a list of SKOS concepts in JSON format
+ * @author jpboone
+ */
+
+@GET
+@Path("tags/url")
+@Produces("application/json")
+public String tagURL(
+		@PathParam("schemeName") String schemeName,
+		@QueryParam("url") String url,     
+		@QueryParam("vocs") String vocs)  
+{
+    String jsonString = "";
+    List<SKOSConcept> skosConcepts = null;
+    List<String> vocabularyList = new ArrayList<String>();
+    System.out.println("vocs=" + vocs); 
+    String[] vocNames = vocs.split("[+]");
+    for (int i=0; i<vocNames.length; i++) {
+        //System.out.println("voc " + i + ": " + vocNames[i]); 
+        vocabularyList.add(vocNames[i]);
+    } 
+    if (!url.startsWith("http://") && !url.startsWith("https://"))
+		url = "http://" + url;
+        
+    SKOSSearcher skosSearcher = ConfigurationListener.getSKOSSearcher();
+    SKOSTagger skosTagger = ConfigurationListener.getSKOSTagger("maui");
+    try {
+       if (skosSearcher != null && skosTagger != null) {
+           // Last 3 arguments take defaults:
+    	   //    maxHops = 0,   max number of links to travers
+    	   //    numTerms = 10, max number of terms to return
+    	   //    diff = true,   only index differences between base page and others
+		   skosConcepts = skosTagger.getTags(new URL(url), vocabularyList, skosSearcher, 0, 10, true);
+      
+           jsonString = conceptListToJSON(skosConcepts);
+       } 
+    }
+    catch (MalformedURLException e) {
+       logger.debug("malformed URL exception: " + url);	 
+    }
+
+    logger.info("in tagURLjson(): jsonString return value:" + jsonString);
+  return jsonString;
+} 
+
+
+
+/**
+ * Analyzes a URL to search for tags that match a given vocabulary
+ * and returns the matching tags as a list of vocabulary concepts.
+ * 
+ * @param  schemeName     the scheme name, dummy value: "multi"       
+ * @param  URL            the URL to be analyzed
+ * @param  vocs           one or more vocabularies to use for tagging (indexing)
+ * @param  maxHops        max number of links to be traversed (hops)
+ * @param  numTerms       number of terms to be returned
+ * @param  diff           extract only differences between base page and subsequent pages
+ * @return                a list of SKOS concepts in XML format
+ * @author jpboone
+ */
+
+@GET
+@Path("tagURLoptions")
+public String tagURLwithOptions(
+		@PathParam("schemeName") String schemeName,
+		@QueryParam("url") String url,     // with or without 'http:/'
+		@QueryParam("vocs") String vocs,   // format: uat%2Bagrovoc%2Blcsh
+		@QueryParam("maxhops") String maxHops,
+		@QueryParam("numterms") String numTerms,
+		@QueryParam("diff") String diff) 
+{
+    int hops, terms;
+    boolean diffd; 
+	String xmlString = "";
+    List<SKOSConcept> skosConcepts = null;
+    List<String> vocabularyList = new ArrayList<String>();
+    System.out.println("vocs=" + vocs); 
+    String[] vocNames = vocs.split("[+]");
+    for (int i=0; i<vocNames.length; i++) {
+    	 System.out.println("voc " + i + ": " + vocNames[i]); 
+        vocabularyList.add(vocNames[i]);
+    } 
+    if (!url.startsWith("http://") && !url.startsWith("https://"))
+		url = "http://" + url;
+    //System.out.println("url=" + url);
+    //System.out.println("Options: " + maxHops + numTerms + diff);
+    
+    if (maxHops == null) hops = 0;
+    else {
+    	try {
+            hops = Integer.parseInt(maxHops );
+            if (hops < 0) hops = 0;  }
+        catch( Exception e ) { hops = 0; }
+    }
+    
+    if (numTerms == null) terms = 10;
+    else {
+    	try {
+            terms = Integer.parseInt(numTerms );
+            if (terms < 1) terms = 10;  }
+        catch( Exception e ) { terms = 10; }
+    }
+    
+    if (diff == null) diffd=true;
+    else {
+       if (diff.equalsIgnoreCase("false")) diffd=false;
+       else diffd=true;
+    }
+    //System.out.println("Options: " + hops + terms + diffd);
+    
+    SKOSSearcher skosSearcher = ConfigurationListener.getSKOSSearcher();
+    SKOSTagger skosTagger = ConfigurationListener.getSKOSTagger("maui");
+    try {
+       if (skosSearcher != null && skosTagger != null) {
+        
+		   skosConcepts = skosTagger.getTags(new URL(url), vocabularyList, skosSearcher, hops, terms, diffd);
+      
+         xmlString = conceptListToXML(skosConcepts);
+       } 
+    }
+    catch (MalformedURLException e) {
+       logger.debug("malformed URL exception: " + url);	 
+    }
+
+  return xmlString;
+}  
+
+
 }
   
